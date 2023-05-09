@@ -20,6 +20,7 @@
 		<property name="avoidStaticImportExcludes" value="org.springframework.core.annotation.MergedAnnotations.SearchStrategy.*" />
 	</module>
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<module name="SuppressionCommentFilter"/>
  		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
  			<property name="maximum" value="0"/>
 			<property name="format" value="org\.assertj\.core\.api\.Assertions\.(catchThrowable|catchThrowableOfType|assertThatThrownBy|assertThatCode)" />
