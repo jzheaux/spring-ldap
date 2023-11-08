@@ -17,22 +17,27 @@
 package org.springframework.ldap.pool2.factory;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 
+import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.DelegatingBaseLdapPathContextSourceSupport;
 import org.springframework.ldap.pool2.DelegatingDirContext;
 import org.springframework.ldap.pool2.DelegatingLdapContext;
 import org.springframework.ldap.pool2.DirContextType;
+import org.springframework.ldap.pool2.validation.DefaultDirContextValidator;
 import org.springframework.ldap.pool2.validation.DirContextValidator;
 
 /**
@@ -79,16 +84,18 @@ import org.springframework.ldap.pool2.validation.DirContextValidator;
  * @since 2.0
  */
 public class PooledContextSource extends DelegatingBaseLdapPathContextSourceSupport
-		implements ContextSource, DisposableBean {
+		implements ContextSource, DisposableBean, InitializingBean {
 
 	/**
 	 * The logger for this class and sub-classes
 	 */
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	protected final GenericKeyedObjectPool<Object, Object> keyedObjectPool;
+	protected GenericKeyedObjectPool<Object, Object> keyedObjectPool;
 
 	private final DirContextPooledObjectFactory dirContextPooledObjectFactory;
+
+	private final ReentrantLock lock = new ReentrantLock();
 
 	private PoolConfig poolConfig;
 
@@ -98,14 +105,29 @@ public class PooledContextSource extends DelegatingBaseLdapPathContextSourceSupp
 	 */
 	public PooledContextSource(PoolConfig poolConfig) {
 		this.dirContextPooledObjectFactory = new DirContextPooledObjectFactory();
+		this.poolConfig = poolConfig;
+		this.keyedObjectPool = initializeKeyedObjectPool(poolConfig);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		try {
+			this.lock.lock();
+			if (this.keyedObjectPool == null) {
+				this.keyedObjectPool = initializeKeyedObjectPool(this.poolConfig);
+			}
+		} finally {
+			this.lock.unlock();
+		}
+	}
+
+	private GenericKeyedObjectPool<Object, Object> initializeKeyedObjectPool(PoolConfig poolConfig) {
 		if (poolConfig != null) {
-			this.poolConfig = poolConfig;
-			GenericKeyedObjectPoolConfig objectPoolConfig = getConfig(poolConfig);
-			this.keyedObjectPool = new GenericKeyedObjectPool<Object, Object>(this.dirContextPooledObjectFactory,
-					objectPoolConfig);
+			GenericKeyedObjectPoolConfig<Object> objectPoolConfig = getConfig(poolConfig);
+			return new GenericKeyedObjectPool<>(this.dirContextPooledObjectFactory, objectPoolConfig);
 		}
 		else {
-			this.keyedObjectPool = new GenericKeyedObjectPool<Object, Object>(this.dirContextPooledObjectFactory);
+			return new GenericKeyedObjectPool<>(this.dirContextPooledObjectFactory);
 		}
 	}
 
@@ -225,6 +247,12 @@ public class PooledContextSource extends DelegatingBaseLdapPathContextSourceSupp
 		}
 		catch (Exception ex) {
 			this.logger.warn("An exception occurred while closing the underlying pool.", ex);
+		}
+		try {
+			this.lock.lock();
+			this.keyedObjectPool = null;
+		} finally {
+			this.lock.unlock();
 		}
 	}
 
