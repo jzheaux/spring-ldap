@@ -1,0 +1,20 @@
+[[observability]]
+= Observability Support
+
+Spring LDAP integrates with Micromter.
+Similar to LDAP's transaction support, observability happens in `DirContext` instances.
+
+== Minimal Configuration
+
+To minimally configure a Spring Boot application to observe LDAP operations, first configure Boot, then publish the following bean:
+
+[source,java]
+====
+@Bean
+static ContextSourceObservationPostProcessor observationPostProcessor(ObjectProvider<ObservationRegistry> provider) {
+    return new ContextSourceObservationPostProcessor(provider);
+}
+====
+
+This will cause the `LdapContextSource` bean that Boot publishes to be wrapped in an `ObservationContextSource`.
+This will subsequently time any LDAP query and report the traces.
