@@ -75,6 +75,7 @@ configurations {
 }
 
 dependencies {
+    implementation 'io.spring.nullability:io.spring.nullability.gradle.plugin:0.0.4'
     implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'com.thaiopensource:trang:20091111'
     implementation 'net.sourceforge.saxon:saxon:9.1.0.8'
