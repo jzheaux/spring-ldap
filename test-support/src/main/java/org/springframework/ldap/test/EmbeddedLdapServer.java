@@ -26,6 +26,8 @@ import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 import org.apache.directory.shared.ldap.name.LdapDN;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Helper class for embedded Apache Directory Server.
@@ -33,13 +35,14 @@ import org.apache.directory.shared.ldap.name.LdapDN;
  * @author Mattias Hellborg Arthursson
  * @since 1.3.2
  */
+@NullMarked
 public final class EmbeddedLdapServer {
 
 	private final DirectoryService directoryService;
 
 	private final LdapServer ldapServer;
 
-	private static File workingDirectory;
+	private static @Nullable File workingDirectory;
 
 	private EmbeddedLdapServer(DirectoryService directoryService, LdapServer ldapServer) {
 		this.directoryService = directoryService;
@@ -86,8 +89,9 @@ public final class EmbeddedLdapServer {
 	public void shutdown() throws Exception {
 		this.ldapServer.stop();
 		this.directoryService.shutdown();
-
-		FileUtils.deleteDirectory(workingDirectory);
+		if (workingDirectory != null) {
+			FileUtils.deleteDirectory(workingDirectory);
+		}
 	}
 
 }

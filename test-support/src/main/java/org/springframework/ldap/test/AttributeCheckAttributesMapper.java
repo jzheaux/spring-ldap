@@ -22,6 +22,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.util.Assert;
 
@@ -31,6 +33,7 @@ import org.springframework.util.Assert;
  *
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class AttributeCheckAttributesMapper implements AttributesMapper<Object> {
 
 	private String[] expectedAttributes = new String[0];

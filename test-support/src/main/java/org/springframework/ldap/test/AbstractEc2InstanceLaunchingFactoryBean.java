@@ -22,6 +22,8 @@ import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import com.xerox.amazonws.ec2.ReservationDescription;
 import com.xerox.amazonws.ec2.ReservationDescription.Instance;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ import org.springframework.util.Assert;
  *
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public abstract class AbstractEc2InstanceLaunchingFactoryBean extends AbstractFactoryBean {
 
 	private static final int INSTANCE_START_SLEEP_TIME = 1000;
@@ -53,17 +56,17 @@ public abstract class AbstractEc2InstanceLaunchingFactoryBean extends AbstractFa
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractEc2InstanceLaunchingFactoryBean.class);
 
-	private String imageName;
+	private @Nullable String imageName;
 
-	private String awsKey;
+	private @Nullable String awsKey;
 
-	private String awsSecretKey;
+	private @Nullable String awsSecretKey;
 
-	private String keypairName;
+	private @Nullable String keypairName;
 
-	private String groupName;
+	private @Nullable String groupName;
 
-	private Instance instance;
+	private @Nullable Instance instance;
 
 	private long preparationSleepTime = DEFAULT_PREPARATION_SLEEP_TIME;
 
@@ -158,7 +161,7 @@ public abstract class AbstractEc2InstanceLaunchingFactoryBean extends AbstractFa
 	protected abstract Object doCreateInstance(String ip) throws Exception;
 
 	@Override
-	protected void destroyInstance(Object ignored) throws Exception {
+	protected void destroyInstance(@Nullable Object ignored) throws Exception {
 		if (this.instance != null) {
 			LOG.info("Shutting down instance");
 			Jec2 jec2 = new Jec2(this.awsKey, this.awsSecretKey);

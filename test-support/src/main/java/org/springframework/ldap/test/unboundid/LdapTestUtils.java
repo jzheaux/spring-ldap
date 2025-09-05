@@ -33,6 +33,8 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldif.LDIFReader;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +52,12 @@ import org.springframework.ldap.support.LdapUtils;
  *
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public final class LdapTestUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LdapTestUtils.class);
 
-	private static EmbeddedLdapServer embeddedServer;
+	private static @Nullable EmbeddedLdapServer embeddedServer;
 
 	/**
 	 * Not to be instantiated.
@@ -110,9 +113,8 @@ public final class LdapTestUtils {
 	 * @throws NamingException if anything goes wrong removing the sub-tree.
 	 */
 	public static void clearSubContexts(ContextSource contextSource, Name name) throws NamingException {
-		DirContext ctx = null;
+		DirContext ctx = contextSource.getReadWriteContext();
 		try {
-			ctx = contextSource.getReadWriteContext();
 			clearSubContexts(ctx, name);
 		}
 		finally {
@@ -134,9 +136,8 @@ public final class LdapTestUtils {
 	 */
 	public static void clearSubContexts(DirContext ctx, Name name) throws NamingException {
 
-		NamingEnumeration<?> enumeration = null;
+		NamingEnumeration<?> enumeration = ctx.listBindings(name);
 		try {
-			enumeration = ctx.listBindings(name);
 			while (enumeration.hasMore()) {
 				Binding element = (Binding) enumeration.next();
 				Name childName = LdapUtils.newLdapName(element.getName());

@@ -18,6 +18,8 @@ package org.springframework.ldap.test;
 
 import java.util.Arrays;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.util.Assert;
@@ -28,6 +30,7 @@ import org.springframework.util.Assert;
  *
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class AttributeCheckContextMapper implements ContextMapper<DirContextAdapter> {
 
 	private String[] expectedAttributes = new String[0];

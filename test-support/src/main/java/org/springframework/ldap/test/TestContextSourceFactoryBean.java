@@ -16,6 +16,9 @@
 
 package org.springframework.ldap.test;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.AuthenticationSource;
@@ -23,33 +26,35 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.DefaultDirObjectFactory;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.support.LdapUtils;
+import org.springframework.util.Assert;
 
 /**
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class TestContextSourceFactoryBean extends AbstractFactoryBean {
 
 	private int port;
 
-	private String defaultPartitionSuffix;
+	private @Nullable String defaultPartitionSuffix;
 
-	private String defaultPartitionName;
+	private @Nullable String defaultPartitionName;
 
-	private String principal;
+	private @Nullable String principal;
 
-	private String password;
+	private @Nullable String password;
 
 	private boolean baseOnTarget = true;
 
-	private Resource ldifFile;
+	private @Nullable Resource ldifFile;
 
 	private Class dirObjectFactory = DefaultDirObjectFactory.class;
 
 	private boolean pooled = true;
 
-	private AuthenticationSource authenticationSource;
+	private @Nullable AuthenticationSource authenticationSource;
 
-	private ContextSource contextSource;
+	private @Nullable ContextSource contextSource;
 
 	public void setAuthenticationSource(AuthenticationSource authenticationSource) {
 		this.authenticationSource = authenticationSource;
@@ -96,9 +101,13 @@ public class TestContextSourceFactoryBean extends AbstractFactoryBean {
 	}
 
 	protected Object createInstance() throws Exception {
+		Assert.hasText(this.defaultPartitionSuffix, "defaultPartitionSuffix cannot be empty");
+		Assert.hasText(this.defaultPartitionName, "defaultPartitionName cannot be empty");
 		LdapTestUtils.startEmbeddedServer(this.port, this.defaultPartitionSuffix, this.defaultPartitionName);
 
 		if (this.contextSource == null) {
+			Assert.notNull(this.principal, "principal cannot be null");
+
 			// If not explicitly configured, create a new instance.
 			LdapContextSource targetContextSource = new LdapContextSource();
 			if (this.baseOnTarget) {
@@ -139,7 +148,7 @@ public class TestContextSourceFactoryBean extends AbstractFactoryBean {
 		return ContextSource.class;
 	}
 
-	protected void destroyInstance(Object instance) throws Exception {
+	protected void destroyInstance(@Nullable Object instance) throws Exception {
 		super.destroyInstance(instance);
 		LdapTestUtils.shutdownEmbeddedServer();
 	}

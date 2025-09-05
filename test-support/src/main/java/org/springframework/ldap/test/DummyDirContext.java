@@ -31,9 +31,12 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class DummyDirContext implements DirContext {
 
 	@Override

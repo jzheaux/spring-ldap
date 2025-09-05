@@ -33,6 +33,8 @@ import javax.naming.ldap.LdapName;
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.core.DefaultDirectoryService;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +52,12 @@ import org.springframework.ldap.support.LdapUtils;
  *
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public final class LdapTestUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LdapTestUtils.class);
 
-	private static EmbeddedLdapServer embeddedServer;
+	private static @Nullable EmbeddedLdapServer embeddedServer;
 
 	/**
 	 * Not to be instantiated.
@@ -78,7 +81,7 @@ public final class LdapTestUtils {
 	 * @deprecated use {@link #startEmbeddedServer(int, String, String)} instead.
 	 */
 	public static DirContext startApacheDirectoryServer(int port, String defaultPartitionSuffix,
-			String defaultPartitionName, String principal, String credentials, Set extraSchemas)
+			String defaultPartitionName, String principal, @Nullable String credentials, @Nullable Set extraSchemas)
 			throws NamingException {
 
 		startEmbeddedServer(port, defaultPartitionSuffix, defaultPartitionName);
@@ -113,7 +116,7 @@ public final class LdapTestUtils {
 	 * @deprecated use {@link #startEmbeddedServer(int, String, String)} instead.
 	 */
 	public static DirContext startApacheDirectoryServer(int port, String defaultPartitionSuffix,
-			String defaultPartitionName, String principal, String credentials) throws NamingException {
+			String defaultPartitionName, String principal, @Nullable String credentials) throws NamingException {
 		return LdapTestUtils.startApacheDirectoryServer(port, defaultPartitionSuffix, defaultPartitionName, principal,
 				credentials, null);
 	}
@@ -138,7 +141,7 @@ public final class LdapTestUtils {
 	 * @throws Exception If anything goes wrong when shutting down the server.
 	 * @deprecated use {@link #shutdownEmbeddedServer()} instead.
 	 */
-	public static void destroyApacheDirectoryServer(String principal, String credentials) throws Exception {
+	public static void destroyApacheDirectoryServer(String principal, @Nullable String credentials) throws Exception {
 		shutdownEmbeddedServer();
 	}
 
@@ -150,9 +153,8 @@ public final class LdapTestUtils {
 	 * @throws NamingException if anything goes wrong removing the sub-tree.
 	 */
 	public static void clearSubContexts(ContextSource contextSource, Name name) throws NamingException {
-		DirContext ctx = null;
+		DirContext ctx = contextSource.getReadWriteContext();
 		try {
-			ctx = contextSource.getReadWriteContext();
 			clearSubContexts(ctx, name);
 		}
 		finally {
@@ -174,9 +176,8 @@ public final class LdapTestUtils {
 	 */
 	public static void clearSubContexts(DirContext ctx, Name name) throws NamingException {
 
-		NamingEnumeration enumeration = null;
+		NamingEnumeration enumeration = ctx.listBindings(name);
 		try {
-			enumeration = ctx.listBindings(name);
 			while (enumeration.hasMore()) {
 				Binding element = (Binding) enumeration.next();
 				Name childName = LdapUtils.newLdapName(element.getName());

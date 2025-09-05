@@ -18,6 +18,8 @@ package org.springframework.ldap.core;
 
 import javax.naming.directory.DirContext;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.NamingException;
 
 /**
@@ -30,6 +32,7 @@ import org.springframework.ldap.NamingException;
  * @author Mattias Hellborg Arthursson
  * @see org.springframework.ldap.core.LdapTemplate
  */
+@NullMarked
 public interface ContextSource {
 
 	/**

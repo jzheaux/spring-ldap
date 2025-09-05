@@ -19,6 +19,8 @@ package org.springframework.ldap.transaction.compensating;
 import javax.naming.Name;
 import javax.naming.directory.Attributes;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.transaction.compensating.CompensatingTransactionOperationExecutor;
 import org.springframework.transaction.compensating.CompensatingTransactionOperationRecorder;
@@ -30,6 +32,7 @@ import org.springframework.transaction.compensating.CompensatingTransactionOpera
  * @author Mattias Hellborg Arthursson
  * @since 1.2
  */
+@NullMarked
 public class BindOperationRecorder implements CompensatingTransactionOperationRecorder {
 
 	private LdapOperations ldapOperations;

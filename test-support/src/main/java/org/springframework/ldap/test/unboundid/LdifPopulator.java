@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ByteArrayResource;
@@ -34,17 +36,18 @@ import org.springframework.util.Assert;
  * @author Mattias Hellborg Arthursson
  * @since 2.0
  */
+@NullMarked
 public class LdifPopulator implements InitializingBean {
 
-	private Resource resource;
+	private @Nullable Resource resource;
 
-	private ContextSource contextSource;
+	private @Nullable ContextSource contextSource;
 
 	private String base = "";
 
 	private boolean clean = false;
 
-	private String defaultBase;
+	private @Nullable String defaultBase;
 
 	public void setContextSource(ContextSource contextSource) {
 		this.contextSource = contextSource;
@@ -70,6 +73,7 @@ public class LdifPopulator implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.contextSource, "ContextSource must be specified");
 		Assert.notNull(this.resource, "Resource must be specified");
+		Assert.notNull(this.defaultBase, "Default Base must be specified");
 
 		if (!LdapUtils.newLdapName(this.base).equals(LdapUtils.newLdapName(this.defaultBase))) {
 			List<String> lines = IOUtils.readLines(this.resource.getInputStream());

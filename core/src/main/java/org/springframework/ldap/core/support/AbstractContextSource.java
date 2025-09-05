@@ -31,6 +31,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.support.LdapEncoder;
 import org.springframework.ldap.support.LdapUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -69,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.ldap.core.support.LdapContextSource
  * @see org.springframework.ldap.core.support.DirContextSource
  */
+@NullMarked
 public abstract class AbstractContextSource implements BaseLdapPathContextSource, InitializingBean {
 
 	private static final String DEFAULT_CONTEXT_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
@@ -81,9 +85,9 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 
 	private static final int DEFAULT_BUFFER_SIZE = 1024;
 
-	private Class<?> dirObjectFactory = DEFAULT_DIR_OBJECT_FACTORY;
+	private @Nullable Class<?> dirObjectFactory = DEFAULT_DIR_OBJECT_FACTORY;
 
-	private Class<?> contextFactory;
+	private @Nullable Class<?> contextFactory;
 
 	private LdapName base = LdapUtils.emptyLdapName();
 
@@ -99,21 +103,21 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	@Deprecated
 	protected String password = "";
 
-	private String[] urls;
+	private String[] urls = new String[0];
 
 	private boolean pooled = false;
 
 	private Hashtable<String, Object> baseEnv = new Hashtable<>();
 
-	private Hashtable<String, Object> anonymousEnv;
+	private Hashtable<String, Object> anonymousEnv = new Hashtable<>();
 
-	private AuthenticationSource authenticationSource;
+	private @Nullable AuthenticationSource authenticationSource;
 
 	private boolean cacheEnvironmentProperties = true;
 
 	private boolean anonymousReadOnly = false;
 
-	private String referral = null;
+	private @Nullable String referral = null;
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractContextSource.class);
 
@@ -165,6 +169,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 */
 	public DirContext getReadOnlyContext() {
 		if (!this.anonymousReadOnly) {
+			Assert.notNull(this.authenticationSource,
+					"authenticationSource cannot be null; please call setAuthenticationSource first");
 			return doGetContext(this.authenticationSource.getPrincipal(), this.authenticationSource.getCredentials(),
 					DONT_DISABLE_POOLING);
 		}
@@ -179,6 +185,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @see org.springframework.ldap.core.ContextSource#getReadWriteContext()
 	 */
 	public DirContext getReadWriteContext() {
+		Assert.notNull(this.authenticationSource,
+				"authenticationSource cannot be null; please call setAuthenticationSource first");
 		return doGetContext(this.authenticationSource.getPrincipal(), this.authenticationSource.getCredentials(),
 				DONT_DISABLE_POOLING);
 	}
@@ -207,7 +215,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Close the context and swallow any exceptions.
 	 * @param ctx the DirContext to close.
 	 */
-	private void closeContext(DirContext ctx) {
+	private void closeContext(@Nullable DirContext ctx) {
 		if (ctx != null) {
 			try {
 				ctx.close();
@@ -309,7 +317,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * names in any operations performed.
 	 * @param base the base suffix.
 	 */
-	public void setBase(String base) {
+	public void setBase(@Nullable String base) {
 		if (base != null) {
 			this.base = LdapUtils.newLdapName(base);
 		}
@@ -375,7 +383,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Get the context factory.
 	 * @return the context factory used when creating Contexts.
 	 */
-	public Class<?> getContextFactory() {
+	public @Nullable Class<?> getContextFactory() {
 		return this.contextFactory;
 	}
 
@@ -387,7 +395,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @param dirObjectFactory the DirObjectFactory to be used. Null means that no
 	 * DirObjectFactory will be used.
 	 */
-	public void setDirObjectFactory(Class<?> dirObjectFactory) {
+	public void setDirObjectFactory(@Nullable Class<?> dirObjectFactory) {
 		this.dirObjectFactory = dirObjectFactory;
 	}
 
@@ -396,7 +404,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @return the DirObjectFactory to be used. <code>null</code> means that no
 	 * DirObjectFactory will be used.
 	 */
-	public Class<?> getDirObjectFactory() {
+	public @Nullable Class<?> getDirObjectFactory() {
 		return this.dirObjectFactory;
 	}
 
@@ -420,10 +428,6 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 				this.anonymousReadOnly = true;
 			}
 			if (!this.anonymousReadOnly) {
-				if (this.password == null) {
-					throw new IllegalArgumentException(
-							"Property 'password' cannot be null. To use a blank password, please ensure it is set to \"\"");
-				}
 				if (!StringUtils.hasText(this.password)) {
 					LOG.info("Property 'password' not set - " + "blank password will be used");
 				}
@@ -438,6 +442,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 
 	@SuppressWarnings("deprecation")
 	private Hashtable<String, Object> setupAnonymousEnv() {
+		Assert.notNull(this.contextFactory, "contextFactory cannot be null");
+		Assert.notNull(this.urls, "urls cannot be null");
 		if (this.pooled) {
 			this.baseEnv.put(SUN_LDAP_POOLING_FLAG, "true");
 			LOG.debug("Using LDAP pooling.");
@@ -474,8 +480,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Set the password (credentials) to use for getting authenticated contexts.
 	 * @param password the password.
 	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(@Nullable String password) {
+		this.password = (password != null) ? password : "";
 	}
 
 	/**
@@ -596,7 +602,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Get the authentication source.
 	 * @return the {@link AuthenticationSource} that will provide user info.
 	 */
-	public AuthenticationSource getAuthenticationSource() {
+	public @Nullable AuthenticationSource getAuthenticationSource() {
 		return this.authenticationSource;
 	}
 
@@ -662,7 +668,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @return a new DirContext instance.
 	 * @throws NamingException if one is encountered when creating the instance.
 	 */
-	protected abstract DirContext getDirContextInstance(Hashtable<String, Object> environment) throws NamingException;
+	protected abstract DirContext getDirContextInstance(@Nullable Hashtable<String, Object> environment)
+			throws NamingException;
 
 	class SimpleAuthenticationSource implements AuthenticationSource {
 

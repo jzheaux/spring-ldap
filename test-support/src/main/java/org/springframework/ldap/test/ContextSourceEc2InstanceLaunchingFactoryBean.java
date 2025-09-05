@@ -16,6 +16,9 @@
 
 package org.springframework.ldap.test;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.util.Assert;
@@ -23,13 +26,14 @@ import org.springframework.util.Assert;
 /**
  * FactoryBean to create a ContextSource using the EC2 instance created by superclass.
  */
+@NullMarked
 public class ContextSourceEc2InstanceLaunchingFactoryBean extends AbstractEc2InstanceLaunchingFactoryBean {
 
-	private String base;
+	private @Nullable String base;
 
-	private String userDn;
+	private @Nullable String userDn;
 
-	private String password;
+	private @Nullable String password;
 
 	private boolean pooled = false;
 

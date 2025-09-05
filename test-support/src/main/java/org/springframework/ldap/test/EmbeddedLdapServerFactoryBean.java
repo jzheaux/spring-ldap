@@ -16,18 +16,23 @@
 
 package org.springframework.ldap.test;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.util.Assert;
 
 /**
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class EmbeddedLdapServerFactoryBean extends AbstractFactoryBean<EmbeddedLdapServer> {
 
 	private int port;
 
-	private String partitionName;
+	private @Nullable String partitionName;
 
-	private String partitionSuffix;
+	private @Nullable String partitionSuffix;
 
 	@Override
 	public Class<?> getObjectType() {
@@ -48,12 +53,16 @@ public class EmbeddedLdapServerFactoryBean extends AbstractFactoryBean<EmbeddedL
 
 	@Override
 	protected EmbeddedLdapServer createInstance() throws Exception {
+		Assert.hasText(this.partitionName, "partitionName cannot be empty");
+		Assert.hasText(this.partitionSuffix, "partitionSuffix cannot be empty");
 		return EmbeddedLdapServer.newEmbeddedServer(this.partitionName, this.partitionSuffix, this.port);
 	}
 
 	@Override
-	protected void destroyInstance(EmbeddedLdapServer instance) throws Exception {
-		instance.shutdown();
+	protected void destroyInstance(@Nullable EmbeddedLdapServer instance) throws Exception {
+		if (instance != null) {
+			instance.shutdown();
+		}
 	}
 
 }

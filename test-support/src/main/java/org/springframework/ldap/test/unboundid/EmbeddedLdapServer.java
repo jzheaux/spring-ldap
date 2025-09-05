@@ -29,9 +29,9 @@ import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPException;
+import org.jspecify.annotations.NullMarked;
 
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Helper class for embedded Unboundid ldap server.
@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
  * @author Eddu Melendez
  * @since 2.1.0
  */
+@NullMarked
 public final class EmbeddedLdapServer implements AutoCloseable {
 
 	private final InMemoryDirectoryServer directoryServer;
@@ -59,6 +60,7 @@ public final class EmbeddedLdapServer implements AutoCloseable {
 	 * @since 3.3
 	 */
 	public static Builder withPartitionSuffix(String partitionSuffix) {
+		Assert.hasText(partitionSuffix, "partitionSuffix cannot be empty");
 		return new Builder(partitionSuffix);
 	}
 
@@ -119,6 +121,7 @@ public final class EmbeddedLdapServer implements AutoCloseable {
 	 * @author Emanuel Trandafir
 	 * @since 3.3
 	 */
+	@NullMarked
 	public static final class Builder {
 
 		private final String partitionSuffix;
@@ -194,7 +197,7 @@ public final class EmbeddedLdapServer implements AutoCloseable {
 		static String leftMostElement(String partitionSuffix) {
 			try {
 				List<Rdn> rdns = new LdapName(partitionSuffix).getRdns();
-				return CollectionUtils.lastElement(rdns).getValue().toString();
+				return rdns.get(rdns.size() - 1).getValue().toString();
 			}
 			catch (InvalidNameException ex) {
 				throw new RuntimeException(ex);

@@ -22,6 +22,9 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 /**
  * ContextSource implementation which creates InitialDirContext instances, for LDAPv2
  * compatibility. For configuration information, see
@@ -31,6 +34,7 @@ import javax.naming.directory.InitialDirContext;
  * @author Mattias Hellborg Arthursson
  * @see org.springframework.ldap.core.support.AbstractContextSource
  */
+@NullMarked
 public class DirContextSource extends AbstractContextSource {
 
 	/**
@@ -38,7 +42,7 @@ public class DirContextSource extends AbstractContextSource {
 	 * @param environment the environment to use when creating the context.
 	 * @return a new InitialDirContext implementation.
 	 */
-	protected DirContext getDirContextInstance(Hashtable environment) throws NamingException {
+	protected DirContext getDirContextInstance(@Nullable Hashtable environment) throws NamingException {
 		return new InitialDirContext(environment);
 	}
 

@@ -16,18 +16,23 @@
 
 package org.springframework.ldap.test.unboundid;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.util.Assert;
 
 /**
  * @author Mattias Hellborg Arthursson
  */
+@NullMarked
 public class EmbeddedLdapServerFactoryBean extends AbstractFactoryBean<EmbeddedLdapServer> {
 
 	private int port;
 
-	private String partitionName;
+	private @Nullable String partitionName;
 
-	private String partitionSuffix;
+	private @Nullable String partitionSuffix;
 
 	@Override
 	public Class<?> getObjectType() {
@@ -48,18 +53,24 @@ public class EmbeddedLdapServerFactoryBean extends AbstractFactoryBean<EmbeddedL
 
 	@Override
 	protected EmbeddedLdapServer createInstance() throws Exception {
-		EmbeddedLdapServer server = EmbeddedLdapServer.withPartitionSuffix(this.partitionSuffix)
-			.partitionName(this.partitionName)
-			.port(this.port)
-			.build();
+		Assert.notNull(this.partitionSuffix, "partitionSuffix must not be null; please call setPartitionSuffix first");
+		Assert.notNull(this.partitionName, "partitionName must not be null; please call setPartitionName first");
+		EmbeddedLdapServer.Builder builder = EmbeddedLdapServer.withPartitionSuffix(this.partitionSuffix)
+			.port(this.port);
+		if (this.partitionName != null) {
+			builder.partitionName(this.partitionName);
+		}
 
+		EmbeddedLdapServer server = builder.build();
 		server.start();
 		return server;
 	}
 
 	@Override
-	protected void destroyInstance(EmbeddedLdapServer instance) throws Exception {
-		instance.close();
+	protected void destroyInstance(@Nullable EmbeddedLdapServer instance) throws Exception {
+		if (instance != null) {
+			instance.close();
+		}
 	}
 
 }
