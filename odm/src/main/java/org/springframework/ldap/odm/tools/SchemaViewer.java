@@ -37,6 +37,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A simple utility to list LDAP directory schema.
@@ -60,6 +61,7 @@ import org.apache.commons.cli.PosixParser;
  * @author Paul Harvey &lt;paul.at.pauls-place.me.uk&gt;
  *
  */
+@NullMarked
 public final class SchemaViewer {
 
 	private static final String DEFAULT_URL = "ldap://127.0.0.1:389";
@@ -193,7 +195,7 @@ public final class SchemaViewer {
 
 	private static final String WILDCARD = "?";
 
-	public static void main(String[] argv) {
+	private static void run(String[] argv) {
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 
@@ -201,15 +203,14 @@ public final class SchemaViewer {
 			cmd = parser.parse(DEFAULT_OPTIONS, argv);
 		}
 		catch (ParseException ex) {
-			System.out.println(ex.getMessage());
-			System.exit(1);
+			throw new IllegalArgumentException(ex);
 		}
 
 		if (cmd.hasOption(Flag.HELP.getShort())) {
 			HelpFormatter formatter = new HelpFormatter();
 
 			formatter.printHelp(120, SchemaViewer.class.getSimpleName(), null, DEFAULT_OPTIONS, null, true);
-			System.exit(0);
+			return;
 		}
 
 		if (cmd.hasOption(Flag.ERROR.getShort())) {
@@ -229,8 +230,7 @@ public final class SchemaViewer {
 		if (pass != null) {
 			env.put(Context.SECURITY_CREDENTIALS, pass);
 			if (user == null) {
-				System.err.println("You must specify a user if you specify a password");
-				System.exit(1);
+				throw new IllegalArgumentException("You must specify a user if you specify a password");
 			}
 		}
 
@@ -253,16 +253,26 @@ public final class SchemaViewer {
 
 		}
 		catch (AuthenticationException ex) {
-			System.err.println(String.format("Failed to bind to ldap server at %1$s", url));
+			throw new IllegalArgumentException(String.format("Failed to bind to ldap server at %1$s", url));
 		}
 		catch (CommunicationException ex) {
-			System.err.println(String.format("Failed to contact ldap server at %1$s", url));
+			throw new IllegalArgumentException(String.format("Failed to contact ldap server at %1$s", url));
 		}
 		catch (NameNotFoundException ex) {
-			System.err.println(String.format("Can't find object %1$s", ex.getMessage()));
+			throw new IllegalArgumentException(String.format("Can't find object %1$s", ex.getMessage()));
 		}
 		catch (NamingException ex) {
-			System.err.println(ex.toString());
+			throw new IllegalArgumentException(ex);
+		}
+	}
+
+	public static void main(String[] argv) {
+		try {
+			run(argv);
+		}
+		catch (IllegalArgumentException ex) {
+			System.err.println(ex.getMessage());
+			System.exit(1);
 		}
 	}
 

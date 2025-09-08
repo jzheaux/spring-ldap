@@ -48,8 +48,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 
 /**
  * This tool creates a Java class representation of a set of LDAP object classes for use
@@ -100,6 +103,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Harvey &lt;paul.at.pauls-place.me.uk&gt;
  */
+@NullMarked
 public final class SchemaToJava {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SchemaToJava.class);
@@ -207,9 +211,9 @@ public final class SchemaToJava {
 	}
 
 	// Read mappings of LDAP syntaxes to Java classes.
-	private static Map<String, String> readSyntaxMap(File syntaxMapFile) throws IOException {
+	private static Map<String, ClassInfo> readSyntaxMap(File syntaxMapFile) throws IOException {
 
-		Map<String, String> result = new HashMap<>();
+		Map<String, ClassInfo> result = new HashMap<>();
 
 		BufferedReader reader = null;
 		try {
@@ -228,7 +232,7 @@ public final class SchemaToJava {
 						if (partOne.length() == 0 || partTwo.length() == 0) {
 							throw new IOException(String.format("Failed to parse line \"%1$s\"", trimmed));
 						}
-						result.put(partOne, partTwo);
+						result.put(partOne, SyntaxToJavaClass.fromSyntaxAndClass(partTwo));
 					}
 				}
 			}
@@ -243,8 +247,9 @@ public final class SchemaToJava {
 	}
 
 	// Bind to the directory, read and process the schema
-	private static ObjectSchema readSchema(String url, String user, String pass, SyntaxToJavaClass syntaxToJavaClass,
-			Set<String> binarySet, Set<String> objectClasses) throws NamingException, ClassNotFoundException {
+	private static ObjectSchema readSchema(String url, String user, String pass,
+			Map<String, ClassInfo> syntaxToJavaClass, Set<String> binarySet, Set<String> objectClasses)
+			throws NamingException, ClassNotFoundException {
 
 		// Set up environment
 		Hashtable<String, String> env = new Hashtable<>();
@@ -270,8 +275,8 @@ public final class SchemaToJava {
 	}
 
 	// Create the Java
-	private static void createCode(String packageName, String className, ObjectSchema schema,
-			Set<SyntaxToJavaClass.ClassInfo> imports, File outputFile) throws IOException, TemplateException {
+	private static void createCode(String packageName, String className, ObjectSchema schema, Set<ClassInfo> imports,
+			File outputFile) throws IOException, TemplateException {
 
 		Configuration freeMarkerConfiguration = new Configuration();
 
@@ -348,12 +353,18 @@ public final class SchemaToJava {
 		return objectClasses;
 	}
 
-	private static void error(String message) {
-		System.err.println(String.format("%1$s: %2$s", SchemaToJava.class.getSimpleName(), message));
+	private static void error(Exception ex) {
+		String message = ex.getMessage();
+		if (message != null) {
+			System.err.println(String.format("%1$s: %2$s", SchemaToJava.class.getSimpleName(), message));
+		}
+		else {
+			System.err.println(ex);
+		}
 		System.exit(1);
 	}
 
-	public static void main(String[] argv) {
+	private static void run(String[] argv) {
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 
@@ -362,7 +373,7 @@ public final class SchemaToJava {
 			cmd = parser.parse(DEFAULT_OPTIONS, argv);
 		}
 		catch (ParseException ex) {
-			error(ex.toString());
+			throw new IllegalArgumentException(ex);
 		}
 
 		// If the help flag is specified ignore other flags, print a usage message and
@@ -370,19 +381,19 @@ public final class SchemaToJava {
 		if (cmd.hasOption(Flag.HELP.getShort())) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(120, SchemaToJava.class.getSimpleName(), null, DEFAULT_OPTIONS, null, true);
-			System.exit(0);
+			return;
 		}
 
 		// Class name flag
 		String className = cmd.getOptionValue(Flag.CLASS.getShort());
 		if (className == null) {
-			error("You must specify the name of a Java class to create");
+			throw new IllegalArgumentException("You must specify the name of a Java class to create");
 		}
 
 		// Package name flag
 		String packageName = cmd.getOptionValue(Flag.PACKAGE.getShort());
 		if (packageName == null) {
-			error("You must specifiy a package name");
+			throw new IllegalArgumentException("You must specifiy a package name");
 		}
 
 		// Output base directory
@@ -392,7 +403,7 @@ public final class SchemaToJava {
 			outputFile = makeOutputFile(outputDir, packageName, className);
 		}
 		catch (IOException ex) {
-			error(ex.toString());
+			throw new IllegalArgumentException(ex.toString());
 		}
 
 		// Get the flags we need to bind to the directory
@@ -403,47 +414,50 @@ public final class SchemaToJava {
 		// Parse out object classes
 		String objectClassesFlag = cmd.getOptionValue(Flag.OBJECTCLASS.getShort());
 		if (objectClassesFlag == null) {
-			error("You must specificy a package name");
+			throw new IllegalArgumentException("You must specificy a package name");
 		}
 		Set<String> objectClasses = parseObjectClassesFlag(objectClassesFlag);
 		if (objectClasses.size() == 0) {
-			error("You must specificy a package name");
+			throw new IllegalArgumentException("You must specificy a package name");
 		}
 
 		// Look for the optional syntax to Java class mapping file
 		String syntaxMapFileName = cmd.getOptionValue(Flag.SYNTAX_MAP.getShort(), (String) null);
-		SyntaxToJavaClass syntaxToJavaClass = new SyntaxToJavaClass(new HashMap<>());
+		Map<String, ClassInfo> syntaxToJavaClass = new HashMap<>();
 		if (syntaxMapFileName != null) {
 			File syntaxMapFile = new File(syntaxMapFileName);
 			if (syntaxMapFile.canRead()) {
 				try {
-					syntaxToJavaClass = new SyntaxToJavaClass(readSyntaxMap(syntaxMapFile));
+					syntaxToJavaClass = readSyntaxMap(syntaxMapFile);
 				}
 				catch (IOException ex) {
-					error(String.format("Error reading syntax map file %1$s - %2$s", syntaxMapFile.getAbsolutePath(),
-							ex.toString()));
+					throw new IllegalArgumentException(String.format("Error reading syntax map file %1$s - %2$s",
+							syntaxMapFile.getAbsolutePath(), ex.toString()), ex);
 				}
 			}
 			else {
-				error(String.format("Cannot read syntax map file %s$1", syntaxMapFile.getAbsolutePath()));
+				throw new IllegalArgumentException(
+						String.format("Cannot read syntax map file %s$1", syntaxMapFile.getAbsolutePath()));
 			}
 		}
 
 		// Read binary mapping file
 		URL binarySetUrl = DEFAULT_LOADER_CLASS.getResource(BINARY_FILE);
 		if (binarySetUrl == null) {
-			error(String.format("Can't locatate binary mappings file %1$s", BINARY_FILE));
+			throw new IllegalArgumentException(String.format("Can't locatate binary mappings file %1$s", BINARY_FILE));
 		}
 		File binarySetFile = new File(binarySetUrl.getFile());
 		if (!binarySetFile.canRead()) {
-			error(String.format("Can't read from binary mappings file %1$s", BINARY_FILE));
+			throw new IllegalArgumentException(String.format("Can't read from binary mappings file %1$s", BINARY_FILE));
 		}
 		Set<String> binarySet = null;
 		try {
 			binarySet = readBinarySet(binarySetFile);
 		}
 		catch (IOException ex) {
-			error(String.format("Error reading binary set file %1$s - %2$s", binarySetFile.getAbsolutePath(), ex));
+			throw new IllegalArgumentException(
+					String.format("Error reading binary set file %1$s - %2$s", binarySetFile.getAbsolutePath(), ex),
+					ex);
 		}
 
 		// Read schema from the directory
@@ -452,16 +466,16 @@ public final class SchemaToJava {
 			schema = readSchema(url, user, pass, syntaxToJavaClass, binarySet, objectClasses);
 		}
 		catch (NamingException ne) {
-			error(String.format("Error processing schema - %1$s", ne));
+			throw new IllegalArgumentException(String.format("Error processing schema - %1$s", ne));
 		}
 		catch (ClassNotFoundException cnfe) {
-			error(String.format("Error processing schema - %1$s", cnfe));
+			throw new IllegalArgumentException(String.format("Error processing schema - %1$s", cnfe));
 		}
 
 		// Work out what imports we need
-		Set<SyntaxToJavaClass.ClassInfo> imports = new HashSet<>();
+		Set<ClassInfo> imports = new HashSet<>();
 		for (AttributeSchema attributeSchema : schema.getMay()) {
-			SyntaxToJavaClass.ClassInfo classInfo = syntaxToJavaClass.getClassInfo(attributeSchema.getSyntax());
+			ClassInfo classInfo = syntaxToJavaClass.get(attributeSchema.getSyntax());
 			if (classInfo != null) {
 				String classPackageName = classInfo.getPackageName();
 				if (classPackageName != null && classPackageName.length() > 0) {
@@ -475,10 +489,19 @@ public final class SchemaToJava {
 			createCode(packageName, className, schema, imports, outputFile);
 		}
 		catch (TemplateException te) {
-			error(String.format("Error generating code - %1$s", te.toString()));
+			throw new IllegalArgumentException(String.format("Error generating code - %1$s", te.toString()));
 		}
 		catch (IOException ioe) {
-			error(String.format("Error generatign code - %1$s", ioe.toString()));
+			throw new IllegalArgumentException(String.format("Error generatign code - %1$s", ioe.toString()));
+		}
+	}
+
+	public static void main(String[] argv) {
+		try {
+			run(argv);
+		}
+		catch (IllegalArgumentException ex) {
+			error(ex);
 		}
 	}
 

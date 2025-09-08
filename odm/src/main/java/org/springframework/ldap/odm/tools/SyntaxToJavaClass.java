@@ -16,47 +16,43 @@
 
 package org.springframework.ldap.odm.tools;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A map from an LDAP syntax to the Java class used to represent it.
  *
  * @author Paul Harvey &lt;paul.at.pauls-place.me.uk>
  */
+@NullMarked
 /* package */ final class SyntaxToJavaClass {
 
-	private final Map<String, ClassInfo> mapSyntaxToClassInfo = new HashMap<>();
+	private SyntaxToJavaClass() {
 
-	SyntaxToJavaClass(Map<String, String> mapSyntaxToClass) {
-		for (Entry<String, String> syntaxAndClass : mapSyntaxToClass.entrySet()) {
-			String fullClassName = syntaxAndClass.getValue().trim();
-			String packageName = null;
-			String className = null;
-			int lastDotIndex = fullClassName.lastIndexOf('.');
-			if (lastDotIndex != -1) {
-				className = fullClassName.substring(lastDotIndex + 1);
-				packageName = fullClassName.substring(0, lastDotIndex);
-			}
-			else {
-				className = fullClassName;
-			}
-			this.mapSyntaxToClassInfo.put(syntaxAndClass.getKey(), new ClassInfo(className, packageName));
-		}
 	}
 
-	ClassInfo getClassInfo(String syntax) {
-		return this.mapSyntaxToClassInfo.get(syntax);
+	static ClassInfo fromSyntaxAndClass(String syntaxAndClass) {
+		String fullClassName = syntaxAndClass.trim();
+		String packageName = null;
+		String className = null;
+		int lastDotIndex = fullClassName.lastIndexOf('.');
+		if (lastDotIndex != -1) {
+			className = fullClassName.substring(lastDotIndex + 1);
+			packageName = fullClassName.substring(0, lastDotIndex);
+		}
+		else {
+			className = fullClassName;
+		}
+		return new ClassInfo(className, packageName);
 	}
 
 	public static final class ClassInfo {
 
 		private final String className;
 
-		private final String packageName;
+		private final @Nullable String packageName;
 
-		private ClassInfo(String className, String packageName) {
+		private ClassInfo(String className, @Nullable String packageName) {
 			this.className = className;
 			this.packageName = packageName;
 		}
@@ -65,7 +61,7 @@ import java.util.Map.Entry;
 			return this.className;
 		}
 
-		public String getPackageName() {
+		public @Nullable String getPackageName() {
 			return this.packageName;
 		}
 

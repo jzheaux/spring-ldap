@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Simple value class to hold the schema of an object class
  * <p>
@@ -27,6 +29,7 @@ import java.util.Set;
  *
  * @author Paul Harvey &lt;paul.at.pauls-place.me.uk&gt;
  */
+@NullMarked
 public final class ObjectSchema {
 
 	private final Set<AttributeSchema> must = new HashSet<>();
@@ -78,40 +81,22 @@ public final class ObjectSchema {
 			return false;
 		}
 		ObjectSchema other = (ObjectSchema) obj;
-		if (this.may == null) {
-			if (other.may != null) {
-				return false;
-			}
-		}
-		else if (!this.may.equals(other.may)) {
+		if (!this.may.equals(other.may)) {
 			return false;
 		}
-		if (this.must == null) {
-			if (other.must != null) {
-				return false;
-			}
-		}
-		else if (!this.must.equals(other.must)) {
+		if (!this.must.equals(other.must)) {
 			return false;
 		}
-		if (this.objectClass == null) {
-			if (other.objectClass != null) {
-				return false;
-			}
-		}
-		else if (!this.objectClass.equals(other.objectClass)) {
-			return false;
-		}
-		return true;
+		return this.objectClass.equals(other.objectClass);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.may == null) ? 0 : this.may.hashCode());
-		result = prime * result + ((this.must == null) ? 0 : this.must.hashCode());
-		result = prime * result + ((this.objectClass == null) ? 0 : this.objectClass.hashCode());
+		result = prime * result + this.may.hashCode();
+		result = prime * result + this.must.hashCode();
+		result = prime * result + this.objectClass.hashCode();
 		return result;
 	}
 

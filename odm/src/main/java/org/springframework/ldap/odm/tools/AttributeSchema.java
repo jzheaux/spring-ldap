@@ -16,6 +16,8 @@
 
 package org.springframework.ldap.odm.tools;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -25,6 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Paul Harvey &lt;paul.at.pauls-place.me.uk&gt;
  */
+@NullMarked
 public final class AttributeSchema {
 
 	private final String name;
@@ -108,31 +111,13 @@ public final class AttributeSchema {
 		if (this.isPrimitive != other.isPrimitive) {
 			return false;
 		}
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		}
-		else if (!this.name.equals(other.name)) {
+		if (!this.name.equals(other.name)) {
 			return false;
 		}
-		if (this.scalarType == null) {
-			if (other.scalarType != null) {
-				return false;
-			}
-		}
-		else if (!this.scalarType.equals(other.scalarType)) {
+		if (!this.scalarType.equals(other.scalarType)) {
 			return false;
 		}
-		if (this.syntax == null) {
-			if (other.syntax != null) {
-				return false;
-			}
-		}
-		else if (!this.syntax.equals(other.syntax)) {
-			return false;
-		}
-		return true;
+		return this.syntax.equals(other.syntax);
 	}
 
 	@Override
@@ -143,9 +128,9 @@ public final class AttributeSchema {
 		result = prime * result + (this.isBinary ? 1231 : 1237);
 		result = prime * result + (this.isMultiValued ? 1231 : 1237);
 		result = prime * result + (this.isPrimitive ? 1231 : 1237);
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.scalarType == null) ? 0 : this.scalarType.hashCode());
-		result = prime * result + ((this.syntax == null) ? 0 : this.syntax.hashCode());
+		result = prime * result + this.name.hashCode();
+		result = prime * result + this.scalarType.hashCode();
+		result = prime * result + this.syntax.hashCode();
 		return result;
 	}
 

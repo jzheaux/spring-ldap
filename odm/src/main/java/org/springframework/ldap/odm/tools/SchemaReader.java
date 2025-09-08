@@ -18,6 +18,7 @@ package org.springframework.ldap.odm.tools;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.naming.NamingEnumeration;
@@ -26,18 +27,21 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 
 // Processes LDAP Schema
+@NullMarked
 /* package */ final class SchemaReader {
 
 	private final DirContext schemaContext;
 
-	private final SyntaxToJavaClass syntaxToJavaClass;
+	private final Map<String, ClassInfo> syntaxToJavaClass;
 
 	private final Set<String> binarySet;
 
-	SchemaReader(DirContext schemaContext, SyntaxToJavaClass syntaxToJavaClass, Set<String> binarySet) {
+	SchemaReader(DirContext schemaContext, Map<String, ClassInfo> syntaxToJavaClass, Set<String> binarySet) {
 		this.schemaContext = schemaContext;
 		this.syntaxToJavaClass = syntaxToJavaClass;
 		this.binarySet = binarySet;
@@ -105,7 +109,7 @@ import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 		boolean isBinary = this.binarySet.contains(syntax);
 
 		// Use it to look up the required Java class
-		ClassInfo classInfo = this.syntaxToJavaClass.getClassInfo(syntax);
+		ClassInfo classInfo = this.syntaxToJavaClass.get(syntax);
 
 		// Now we can set the java class
 		String javaClassName = null;
