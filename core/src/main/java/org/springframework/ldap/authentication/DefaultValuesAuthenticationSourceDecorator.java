@@ -16,8 +16,12 @@
 
 package org.springframework.ldap.authentication;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.ldap.core.AuthenticationSource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,13 +37,14 @@ import org.springframework.util.StringUtils;
  * @author Mattias Hellborg Arthursson
  *
  */
+@NullMarked
 public class DefaultValuesAuthenticationSourceDecorator implements AuthenticationSource, InitializingBean {
 
-	private AuthenticationSource target;
+	private @Nullable AuthenticationSource target;
 
-	private String defaultUser;
+	private @Nullable String defaultUser;
 
-	private String defaultPassword;
+	private @Nullable String defaultPassword;
 
 	/**
 	 * Constructor for bean usage.
@@ -69,6 +74,8 @@ public class DefaultValuesAuthenticationSourceDecorator implements Authenticatio
 	 * <code>defaultPassword</code> otherwise.
 	 */
 	public String getCredentials() {
+		Assert.notNull(this.target, "target cannot be null");
+		Assert.notNull(this.defaultPassword, "target cannot be null");
 		if (StringUtils.hasText(this.target.getPrincipal())) {
 			return this.target.getCredentials();
 		}
@@ -84,6 +91,8 @@ public class DefaultValuesAuthenticationSourceDecorator implements Authenticatio
 	 * otherwise.
 	 */
 	public String getPrincipal() {
+		Assert.notNull(this.target, "target cannot be null");
+		Assert.notNull(this.defaultUser, "target cannot be null");
 		String principal = this.target.getPrincipal();
 		if (StringUtils.hasText(principal)) {
 			return principal;
