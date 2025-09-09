@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI SizeLimitExceededException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.SizeLimitExceededException
  */
+@NullMarked
 public class SizeLimitExceededException extends LimitExceededException {
 
 	public SizeLimitExceededException(javax.naming.SizeLimitExceededException cause) {

@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI NamingSecurityException.
  *
@@ -23,10 +25,15 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.NamingSecurityException
  */
+@NullMarked
 public class NamingSecurityException extends NamingException {
 
 	public NamingSecurityException(javax.naming.NamingSecurityException cause) {
 		super(cause);
+	}
+
+	public NamingSecurityException() {
+		super((Throwable) null);
 	}
 
 }

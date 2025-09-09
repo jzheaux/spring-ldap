@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InterruptedNamingException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.InterruptedNamingException
  */
+@NullMarked
 public class InterruptedNamingException extends NamingException {
 
 	public InterruptedNamingException(javax.naming.InterruptedNamingException cause) {

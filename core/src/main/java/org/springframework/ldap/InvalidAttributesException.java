@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InvalidAttributesException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.InvalidAttributesException
  */
+@NullMarked
 public class InvalidAttributesException extends NamingException {
 
 	public InvalidAttributesException(javax.naming.directory.InvalidAttributesException cause) {

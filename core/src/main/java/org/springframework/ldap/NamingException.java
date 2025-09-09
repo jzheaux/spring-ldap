@@ -22,6 +22,9 @@ import java.io.Serializable;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.NestedRuntimeException;
 
 /**
@@ -31,9 +34,10 @@ import org.springframework.core.NestedRuntimeException;
  * @author Ulrik Sandberg
  * @since 1.2
  */
+@NullMarked
 public abstract class NamingException extends NestedRuntimeException {
 
-	private final Throwable cause;
+	private final @Nullable Throwable cause;
 
 	/**
 	 * Overrides {@link NestedRuntimeException#getCause()} since serialization always
@@ -42,7 +46,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * class, we get a chance at temporarily nulling the cause before serialization, thus
 	 * in effect making the current instance serializable.
 	 */
-	public Throwable getCause() {
+	public @Nullable Throwable getCause() {
 		// Even if you cannot set the cause of this exception other than through
 		// the constructor, we check for the cause being "this" here, as the cause
 		// could still be set to "this" via reflection: for example, by a remoting
@@ -65,7 +69,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * @param cause the cause of the exception. This argument is generally expected to be
 	 * a proper subclass of {@link javax.naming.NamingException}.
 	 */
-	public NamingException(String msg, Throwable cause) {
+	public NamingException(@Nullable String msg, @Nullable Throwable cause) {
 		super(msg);
 		this.cause = cause;
 	}
@@ -76,7 +80,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * @param cause the cause of the exception. This argument is generally expected to be
 	 * a proper subclass of {@link javax.naming.NamingException}.
 	 */
-	public NamingException(Throwable cause) {
+	public NamingException(@Nullable Throwable cause) {
 		this((cause != null) ? cause.getMessage() : null, cause);
 	}
 
@@ -87,7 +91,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * an instance of javax.naming.NamingException, or <code>null</code> if there is no
 	 * detail message for this exception
 	 */
-	public String getExplanation() {
+	public @Nullable String getExplanation() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getExplanation();
 		}
@@ -102,7 +106,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * if the root cause is an instance of javax.naming.NamingException, or
 	 * <code>null</code> if the remaining name field has not been set
 	 */
-	public Name getRemainingName() {
+	public @Nullable Name getRemainingName() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getRemainingName();
 		}
@@ -118,7 +122,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * javax.naming.NamingException, or <code>null</code> if the resolved name field has
 	 * not been set
 	 */
-	public Name getResolvedName() {
+	public @Nullable Name getResolvedName() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getResolvedName();
 		}
@@ -132,7 +136,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * javax.naming.NamingException, or <code>null</code> if the resolved object field has
 	 * not been set
 	 */
-	public Object getResolvedObj() {
+	public @Nullable Object getResolvedObj() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getResolvedObj();
 		}
@@ -148,20 +152,25 @@ public abstract class NamingException extends NestedRuntimeException {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		Object resolvedObj = getResolvedObj();
-		boolean serializable = resolvedObj instanceof Serializable;
-		if (resolvedObj != null && !serializable) {
-			// the cause is of this type, since resolvedObj is not null
-			javax.naming.NamingException namingException = (javax.naming.NamingException) getCause();
-			namingException.setResolvedObj(null);
-			try {
-				stream.defaultWriteObject();
-			}
-			finally {
-				namingException.setResolvedObj(resolvedObj);
-			}
-		}
-		else {
+		if (resolvedObj == null) {
 			stream.defaultWriteObject();
+			return;
+		}
+		boolean serializable = resolvedObj instanceof Serializable;
+		if (serializable) {
+			stream.defaultWriteObject();
+			return;
+		}
+		if (!(getCause() instanceof javax.naming.NamingException naming)) {
+			stream.defaultWriteObject();
+			return;
+		}
+		naming.setResolvedObj(null);
+		try {
+			stream.defaultWriteObject();
+		}
+		finally {
+			naming.setResolvedObj(resolvedObj);
 		}
 	}
 

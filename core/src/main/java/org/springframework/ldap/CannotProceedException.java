@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI CannotProceedException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.CannotProceedException
  */
+@NullMarked
 public class CannotProceedException extends NamingException {
 
 	public CannotProceedException(javax.naming.CannotProceedException cause) {

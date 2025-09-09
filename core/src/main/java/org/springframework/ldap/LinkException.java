@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI LinkException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.LinkException
  */
+@NullMarked
 public class LinkException extends NamingException {
 
 	public LinkException(javax.naming.LinkException cause) {

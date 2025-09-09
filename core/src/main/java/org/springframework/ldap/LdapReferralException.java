@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI LdapReferralException.
  *
@@ -27,6 +29,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.ldap.LdapReferralException
  */
+@NullMarked
 public class LdapReferralException extends ReferralException {
 
 	public LdapReferralException(javax.naming.ldap.LdapReferralException cause) {

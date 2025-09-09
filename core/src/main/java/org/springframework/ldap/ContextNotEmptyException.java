@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI ContextNotEmptyException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.ContextNotEmptyException
  */
+@NullMarked
 public class ContextNotEmptyException extends NamingException {
 
 	public ContextNotEmptyException(javax.naming.ContextNotEmptyException cause) {

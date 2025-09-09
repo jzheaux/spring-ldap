@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI AttributeModificationException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.AttributeModificationException
  */
+@NullMarked
 public class AttributeModificationException extends NamingException {
 
 	public AttributeModificationException(javax.naming.directory.AttributeModificationException cause) {

@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InsufficientResourcesException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.InsufficientResourcesException
  */
+@NullMarked
 public class InsufficientResourcesException extends NamingException {
 
 	public InsufficientResourcesException(javax.naming.InsufficientResourcesException cause) {

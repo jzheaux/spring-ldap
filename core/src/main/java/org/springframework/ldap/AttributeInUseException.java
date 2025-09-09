@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI AttributeInUseException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.AttributeInUseException
  */
+@NullMarked
 public class AttributeInUseException extends NamingException {
 
 	public AttributeInUseException(javax.naming.directory.AttributeInUseException cause) {

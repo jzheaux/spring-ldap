@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI NoInitialContextException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.NoInitialContextException
  */
+@NullMarked
 public class NoInitialContextException extends NamingException {
 
 	public NoInitialContextException(javax.naming.NoInitialContextException cause) {

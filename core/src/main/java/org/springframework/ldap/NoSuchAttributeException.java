@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI NoSuchAttributeException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.NoSuchAttributeException
  */
+@NullMarked
 public class NoSuchAttributeException extends NamingException {
 
 	public NoSuchAttributeException(String message) {

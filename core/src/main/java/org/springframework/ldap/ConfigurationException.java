@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI ConfigurationException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.ConfigurationException
  */
+@NullMarked
 public class ConfigurationException extends NamingException {
 
 	public ConfigurationException(javax.naming.ConfigurationException cause) {

@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI NameAlreadyBoundException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.NameAlreadyBoundException
  */
+@NullMarked
 public class NameAlreadyBoundException extends NamingException {
 
 	public NameAlreadyBoundException(javax.naming.NameAlreadyBoundException cause) {

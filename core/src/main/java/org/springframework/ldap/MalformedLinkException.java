@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI MalformedLinkException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.MalformedLinkException
  */
+@NullMarked
 public class MalformedLinkException extends LinkException {
 
 	public MalformedLinkException(javax.naming.MalformedLinkException cause) {

@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InvalidNameException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.InvalidNameException
  */
+@NullMarked
 public class InvalidNameException extends NamingException {
 
 	public InvalidNameException(javax.naming.InvalidNameException cause) {

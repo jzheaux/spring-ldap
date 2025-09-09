@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI PartialResultException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.PartialResultException
  */
+@NullMarked
 public class PartialResultException extends NamingException {
 
 	public PartialResultException(javax.naming.PartialResultException cause) {

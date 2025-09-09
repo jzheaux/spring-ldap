@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InvalidSearchControlsException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.InvalidSearchControlsException
  */
+@NullMarked
 public class InvalidSearchControlsException extends NamingException {
 
 	public InvalidSearchControlsException(javax.naming.directory.InvalidSearchControlsException cause) {

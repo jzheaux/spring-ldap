@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI InvalidSearchFilterException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.directory.InvalidSearchFilterException
  */
+@NullMarked
 public class InvalidSearchFilterException extends NamingException {
 
 	public InvalidSearchFilterException(javax.naming.directory.InvalidSearchFilterException cause) {

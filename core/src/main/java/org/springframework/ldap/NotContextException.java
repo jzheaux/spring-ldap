@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI NotContextException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.NotContextException
  */
+@NullMarked
 public class NotContextException extends NamingException {
 
 	public NotContextException(javax.naming.NotContextException cause) {

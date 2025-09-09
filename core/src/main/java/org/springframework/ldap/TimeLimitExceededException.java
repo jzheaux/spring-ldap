@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI TimeLimitExceededException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.TimeLimitExceededException
  */
+@NullMarked
 public class TimeLimitExceededException extends LimitExceededException {
 
 	public TimeLimitExceededException(javax.naming.TimeLimitExceededException cause) {

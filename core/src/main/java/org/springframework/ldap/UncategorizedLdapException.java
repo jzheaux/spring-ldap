@@ -16,12 +16,15 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * NamingException to be thrown when no other matching subclass is found.
  *
  * @author Ulrik Sandberg
  * @since 1.2
  */
+@NullMarked
 public class UncategorizedLdapException extends NamingException {
 
 	public UncategorizedLdapException(String msg) {

@@ -16,6 +16,8 @@
 
 package org.springframework.ldap;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Runtime exception mirroring the JNDI ServiceUnavailableException.
  *
@@ -23,6 +25,7 @@ package org.springframework.ldap;
  * @since 1.2
  * @see javax.naming.ServiceUnavailableException
  */
+@NullMarked
 public class ServiceUnavailableException extends NamingException {
 
 	public ServiceUnavailableException(javax.naming.ServiceUnavailableException cause) {
