@@ -18,6 +18,9 @@ package org.springframework.ldap.aot.hint;
 
 import java.util.Collections;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -34,10 +37,11 @@ import org.springframework.ldap.core.support.DefaultDirObjectFactory;
  * @author Marcus Da Coregio
  * @since 3.0
  */
+@NullMarked
 class LdapCoreRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		hints.reflection()
 			.registerType(TypeReference.of("com.sun.jndi.ldap.LdapCtxFactory"),
 					(builder) -> builder.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
