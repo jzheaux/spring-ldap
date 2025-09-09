@@ -51,6 +51,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,7 +241,7 @@ public final class SchemaToJava {
 	}
 
 	// Bind to the directory, read and process the schema
-	private static ObjectSchema readSchema(String url, String user, String pass,
+	private static ObjectSchema readSchema(String url, @Nullable String user, @Nullable String pass,
 			Map<String, ClassInfo> syntaxToJavaClass, Set<String> binarySet, Set<String> objectClasses)
 			throws NamingException, ClassNotFoundException {
 
