@@ -105,7 +105,9 @@ public class DefaultValuesAuthenticationSourceDecorator implements Authenticatio
 	/**
 	 * Set the password of the default user.
 	 * @param defaultPassword the password of the default user.
+	 * @deprecated Please use the constructor
 	 */
+	@Deprecated(since = "4.0", forRemoval = true)
 	public void setDefaultPassword(String defaultPassword) {
 		this.defaultPassword = defaultPassword;
 	}
@@ -114,7 +116,9 @@ public class DefaultValuesAuthenticationSourceDecorator implements Authenticatio
 	 * Set the default user DN. This should be a non-privileged user, since it will be
 	 * used when no authentication information is returned from the target.
 	 * @param defaultUser DN of the default user.
+	 * @deprecated Please use the constructor
 	 */
+	@Deprecated(since = "4.0", forRemoval = true)
 	public void setDefaultUser(String defaultUser) {
 		this.defaultUser = defaultUser;
 	}
@@ -122,16 +126,17 @@ public class DefaultValuesAuthenticationSourceDecorator implements Authenticatio
 	/**
 	 * Set the target AuthenticationSource.
 	 * @param target the target AuthenticationSource.
+	 * @deprecated Please use the constructor
 	 */
+	@Deprecated(since = "4.0", forRemoval = true)
 	public void setTarget(AuthenticationSource target) {
 		this.target = target;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	/**
+	 * @deprecated Please use the constructor
 	 */
+	@Deprecated(since = "4.0", forRemoval = true)
 	public void afterPropertiesSet() throws Exception {
 		if (this.target == null) {
 			throw new IllegalArgumentException("Property 'target' must be set.'");
