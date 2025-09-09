@@ -480,8 +480,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Set the password (credentials) to use for getting authenticated contexts.
 	 * @param password the password.
 	 */
-	public void setPassword(@Nullable String password) {
-		this.password = (password != null) ? password : "";
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**

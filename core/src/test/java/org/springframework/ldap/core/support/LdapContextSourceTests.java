@@ -49,17 +49,6 @@ public class LdapContextSourceTests {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.tested.afterPropertiesSet());
 	}
 
-	// gh-538
-	@Test
-	public void testAfterPropertiesSet_NullPassword() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
-			this.tested.setUrl("ldap://ldap.example.com:389");
-			this.tested.setUserDn("value");
-			this.tested.setPassword(null);
-			this.tested.afterPropertiesSet();
-		});
-	}
-
 	@Test
 	public void testGetAnonymousEnv() throws Exception {
 		this.tested.setBase("dc=some example,dc=se");
