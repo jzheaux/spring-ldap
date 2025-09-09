@@ -16,6 +16,8 @@
 
 package org.springframework.ldap.odm.tools;
 
+import java.util.Objects;
+
 import org.jspecify.annotations.NullMarked;
 
 import org.springframework.util.StringUtils;
@@ -44,8 +46,8 @@ public final class AttributeSchema {
 
 	private final boolean isArray;
 
-	public AttributeSchema(final String name, final String syntax, final boolean isMultiValued,
-			final boolean isPrimitive, final boolean isBinary, final boolean isArray, final String scalarType) {
+	public AttributeSchema(String name, String syntax, boolean isMultiValued, boolean isPrimitive, boolean isBinary,
+			boolean isArray, String scalarType) {
 		this.name = name;
 		this.syntax = syntax;
 		this.isMultiValued = isMultiValued;
@@ -92,46 +94,19 @@ public final class AttributeSchema {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!(obj instanceof AttributeSchema that)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		AttributeSchema other = (AttributeSchema) obj;
-		if (this.isArray != other.isArray) {
-			return false;
-		}
-		if (this.isBinary != other.isBinary) {
-			return false;
-		}
-		if (this.isMultiValued != other.isMultiValued) {
-			return false;
-		}
-		if (this.isPrimitive != other.isPrimitive) {
-			return false;
-		}
-		if (!this.name.equals(other.name)) {
-			return false;
-		}
-		if (!this.scalarType.equals(other.scalarType)) {
-			return false;
-		}
-		return this.syntax.equals(other.syntax);
+		return Objects.equals(this.isArray, that.isArray) && Objects.equals(this.isBinary, that.isBinary)
+				&& Objects.equals(this.isMultiValued, that.isMultiValued)
+				&& Objects.equals(this.isPrimitive, that.isPrimitive) && Objects.equals(this.name, that.name)
+				&& Objects.equals(this.scalarType, that.scalarType) && Objects.equals(this.syntax, that.syntax);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (this.isArray ? 1231 : 1237);
-		result = prime * result + (this.isBinary ? 1231 : 1237);
-		result = prime * result + (this.isMultiValued ? 1231 : 1237);
-		result = prime * result + (this.isPrimitive ? 1231 : 1237);
-		result = prime * result + this.name.hashCode();
-		result = prime * result + this.scalarType.hashCode();
-		result = prime * result + this.syntax.hashCode();
-		return result;
+		return Objects.hash(this.isArray, this.isBinary, this.isMultiValued, this.isPrimitive, this.name,
+				this.scalarType, this.syntax);
 	}
 
 	/*

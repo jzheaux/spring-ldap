@@ -57,27 +57,17 @@ import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 
 	private enum SchemaAttributeType {
 
-		SUP, MUST, MAY, UNKNOWN
+		SUP, MUST, MAY, UNKNOWN;
 
-	}
-
-	private SchemaAttributeType getSchemaAttributeType(String type) {
-		SchemaAttributeType result = SchemaAttributeType.UNKNOWN;
-
-		if (type.equals("SUP")) {
-			result = SchemaAttributeType.SUP;
+		private static SchemaAttributeType from(String type) {
+			return switch (type) {
+				case "SUP" -> SchemaAttributeType.SUP;
+				case "MUST" -> SchemaAttributeType.MUST;
+				case "MAY" -> SchemaAttributeType.MAY;
+				default -> SchemaAttributeType.UNKNOWN;
+			};
 		}
-		else {
-			if (type.equals("MUST")) {
-				result = SchemaAttributeType.MUST;
-			}
-			else {
-				if (type.equals("MAY")) {
-					result = SchemaAttributeType.MAY;
-				}
-			}
-		}
-		return result;
+
 	}
 
 	private AttributeSchema createAttributeSchema(String name, DirContext schemaContext)
@@ -112,12 +102,11 @@ import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 		ClassInfo classInfo = this.syntaxToJavaClass.get(syntax);
 
 		// Now we can set the java class
-		String javaClassName = null;
+		String javaClassName;
 		boolean isPrimitive = false;
 		boolean isArray = false;
 
 		if (classInfo != null) {
-			javaClassName = classInfo.getClassName();
 			Class<?> javaClass = Class.forName(classInfo.getFullClassName());
 			javaClassName = javaClass.getSimpleName();
 			isPrimitive = javaClass.isPrimitive();
@@ -126,13 +115,10 @@ import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 		else {
 			if (isBinary) {
 				javaClassName = "byte[]";
-				isPrimitive = false;
 				isArray = true;
 			}
 			else {
 				javaClassName = "String";
-				isPrimitive = false;
-				isArray = false;
 			}
 		}
 
@@ -164,7 +150,7 @@ import org.springframework.ldap.odm.tools.SyntaxToJavaClass.ClassInfo;
 				String currentId = currentAttribute.getID().toUpperCase(Locale.ROOT);
 
 				// Is this a MUST, MAY or SUP attribute
-				SchemaAttributeType type = getSchemaAttributeType(currentId);
+				SchemaAttributeType type = SchemaAttributeType.from(currentId);
 
 				// Loop through all the values
 				NamingEnumeration<?> currentValues = currentAttribute.getAll();

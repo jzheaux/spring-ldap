@@ -18,6 +18,7 @@ package org.springframework.ldap.odm.tools;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.jspecify.annotations.NullMarked;
@@ -74,30 +75,16 @@ public final class ObjectSchema {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!(obj instanceof ObjectSchema that)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ObjectSchema other = (ObjectSchema) obj;
-		if (!this.may.equals(other.may)) {
-			return false;
-		}
-		if (!this.must.equals(other.must)) {
-			return false;
-		}
-		return this.objectClass.equals(other.objectClass);
+		return Objects.equals(this.may, that.may) && Objects.equals(this.must, that.must)
+				&& Objects.equals(this.objectClass, that.objectClass);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.may.hashCode();
-		result = prime * result + this.must.hashCode();
-		result = prime * result + this.objectClass.hashCode();
-		return result;
+		return Objects.hash(this.may, this.must, this.objectClass);
 	}
 
 	/*

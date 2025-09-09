@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -185,25 +187,16 @@ public final class SchemaToJava {
 
 		Set<String> result = new HashSet<>();
 
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(binarySetFile));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String trimmed = line.trim();
-				if (trimmed.length() > 0) {
-					if (trimmed.charAt(0) != '#') {
-						String[] parts = trimmed.split("\\s");
-						if (parts.length > 0) {
-							result.add(parts[0]);
-						}
+		List<String> lines = Files.readAllLines(binarySetFile.toPath());
+		for (String line : lines) {
+			String trimmed = line.trim();
+			if (!trimmed.isEmpty()) {
+				if (trimmed.charAt(0) != '#') {
+					String[] parts = trimmed.split("\\s");
+					if (parts.length > 0) {
+						result.add(parts[0]);
 					}
 				}
-			}
-		}
-		finally {
-			if (reader != null) {
-				reader.close();
 			}
 		}
 
@@ -417,7 +410,7 @@ public final class SchemaToJava {
 			throw new IllegalArgumentException("You must specificy a package name");
 		}
 		Set<String> objectClasses = parseObjectClassesFlag(objectClassesFlag);
-		if (objectClasses.size() == 0) {
+		if (objectClasses.isEmpty()) {
 			throw new IllegalArgumentException("You must specificy a package name");
 		}
 
@@ -450,7 +443,7 @@ public final class SchemaToJava {
 		if (!binarySetFile.canRead()) {
 			throw new IllegalArgumentException(String.format("Can't read from binary mappings file %1$s", BINARY_FILE));
 		}
-		Set<String> binarySet = null;
+		Set<String> binarySet;
 		try {
 			binarySet = readBinarySet(binarySetFile);
 		}
@@ -461,15 +454,12 @@ public final class SchemaToJava {
 		}
 
 		// Read schema from the directory
-		ObjectSchema schema = null;
+		ObjectSchema schema;
 		try {
 			schema = readSchema(url, user, pass, syntaxToJavaClass, binarySet, objectClasses);
 		}
-		catch (NamingException ne) {
+		catch (NamingException | ClassNotFoundException ne) {
 			throw new IllegalArgumentException(String.format("Error processing schema - %1$s", ne));
-		}
-		catch (ClassNotFoundException cnfe) {
-			throw new IllegalArgumentException(String.format("Error processing schema - %1$s", cnfe));
 		}
 
 		// Work out what imports we need
