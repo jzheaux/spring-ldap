@@ -1,4 +1,5 @@
 plugins {
+    id 'apply-nullability'
     id 'io.spring.convention.spring-module'
     id 'com.intershop.gradle.javacc'
 }
