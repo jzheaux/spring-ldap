@@ -45,6 +45,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,6 +187,7 @@ class DefaultLdapClient implements LdapClient {
 		this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
 	}
 
+	@Nullable
 	<T> T computeWithReadOnlyContext(ContextExecutor<T> executor) {
 		DirContext context = this.contextSource.getReadOnlyContext();
 		try {
@@ -273,6 +275,7 @@ class DefaultLdapClient implements LdapClient {
 		throw LdapUtils.convertLdapException(ex);
 	};
 
+	@Nullable
 	private <S extends NameClassPair, T> T toObject(NamingEnumeration<S> results,
 			NamingExceptionFunction<? super S, T> mapper) {
 		try {

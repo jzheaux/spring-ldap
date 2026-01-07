@@ -31,6 +31,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 
 	private static final int DEFAULT_BUFFER_SIZE = 1024;
 
-	private Class<?> dirObjectFactory = DEFAULT_DIR_OBJECT_FACTORY;
+	private @Nullable Class<?> dirObjectFactory = DEFAULT_DIR_OBJECT_FACTORY;
 
 	private Class<?> contextFactory;
 
@@ -207,7 +208,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * Close the context and swallow any exceptions.
 	 * @param ctx the DirContext to close.
 	 */
-	private void closeContext(DirContext ctx) {
+	private void closeContext(@Nullable DirContext ctx) {
 		if (ctx != null) {
 			try {
 				ctx.close();
@@ -309,7 +310,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * names in any operations performed.
 	 * @param base the base suffix.
 	 */
-	public void setBase(String base) {
+	public void setBase(@Nullable String base) {
 		if (base != null) {
 			this.base = LdapUtils.newLdapName(base);
 		}
@@ -387,7 +388,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @param dirObjectFactory the DirObjectFactory to be used. Null means that no
 	 * DirObjectFactory will be used.
 	 */
-	public void setDirObjectFactory(Class<?> dirObjectFactory) {
+	public void setDirObjectFactory(@Nullable Class<?> dirObjectFactory) {
 		this.dirObjectFactory = dirObjectFactory;
 	}
 
@@ -396,7 +397,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @return the DirObjectFactory to be used. <code>null</code> means that no
 	 * DirObjectFactory will be used.
 	 */
-	public Class<?> getDirObjectFactory() {
+	public @Nullable Class<?> getDirObjectFactory() {
 		return this.dirObjectFactory;
 	}
 

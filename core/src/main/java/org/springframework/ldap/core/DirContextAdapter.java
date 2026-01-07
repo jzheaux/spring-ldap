@@ -41,6 +41,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,9 +118,9 @@ public class DirContextAdapter implements DirContextOperations {
 
 	private boolean updateMode = false;
 
-	private NameAwareAttributes updatedAttrs;
+	private @Nullable NameAwareAttributes updatedAttrs;
 
-	private String referralUrl;
+	private @Nullable String referralUrl;
 
 	/**
 	 * Default constructor.
@@ -150,7 +151,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * @param attrs the attributes.
 	 * @param dn the dn.
 	 */
-	public DirContextAdapter(Attributes attrs, Name dn) {
+	public DirContextAdapter(@Nullable Attributes attrs, Name dn) {
 		this(attrs, dn, null);
 	}
 
@@ -160,7 +161,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * @param dn the dn.
 	 * @param base the base name.
 	 */
-	public DirContextAdapter(Attributes attrs, Name dn, Name base) {
+	public DirContextAdapter(@Nullable Attributes attrs, @Nullable Name dn, @Nullable Name base) {
 		this(attrs, dn, base, null);
 	}
 
@@ -171,7 +172,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * @param base the base.
 	 * @param referralUrl the referral url (if this instance results from a referral).
 	 */
-	public DirContextAdapter(Attributes attrs, Name dn, Name base, String referralUrl) {
+	public DirContextAdapter(@Nullable Attributes attrs, @Nullable Name dn, @Nullable Name base, @Nullable String referralUrl) {
 		if (attrs != null) {
 			this.originalAttrs = new NameAwareAttributes(attrs);
 		}
@@ -253,7 +254,7 @@ public class DirContextAdapter implements DirContextOperations {
 		return tmpList.toArray(new String[tmpList.size()]);
 	}
 
-	private void closeNamingEnumeration(NamingEnumeration<?> enumeration) {
+	private void closeNamingEnumeration(@Nullable NamingEnumeration<?> enumeration) {
 		try {
 			if (enumeration != null) {
 				enumeration.close();
@@ -382,7 +383,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * returns true if the attribute is empty. It is empty if a == null, size == 0 or
 	 * get() == null or an exception if thrown when accessing the get method
 	 */
-	private boolean isEmptyAttribute(Attribute a) {
+	private boolean isEmptyAttribute(@Nullable Attribute a) {
 		try {
 			return (a == null || a.size() == 0 || a.get() == null);
 		}
@@ -405,7 +406,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * @return true if there has been a change compared to original attribute, or a
 	 * previous update
 	 */
-	private boolean isChanged(String name, Object[] values, boolean orderMatters) {
+	private boolean isChanged(String name, Object @Nullable [] values, boolean orderMatters) {
 
 		NameAwareAttribute orig = this.originalAttrs.get(name);
 		NameAwareAttribute prev = this.updatedAttrs.get(name);
@@ -507,6 +508,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Nullable
 	public String getStringAttribute(String name) {
 		return (String) getObjectAttribute(name);
 	}
@@ -515,6 +517,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Nullable
 	public Object getObjectAttribute(String name) {
 		Attribute oneAttr = this.originalAttrs.get(name);
 		if (oneAttr == null || oneAttr.size() == 0) { // LDAP-215
@@ -542,7 +545,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setAttributeValue(String name, Object value) {
+	public void setAttributeValue(String name, @Nullable Object value) {
 		// new entry
 		if (!this.updateMode && value != null) {
 			this.originalAttrs.put(name, value);
@@ -637,7 +640,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setAttributeValues(String name, Object[] values) {
+	public void setAttributeValues(String name, Object @Nullable [] values) {
 		setAttributeValues(name, values, ORDER_DOESNT_MATTER);
 	}
 
@@ -645,7 +648,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setAttributeValues(String name, Object[] values, boolean orderMatters) {
+	public void setAttributeValues(String name, Object @Nullable [] values, boolean orderMatters) {
 		Attribute a = new NameAwareAttribute(name, orderMatters);
 
 		for (int i = 0; values != null && i < values.length; i++) {
@@ -688,7 +691,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getStringAttributes(String name) {
+	public String @Nullable [] getStringAttributes(String name) {
 		try {
 			List<String> objects = collectAttributeValuesAsList(name, String.class);
 			return objects.toArray(new String[objects.size()]);
@@ -703,7 +706,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object[] getObjectAttributes(String name) {
+	public Object @Nullable [] getObjectAttributes(String name) {
 		try {
 			List<Object> list = collectAttributeValuesAsList(name, Object.class);
 			return list.toArray(new Object[list.size()]);
@@ -724,6 +727,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Nullable
 	public SortedSet<String> getAttributeSortedStringSet(String name) {
 		try {
 			TreeSet<String> attrSet = new TreeSet<>();

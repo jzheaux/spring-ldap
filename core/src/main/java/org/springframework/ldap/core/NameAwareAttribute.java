@@ -28,6 +28,8 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.DirContext;
+
+import org.jspecify.annotations.Nullable;
 import javax.naming.ldap.LdapName;
 
 import org.springframework.ldap.InvalidNameException;
@@ -108,6 +110,7 @@ public final class NameAwareAttribute implements Attribute, Iterable<Object> {
 	}
 
 	@Override
+	@Nullable
 	public Object get() {
 		if (this.values.isEmpty()) {
 			return null;

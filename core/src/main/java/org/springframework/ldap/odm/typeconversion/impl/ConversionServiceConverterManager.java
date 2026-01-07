@@ -18,6 +18,8 @@ package org.springframework.ldap.odm.typeconversion.impl;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.ldap.convert.ConverterUtils;
@@ -63,12 +65,12 @@ public class ConversionServiceConverterManager implements ConverterManager {
 	}
 
 	@Override
-	public boolean canConvert(Class<?> fromClass, String syntax, Class<?> toClass) {
+	public boolean canConvert(Class<?> fromClass, @Nullable String syntax, Class<?> toClass) {
 		return this.conversionService.canConvert(fromClass, toClass);
 	}
 
 	@Override
-	public <T> T convert(Object source, String syntax, Class<T> toClass) {
+	public <T> @Nullable T convert(Object source, @Nullable String syntax, Class<T> toClass) {
 		return this.conversionService.convert(source, toClass);
 	}
 
@@ -76,6 +78,7 @@ public class ConversionServiceConverterManager implements ConverterManager {
 			implements org.springframework.core.convert.converter.Converter<Name, String> {
 
 		@Override
+		@Nullable
 		public String convert(Name source) {
 			if (source == null) {
 				return null;
@@ -90,6 +93,7 @@ public class ConversionServiceConverterManager implements ConverterManager {
 			implements org.springframework.core.convert.converter.Converter<String, Name> {
 
 		@Override
+		@Nullable
 		public Name convert(String source) {
 			if (source == null) {
 				return null;

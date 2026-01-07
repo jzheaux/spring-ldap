@@ -19,6 +19,8 @@ package org.springframework.ldap.odm.typeconversion.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.odm.typeconversion.ConverterException;
 import org.springframework.ldap.odm.typeconversion.ConverterManager;
 
@@ -64,7 +66,7 @@ public final class ConverterManagerImpl implements ConverterManager {
 	 * @param toClass The class to convert to.
 	 * @return key
 	 */
-	private String makeConverterKey(Class<?> fromClass, String syntax, Class<?> toClass) {
+	private String makeConverterKey(Class<?> fromClass, @Nullable String syntax, Class<?> toClass) {
 		StringBuilder key = new StringBuilder();
 		if (syntax == null) {
 			syntax = "";
@@ -102,7 +104,7 @@ public final class ConverterManagerImpl implements ConverterManager {
 	 * org.springframework.ldap.odm.typeconversion.ConverterManager#canConvert(java.lang.
 	 * Class, java.lang.String, java.lang.Class)
 	 */
-	public boolean canConvert(Class<?> fromClass, String syntax, Class<?> toClass) {
+	public boolean canConvert(Class<?> fromClass, @Nullable String syntax, Class<?> toClass) {
 		Class<?> fixedToClass = toClass;
 		if (toClass.isPrimitive()) {
 			fixedToClass = primitiveTypeMap.get(toClass);
@@ -124,7 +126,7 @@ public final class ConverterManagerImpl implements ConverterManager {
 	 * Object, java.lang.String, java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T convert(Object source, String syntax, Class<T> toClass) {
+	public <T> T convert(Object source, @Nullable String syntax, Class<T> toClass) {
 		Object result = null;
 
 		// What are we converting from
@@ -185,7 +187,7 @@ public final class ConverterManagerImpl implements ConverterManager {
 	 * @param toClass The class the <code>Converter</code> should be used to convert to.
 	 * @param converter The <code>Converter</code> to add.
 	 */
-	public void addConverter(Class<?> fromClass, String syntax, Class<?> toClass, Converter converter) {
+	public void addConverter(Class<?> fromClass, @Nullable String syntax, Class<?> toClass, Converter converter) {
 		this.converters.put(makeConverterKey(fromClass, syntax, toClass), converter);
 	}
 

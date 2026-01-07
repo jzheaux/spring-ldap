@@ -34,6 +34,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +117,7 @@ public class DefaultIncrementalAttributesMapper
 		}
 
 		@Override
+		@Nullable
 		public List<Object> getValues() {
 			return null;
 		}
@@ -212,7 +214,7 @@ public class DefaultIncrementalAttributesMapper
 	}
 
 	@Override
-	public final List<Object> getValues(String attributeName) {
+	public final @Nullable List<Object> getValues(String attributeName) {
 		return getState(attributeName).getValues();
 	}
 
@@ -359,7 +361,7 @@ public class DefaultIncrementalAttributesMapper
 
 		private final String actualAttributeName;
 
-		private List<Object> values = null;
+		private @Nullable List<Object> values = null;
 
 		private final int pageSize;
 
@@ -422,6 +424,7 @@ public class DefaultIncrementalAttributesMapper
 		}
 
 		@Override
+		@Nullable
 		public List<Object> getValues() {
 			if (this.values != null) {
 				return new ArrayList<>(this.values);
@@ -448,7 +451,7 @@ public class DefaultIncrementalAttributesMapper
 
 		void processValues(Attributes attributes, String attributeName) throws NamingException;
 
-		List<Object> getValues();
+		@Nullable List<Object> getValues();
 
 	}
 

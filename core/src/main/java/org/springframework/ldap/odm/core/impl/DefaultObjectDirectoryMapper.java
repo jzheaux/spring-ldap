@@ -34,6 +34,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -291,7 +292,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 	}
 
 	@Override
-	public <T> T mapFromLdapDataEntry(LdapDataEntry context, Class<T> clazz) {
+	public <T> @Nullable T mapFromLdapDataEntry(LdapDataEntry context, Class<T> clazz) {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("Converting to Java Entry class %1$s from %2$s", clazz, context));
 		}
@@ -462,7 +463,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 	}
 
 	@Override
-	public void setId(Object entry, Name id) {
+	public void setId(Object entry, @Nullable Name id) {
 		try {
 			getIdField(entry).set(entry, id);
 		}
@@ -472,6 +473,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 	}
 
 	@Override
+	@Nullable
 	public Name getCalculatedId(Object entry) {
 		Assert.notNull(entry, "Entry must not be null");
 		EntityData entityData = getEntityData(entry.getClass());
@@ -497,7 +499,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 	}
 
 	@Override
-	public Filter filterFor(Class<?> clazz, Filter baseFilter) {
+	public Filter filterFor(Class<?> clazz, @Nullable Filter baseFilter) {
 		Filter ocFilter = getEntityData(clazz).ocFilter;
 
 		if (baseFilter == null) {

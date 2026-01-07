@@ -31,6 +31,8 @@ import java.util.TreeSet;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.DnAttribute;
@@ -81,7 +83,7 @@ import org.springframework.ldap.odm.annotations.Transient;
 
 	private String[] attributes;
 
-	private DnAttribute dnAttribute;
+	private @Nullable DnAttribute dnAttribute;
 
 	// Extract information from the @Attribute annotation:
 	// syntax, isBinary, isObjectClass and name.
@@ -299,7 +301,7 @@ import org.springframework.ldap.odm.annotations.Transient;
 		return this.isTransient;
 	}
 
-	DnAttribute getDnAttribute() {
+	@Nullable DnAttribute getDnAttribute() {
 		return this.dnAttribute;
 	}
 
@@ -315,7 +317,7 @@ import org.springframework.ldap.odm.annotations.Transient;
 		return this.valueClass;
 	}
 
-	String[] getAttributes() {
+	String @Nullable [] getAttributes() {
 		return this.attributes;
 	}
 

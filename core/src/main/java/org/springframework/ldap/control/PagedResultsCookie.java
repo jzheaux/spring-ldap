@@ -20,6 +20,8 @@ import java.util.Arrays;
 
 import javax.naming.ldap.PagedResultsControl;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Wrapper class for the cookie returned when using the {@link PagedResultsControl}.
  *
@@ -48,6 +50,7 @@ public class PagedResultsCookie {
 	 * @return the cookie. This value may be <code>null</code>, indicating that there are
 	 * no more requests, or that the control wasn't supported by the server.
 	 */
+	@Nullable
 	public byte[] getCookie() {
 		if (this.cookie != null) {
 			return Arrays.copyOf(this.cookie, this.cookie.length);

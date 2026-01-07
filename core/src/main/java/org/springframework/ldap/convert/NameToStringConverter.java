@@ -18,6 +18,8 @@ package org.springframework.ldap.convert;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.converter.Converter;
 
 /**
@@ -34,6 +36,7 @@ import org.springframework.core.convert.converter.Converter;
 public final class NameToStringConverter implements Converter<Name, String> {
 
 	@Override
+	@Nullable
 	public String convert(Name source) {
 		if (source == null) {
 			return null;

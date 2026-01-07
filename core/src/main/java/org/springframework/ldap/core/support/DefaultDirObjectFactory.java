@@ -26,6 +26,7 @@ import javax.naming.Name;
 import javax.naming.directory.Attributes;
 import javax.naming.spi.DirObjectFactory;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,6 +157,7 @@ public class DefaultDirObjectFactory implements DirObjectFactory {
 	}
 
 	@Override
+	@Nullable
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
 			throws Exception {
 		return null;

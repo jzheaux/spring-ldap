@@ -18,6 +18,8 @@ package org.springframework.ldap.query;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.filter.Filter;
 
 /**
@@ -49,6 +51,7 @@ public interface LdapQuery {
 	 * LdapTemplate default should be used.
 	 * @return the search scope.
 	 */
+	@Nullable
 	SearchScope searchScope();
 
 	/**
@@ -56,6 +59,7 @@ public interface LdapQuery {
 	 * default should be used.
 	 * @return the time limit.
 	 */
+	@Nullable
 	Integer timeLimit();
 
 	/**
@@ -63,6 +67,7 @@ public interface LdapQuery {
 	 * default should be used.
 	 * @return the count limit.
 	 */
+	@Nullable
 	Integer countLimit();
 
 	/**
@@ -70,7 +75,7 @@ public interface LdapQuery {
 	 * attributes should be returned.
 	 * @return the attributes to return.
 	 */
-	String[] attributes();
+	String @Nullable [] attributes();
 
 	/**
 	 * Get the filter.

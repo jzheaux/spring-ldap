@@ -21,6 +21,8 @@ import java.util.SortedSet;
 import javax.naming.Name;
 import javax.naming.directory.Attributes;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Common data access methods for entries in an LDAP tree.
  *
@@ -38,6 +40,7 @@ public interface LdapDataEntry {
 	 * attribute doesn't exist or if it exists but with no value.
 	 * @throws ClassCastException if the value of the entry is not a String.
 	 */
+	@Nullable
 	String getStringAttribute(String name);
 
 	/**
@@ -48,6 +51,7 @@ public interface LdapDataEntry {
 	 * @return the attribute value as an object if it exists, or <code>null</code> if the
 	 * attribute doesn't exist or if it exists but with no value.
 	 */
+	@Nullable
 	Object getObjectAttribute(String name);
 
 	/**
@@ -67,7 +71,7 @@ public interface LdapDataEntry {
 	 * several of the currently present attribute values is <strong>not</strong>
 	 * {@link Name} instances or Strings representing valid Distinguished Names.
 	 */
-	void setAttributeValue(String name, Object value);
+	void setAttributeValue(String name, @Nullable Object value);
 
 	/**
 	 * Sets a multivalue attribute, disregarding the order of the values.
@@ -85,7 +89,7 @@ public interface LdapDataEntry {
 	 * several of the currently present attribute values is <strong>not</strong>
 	 * {@link Name} instances or Strings representing valid Distinguished Names.
 	 */
-	void setAttributeValues(String name, Object[] values);
+	void setAttributeValues(String name, Object @Nullable [] values);
 
 	/**
 	 * Sets a multivalue attribute.
@@ -107,7 +111,7 @@ public interface LdapDataEntry {
 	 * several of the currently present attribute values is <strong>not</strong>
 	 * {@link Name} instances or Strings representing valid Distinguished Names.
 	 */
-	void setAttributeValues(String name, Object[] values, boolean orderMatters);
+	void setAttributeValues(String name, Object @Nullable [] values, boolean orderMatters);
 
 	/**
 	 * Add a value to the Attribute with the specified name. If the Attribute doesn't
@@ -166,7 +170,7 @@ public interface LdapDataEntry {
 	 * as Strings if the attribute is defined or <code>null</code> otherwise.
 	 * @throws IllegalArgumentException if any of the attribute values is not a String.
 	 */
-	String[] getStringAttributes(String name);
+	String @Nullable [] getStringAttributes(String name);
 
 	/**
 	 * Get all values of an Object attribute.
@@ -175,7 +179,7 @@ public interface LdapDataEntry {
 	 * if the attribute is defined or <code>null</code> otherwise.
 	 * @since 1.3
 	 */
-	Object[] getObjectAttributes(String name);
+	Object @Nullable [] getObjectAttributes(String name);
 
 	/**
 	 * Get all String values of the attribute as a <code>SortedSet</code>.
@@ -185,6 +189,7 @@ public interface LdapDataEntry {
 	 * @throws IllegalArgumentException if one of the found attribute values cannot be
 	 * cast to a String.
 	 */
+	@Nullable
 	SortedSet<String> getAttributeSortedStringSet(String name);
 
 	/**

@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import javax.naming.ldap.LdapName;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -55,9 +57,9 @@ public class BaseLdapPathBeanPostProcessor implements BeanPostProcessor, Applica
 
 	private ApplicationContext applicationContext;
 
-	private LdapName basePath;
+	private @Nullable LdapName basePath;
 
-	private String baseLdapPathSourceName;
+	private @Nullable String baseLdapPathSourceName;
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 

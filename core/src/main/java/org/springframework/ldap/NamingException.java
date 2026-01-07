@@ -22,6 +22,8 @@ import java.io.Serializable;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.NestedRuntimeException;
 
 /**
@@ -42,6 +44,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * class, we get a chance at temporarily nulling the cause before serialization, thus
 	 * in effect making the current instance serializable.
 	 */
+	@Nullable
 	public Throwable getCause() {
 		// Even if you cannot set the cause of this exception other than through
 		// the constructor, we check for the cause being "this" here, as the cause
@@ -87,6 +90,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * an instance of javax.naming.NamingException, or <code>null</code> if there is no
 	 * detail message for this exception
 	 */
+	@Nullable
 	public String getExplanation() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getExplanation();
@@ -102,6 +106,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * if the root cause is an instance of javax.naming.NamingException, or
 	 * <code>null</code> if the remaining name field has not been set
 	 */
+	@Nullable
 	public Name getRemainingName() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getRemainingName();
@@ -118,6 +123,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * javax.naming.NamingException, or <code>null</code> if the resolved name field has
 	 * not been set
 	 */
+	@Nullable
 	public Name getResolvedName() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getResolvedName();
@@ -132,6 +138,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * javax.naming.NamingException, or <code>null</code> if the resolved object field has
 	 * not been set
 	 */
+	@Nullable
 	public Object getResolvedObj() {
 		if (getCause() instanceof javax.naming.NamingException) {
 			return ((javax.naming.NamingException) getCause()).getResolvedObj();
