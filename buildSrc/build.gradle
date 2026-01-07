@@ -3,6 +3,7 @@ plugins {
     id "java"
     id "groovy"
     id 'com.apollographql.apollo' version '4.3.1'
+    id 'groovy-gradle-plugin'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -75,6 +76,7 @@ configurations {
 }
 
 dependencies {
+    implementation "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:4.3.0"
     implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'com.thaiopensource:trang:20091111'
     implementation 'net.sourceforge.saxon:saxon:9.1.0.8'
