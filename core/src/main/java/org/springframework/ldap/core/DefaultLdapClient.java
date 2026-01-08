@@ -282,7 +282,7 @@ class DefaultLdapClient implements LdapClient {
 		}
 		try {
 			Enumeration<S> enumeration = enumeration(results);
-			Function<? super S, T> function = mapper.wrap(this.namingExceptionHandler);
+			Function<? super S, @Nullable T> function = mapper.wrap(this.namingExceptionHandler);
 			if (!enumeration.hasMoreElements()) {
 				return null;
 			}

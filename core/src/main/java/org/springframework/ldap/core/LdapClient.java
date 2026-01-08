@@ -29,6 +29,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.LdapDataEntry;
 import org.springframework.ldap.NameAlreadyBoundException;
 import org.springframework.ldap.PartialResultException;
@@ -363,7 +365,7 @@ public interface LdapClient {
 		 */
 		SearchSpec query(LdapQuery query);
 
-		default <O extends LdapDataEntry> O toEntry() {
+		default <O extends LdapDataEntry> @Nullable O toEntry() {
 			ContextMapper<O> cast = (ctx) -> (O) ctx;
 			return toObject(cast);
 		}
@@ -378,7 +380,7 @@ public interface LdapClient {
 		 * @throws org.springframework.dao.IncorrectResultSizeDataAccessException if the
 		 * result set contains more than one result
 		 */
-		<O> O toObject(ContextMapper<O> mapper);
+		<O> @Nullable O toObject(ContextMapper<O> mapper);
 
 		/**
 		 * Expect at most one search result, mapped by the given strategy.
@@ -387,7 +389,7 @@ public interface LdapClient {
 		 * @throws org.springframework.dao.IncorrectResultSizeDataAccessException if the
 		 * result set contains more than one result
 		 */
-		<O> O toObject(AttributesMapper<O> mapper);
+		<O> @Nullable O toObject(AttributesMapper<O> mapper);
 
 		default <O extends LdapDataEntry> List<O> toEntryList() {
 			ContextMapper<O> cast = (ctx) -> (O) ctx;
