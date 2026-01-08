@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -262,14 +263,19 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 		// We need to build up a list of of the values
 		List<Object> attributeValues = new ArrayList<>();
 		// Get the list of values
-		Collection<?> fieldValues = (Collection<?>) field.get(entry);
+		Collection<@Nullable Object> fieldValues = (Collection<@Nullable Object>) field.get(entry);
 		// Ignore null lists
 		if (fieldValues != null) {
 			for (final Object o : fieldValues) {
 				// Ignore null values
-				if (o != null) {
-					attributeValues.add(this.converterManager.convert(o, attributeInfo.getSyntax(), targetClass));
+				if (o == null) {
+					continue;
 				}
+				Object converted = this.converterManager.convert(o, attributeInfo.getSyntax(), targetClass);
+				if (converted == null) {
+					continue;
+				}
+				attributeValues.add(converted);
 			}
 			context.setAttributeValues(attributeInfo.getName().toString(), attributeValues.toArray());
 		}
@@ -415,12 +421,17 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 				// Get the current value
 				Object value = valuesEmumeration.nextElement();
 				// Check the value is not null
-				if (value != null) {
-					// Convert the value to its Java representation and add it to our
-					// working list
-					fieldValues.add(this.converterManager.convert(value, attributeInfo.getSyntax(),
-							attributeInfo.getValueClass()));
+				if (value == null) {
+					continue;
 				}
+				// Convert the value to its Java representation and add it to our
+				// working list
+				Object converted = this.converterManager.convert(value, attributeInfo.getSyntax(),
+					attributeInfo.getValueClass());
+				if (converted == null) {
+					continue;
+				}
+				fieldValues.add(converted);
 			}
 		}
 		// Now we need to set the List in to a Java object
@@ -488,8 +499,8 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 							String.format("DnAttribute for field %s on class %s is null; cannot build DN",
 									dnAttribute.getField().getName(), entry.getClass().getName()));
 				}
-
-				ldapNameBuilder.add(dnAttribute.getDnAttribute().value(), dnFieldValue.toString());
+				DnAttribute annotation = Objects.requireNonNull(dnAttribute.getDnAttribute());
+				ldapNameBuilder.add(annotation.value(), dnFieldValue.toString());
 			}
 
 			return ldapNameBuilder.build();

@@ -88,7 +88,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 
 	private static final String @Nullable [] ALL_ATTRIBUTES = null;
 
-	private ContextSource contextSource;
+	private ContextSource contextSource = new NullContextSource();
 
 	private boolean ignorePartialResultException = false;
 
@@ -123,6 +123,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * @param contextSource the ContextSource.
 	 */
 	public void setContextSource(ContextSource contextSource) {
+		Assert.notNull(contextSource, "contextSource cannot be null");
 		this.contextSource = contextSource;
 	}
 
@@ -1158,7 +1159,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.contextSource, "Property 'contextSource' must be set.");
+		Assert.isTrue(!(this.contextSource instanceof NullContextSource), "Property 'contextSource' must be set.");
 	}
 
 	private void closeContextAndNamingEnumeration(DirContext ctx, @Nullable NamingEnumeration results) {
@@ -1992,4 +1993,21 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 
 	}
 
+	private static final class NullContextSource implements ContextSource {
+
+		@Override
+		public DirContext getReadOnlyContext() throws NamingException {
+			throw new IllegalStateException("Property 'contextSource' must be set.");
+		}
+
+		@Override
+		public DirContext getReadWriteContext() throws NamingException {
+			throw new IllegalStateException("Property 'contextSource' must be set.");
+		}
+
+		@Override
+		public DirContext getContext(String principal, String credentials) throws NamingException {
+			throw new IllegalStateException("Property 'contextSource' must be set.");
+		}
+	}
 }
