@@ -54,6 +54,7 @@ import org.springframework.ldap.odm.core.OdmException;
 import org.springframework.ldap.odm.core.impl.DefaultObjectDirectoryMapper;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
+import org.springframework.ldap.query.SearchScope;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -81,6 +82,8 @@ import org.springframework.util.CollectionUtils;
 public class LdapTemplate implements LdapOperations, InitializingBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LdapTemplate.class);
+
+	private static final ContextMapper<DirContextOperations> OPERATIONS = (ctx) -> (DirContextOperations) ctx;
 
 	private static final boolean DONT_RETURN_OBJ_FLAG = false;
 
@@ -955,7 +958,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	@Override
 	public void modifyAttributes(final Name dn, final ModificationItem[] mods) {
 		executeReadWrite(new ContextExecutor() {
-			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
+			public @Nullable Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.modifyAttributes(dn, mods);
 				return null;
 			}
@@ -968,7 +971,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	@Override
 	public void modifyAttributes(final String dn, final ModificationItem[] mods) {
 		executeReadWrite(new ContextExecutor() {
-			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
+			public @Nullable Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.modifyAttributes(dn, mods);
 				return null;
 			}
@@ -982,7 +985,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	public void bind(final Name dn, final @Nullable Object obj, final @Nullable Attributes attributes) {
 		executeReadWrite((ctx) -> {
 			ctx.bind(dn, obj, attributes);
-			return null;
+			return Void.class;
 		});
 	}
 
@@ -993,7 +996,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	public void bind(final String dn, final @Nullable Object obj, final @Nullable Attributes attributes) {
 		executeReadWrite((ctx) -> {
 			ctx.bind(dn, obj, attributes);
-			return null;
+			return Void.class;
 		});
 	}
 
@@ -1042,28 +1045,28 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	private void doUnbind(final Name dn) {
 		executeReadWrite((ctx) -> {
 			ctx.unbind(dn);
-			return null;
+			return Void.class;
 		});
 	}
 
 	private void doUnbind(final String dn) {
 		executeReadWrite((ctx) -> {
 			ctx.unbind(dn);
-			return null;
+			return Void.class;
 		});
 	}
 
 	private void doUnbindRecursively(final Name dn) {
 		executeReadWrite((ctx) -> {
 			deleteRecursively(ctx, LdapUtils.newLdapName(dn));
-			return null;
+			return Void.class;
 		});
 	}
 
 	private void doUnbindRecursively(final String dn) {
 		executeReadWrite((ctx) -> {
 			deleteRecursively(ctx, LdapUtils.newLdapName(dn));
-			return null;
+			return Void.class;
 		});
 	}
 
@@ -1094,7 +1097,9 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		}
 		finally {
 			try {
-				enumeration.close();
+				if (enumeration != null) {
+					enumeration.close();
+				}
 			}
 			catch (Exception ex) {
 				// Never mind this
@@ -1110,7 +1115,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		executeReadWrite(new ContextExecutor() {
 			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.rebind(dn, obj, attributes);
-				return null;
+				return Void.class;
 			}
 		});
 	}
@@ -1123,7 +1128,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		executeReadWrite(new ContextExecutor() {
 			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.rebind(dn, obj, attributes);
-				return null;
+				return Void.class;
 			}
 		});
 	}
@@ -1136,7 +1141,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		executeReadWrite(new ContextExecutor() {
 			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.rename(oldDn, newDn);
-				return null;
+				return Void.class;
 			}
 		});
 	}
@@ -1149,7 +1154,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		executeReadWrite(new ContextExecutor() {
 			public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 				ctx.rename(oldDn, newDn);
-				return null;
+				return Void.class;
 			}
 		});
 	}
@@ -1246,7 +1251,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	@Override
 	public void modifyAttributes(DirContextOperations ctx) {
 		Name dn = ctx.getDn();
-		if (dn != null && ctx.isUpdateMode()) {
+		if (ctx.isUpdateMode()) {
 			modifyAttributes(dn, ctx.getModificationItems());
 		}
 		else {
@@ -1260,7 +1265,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	@Override
 	public void bind(DirContextOperations ctx) {
 		Name dn = ctx.getDn();
-		if (dn != null && !ctx.isUpdateMode()) {
+		if (!ctx.isUpdateMode()) {
 			bind(dn, ctx, null);
 		}
 		else {
@@ -1274,7 +1279,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	@Override
 	public void rebind(DirContextOperations ctx) {
 		Name dn = ctx.getDn();
-		if (dn != null && !ctx.isUpdateMode()) {
+		if (!ctx.isUpdateMode()) {
 			rebind(dn, ctx, null);
 		}
 		else {
@@ -1381,7 +1386,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			executeWithContext(new ContextExecutor<>() {
 				public Object executeWithContext(DirContext ctx) throws javax.naming.NamingException {
 					callback.executeWithContext(ctx, entryIdentification);
-					return null;
+					return Void.class;
 				}
 			}, ctx);
 			return AuthenticationStatus.SUCCESS;
@@ -1499,16 +1504,19 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		SearchControls searchControls = getDefaultSearchControls(this.defaultSearchScope, returnObjFlag,
 				query.attributes());
 
-		if (query.searchScope() != null) {
-			searchControls.setSearchScope(query.searchScope().getId());
+		SearchScope searchScope = query.searchScope();
+		if (searchScope != null) {
+			searchControls.setSearchScope(searchScope.getId());
 		}
 
-		if (query.countLimit() != null) {
-			searchControls.setCountLimit(query.countLimit());
+		Integer countLimit = query.countLimit();
+		if (countLimit != null) {
+			searchControls.setCountLimit(countLimit);
 		}
 
-		if (query.timeLimit() != null) {
-			searchControls.setTimeLimit(query.timeLimit());
+		Integer timeLimit = query.timeLimit();
+		if (timeLimit != null) {
+			searchControls.setTimeLimit(timeLimit);
 		}
 		return searchControls;
 	}
@@ -1571,7 +1579,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		});
 	}
 
-	<T> Stream<T> searchForStream(LdapQuery query, Function<SearchResult, T> mapper) {
+	<T> Stream<T> searchForStream(LdapQuery query, Function<SearchResult, @Nullable T> mapper) {
 		Name base = query.base();
 		Filter filter = query.filter();
 		SearchControls searchControls = searchControlsForQuery(query, RETURN_OBJ_FLAG);
@@ -1593,12 +1601,9 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			closeContextAndNamingEnumeration(ctx, null);
 			return Stream.empty();
 		}
-		return StreamSupport
-			.stream(Spliterators.spliteratorUnknownSize(CollectionUtils.toIterator(results), Spliterator.ORDERED),
-					false)
-			.map((nameClassPair) -> unchecked(() -> mapper.apply(nameClassPair)))
-			.filter(Objects::nonNull)
-			.onClose(() -> closeContextAndNamingEnumeration(ctx, results));
+		Spliterator<SearchResult> spliterator = Spliterators.spliteratorUnknownSize(CollectionUtils.toIterator(results), Spliterator.ORDERED);
+		Stream<T> result = StreamSupport.stream(spliterator, false).map(mapper).filter(Objects::nonNull);
+		return result.onClose(() -> closeContextAndNamingEnumeration(ctx, results));
 	}
 
 	/**
@@ -1613,12 +1618,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		// Make sure the class is OK before doing the lookup
 		String[] attributes = this.odm.manageClass(clazz);
 
-		T result = lookup(dn, attributes, new ContextMapper<>() {
-			@Override
-			public T mapFromContext(Object ctx) throws javax.naming.NamingException {
-				return LdapTemplate.this.odm.mapFromLdapDataEntry((DirContextOperations) ctx, clazz);
-			}
-		});
+		DirContextOperations entry = lookup(dn, attributes, OPERATIONS);
+		T result = this.odm.mapFromLdapDataEntry(entry, clazz);
 
 		if (result == null) {
 			throw new OdmException(String.format("Entry %1$s does not have the required objectclasses ", dn));
@@ -1768,13 +1769,10 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 					searchControls));
 		}
 
-		List<T> result = search(localBase, finalFilter.encode(), searchControls, new ContextMapper<>() {
-			@Override
-			public T mapFromContext(Object ctx) throws javax.naming.NamingException {
-				return LdapTemplate.this.odm.mapFromLdapDataEntry((DirContextOperations) ctx, clazz);
-			}
-		});
-		result.remove(null);
+		List<T> result = search(localBase, finalFilter.encode(), searchControls, OPERATIONS)
+			.stream()
+			.map((ctx) -> LdapTemplate.this.odm.mapFromLdapDataEntry(ctx, clazz))
+			.filter(Objects::nonNull).toList();
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("Found %1$s Entries - %2$s", result.size(), result));
@@ -1820,9 +1818,9 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			builder.attributes(attributes);
 		}
 		Filter includeClass = this.odm.filterFor(clazz, query.filter());
-		ContextMapper<T> contextMapper = (object) -> this.odm.mapFromLdapDataEntry((DirContextOperations) object,
-				clazz);
-		return searchForStream(builder.filter(includeClass), contextMapper);
+		return searchForStream(builder.filter(includeClass), OPERATIONS)
+			.map((ctx) -> this.odm.mapFromLdapDataEntry(ctx, clazz))
+			.filter(Objects::nonNull);
 	}
 
 	@Nullable
@@ -1907,7 +1905,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		}
 
 		@Override
-		public Object mapWithContext(DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
+		public @Nullable Object mapWithContext(DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
 			return null;
 		}
 
