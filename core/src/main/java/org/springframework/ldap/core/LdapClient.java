@@ -158,20 +158,30 @@ public interface LdapClient {
 
 	// Static, factory methods
 
+
+	/**
+	 * Obtain a {@code LdapClient} builder.
+	 * @param contextSource the {@link ContextSource} for all requests
+	 * @since 4.1
+	 */
+	static LdapClient.Builder withContextSource(ContextSource contextSource) {
+		return new DefaultLdapClientBuilder(contextSource);
+	}
+
 	/**
 	 * Create an instance of {@link LdapClient}
 	 * @param contextSource the {@link ContextSource} for all requests
-	 * @see #builder()
+	 * @see #withContextSource
 	 */
 	static LdapClient create(ContextSource contextSource) {
-		return new DefaultLdapClientBuilder().contextSource(contextSource).build();
+		return new DefaultLdapClientBuilder(contextSource).build();
 	}
 
 	/**
 	 * Create an instance of {@link LdapClient}
 	 * @param ldap the {@link LdapTemplate} to base this client off of
 	 * @since 3.3
-	 * @see #builder()
+	 * @see #withContextSource
 	 */
 	static LdapClient create(LdapTemplate ldap) {
 		return new DefaultLdapClientBuilder(ldap).build();
@@ -179,7 +189,9 @@ public interface LdapClient {
 
 	/**
 	 * Obtain a {@code LdapClient} builder.
+	 * @deprecated Please provide a {@link ContextSource} using {@link #withContextSource}
 	 */
+	@Deprecated
 	static LdapClient.Builder builder() {
 		return new DefaultLdapClientBuilder();
 	}
