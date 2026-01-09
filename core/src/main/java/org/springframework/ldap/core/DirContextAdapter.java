@@ -118,9 +118,9 @@ public class DirContextAdapter implements DirContextOperations {
 
 	private boolean updateMode = false;
 
-	private @Nullable NameAwareAttributes updatedAttrs;
+	private NameAwareAttributes updatedAttrs = new NameAwareAttributes();
 
-	private @Nullable String referralUrl;
+	private String referralUrl;
 
 	/**
 	 * Default constructor.
@@ -210,6 +210,7 @@ public class DirContextAdapter implements DirContextOperations {
 		this.dn = main.dn;
 		this.updatedAttrs = (NameAwareAttributes) main.updatedAttrs.clone();
 		this.updateMode = main.updateMode;
+		this.referralUrl = main.referralUrl;
 	}
 
 	/**
@@ -309,43 +310,36 @@ public class DirContextAdapter implements DirContextOperations {
 			}
 		}
 
-		if (changedAttr.equals(currentAttribute)) {
-			// No changes
+		if (changedAttr.size() == 0 && currentAttribute != null) {
+			modificationList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, changedAttr));
 			return;
 		}
-		else if (currentAttribute != null && currentAttribute.size() == 1 && changedAttr.size() == 1) {
-			// Replace single-vale attribute.
-			modificationList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, changedAttr));
-		}
-		else if (changedAttr.size() == 0 && currentAttribute != null) {
-			// Attribute has been removed.
-			modificationList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, changedAttr));
-		}
-		else if ((currentAttribute == null || currentAttribute.size() == 0) && changedAttr.size() > 0) {
-			// Attribute has been added.
+		if (currentAttribute == null) {
 			modificationList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, changedAttr));
+			return;
 		}
-		else if (changedAttr.size() > 0 && changedAttr.isOrdered()) {
-			// This is a multivalue attribute and it is ordered - the original
-			// value should be replaced with the new values so that the ordering
-			// is preserved.
+		if (currentAttribute.equals(changedAttr)) {
+			return;
+		}
+		if (currentAttribute.size() == 1 && changedAttr.size() == 1) {
 			modificationList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, changedAttr));
+			return;
 		}
-		else if (changedAttr.size() > 0) {
-			// Change of multivalue Attribute. Collect additions and removals
-			// individually.
-			List<ModificationItem> myModifications = new LinkedList<>();
-			collectModifications(currentAttribute, changedAttr, myModifications);
-
-			if (myModifications.isEmpty()) {
-				// This means that the attributes are not equal, but the
-				// actual values are the same - thus the order must have
-				// changed. This should result in a REPLACE_ATTRIBUTE operation.
-				myModifications.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, changedAttr));
-			}
-
-			modificationList.addAll(myModifications);
+		if (changedAttr.isOrdered()) {
+			modificationList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, changedAttr));
+			return;
 		}
+		List<ModificationItem> myModifications = new LinkedList<>();
+		collectModifications(currentAttribute, changedAttr, myModifications);
+
+		if (myModifications.isEmpty()) {
+			// This means that the attributes are not equal, but the
+			// actual values are the same - thus the order must have
+			// changed. This should result in a REPLACE_ATTRIBUTE operation.
+			myModifications.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, changedAttr));
+		}
+
+		modificationList.addAll(myModifications);
 	}
 
 	private void collectModifications(NameAwareAttribute originalAttr, NameAwareAttribute changedAttr,
@@ -574,7 +568,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 */
 	@Override
 	public void addAttributeValue(String name, Object value, boolean addIfDuplicateExists) {
-		if (!this.updateMode && value != null) {
+		if (!this.updateMode) {
 			Attribute attr = this.originalAttrs.get(name);
 			if (attr == null) {
 				this.originalAttrs.put(name, value);
@@ -583,10 +577,11 @@ public class DirContextAdapter implements DirContextOperations {
 				attr.add(value);
 			}
 		}
-		else if (this.updateMode) {
+		else {
 			Attribute attr = this.updatedAttrs.get(name);
 			if (attr == null) {
-				if (this.originalAttrs.get(name) == null) {
+				Attribute original = this.originalAttrs.get(name);
+				if (original == null) {
 					// No match in the original attributes -
 					// add a new Attribute to updatedAttrs
 					this.updatedAttrs.put(name, value);
@@ -594,7 +589,7 @@ public class DirContextAdapter implements DirContextOperations {
 				else {
 					// The attribute exists in the original attributes - clone
 					// that and add the new entry to it
-					attr = (Attribute) this.originalAttrs.get(name).clone();
+					attr = (Attribute) original.clone();
 					if (addIfDuplicateExists || !attr.contains(value)) {
 						attr.add(value);
 					}
@@ -612,7 +607,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 */
 	@Override
 	public void removeAttributeValue(String name, Object value) {
-		if (!this.updateMode && value != null) {
+		if (!this.updateMode) {
 			Attribute attr = this.originalAttrs.get(name);
 			if (attr != null) {
 				attr.remove(value);
@@ -621,7 +616,7 @@ public class DirContextAdapter implements DirContextOperations {
 				}
 			}
 		}
-		else if (this.updateMode) {
+		else {
 			Attribute attr = this.updatedAttrs.get(name);
 			if (attr == null) {
 				if (this.originalAttrs.get(name) != null) {
@@ -1273,20 +1268,19 @@ public class DirContextAdapter implements DirContextOperations {
 		if (this.updateMode != that.updateMode) {
 			return false;
 		}
-		if ((this.base != null) ? !this.base.equals(that.base) : that.base != null) {
+		if (!this.base.equals(that.base)) {
 			return false;
 		}
-		if ((this.dn != null) ? !this.dn.equals(that.dn) : that.dn != null) {
+		if (!this.dn.equals(that.dn)) {
 			return false;
 		}
-		if ((this.originalAttrs != null) ? !this.originalAttrs.equals(that.originalAttrs)
-				: that.originalAttrs != null) {
+		if (!this.originalAttrs.equals(that.originalAttrs)) {
 			return false;
 		}
-		if ((this.referralUrl != null) ? !this.referralUrl.equals(that.referralUrl) : that.referralUrl != null) {
+		if (!this.referralUrl.equals(that.referralUrl)) {
 			return false;
 		}
-		if ((this.updatedAttrs != null) ? !this.updatedAttrs.equals(that.updatedAttrs) : that.updatedAttrs != null) {
+		if (!this.updatedAttrs.equals(that.updatedAttrs)) {
 			return false;
 		}
 
@@ -1298,12 +1292,12 @@ public class DirContextAdapter implements DirContextOperations {
 	 */
 	@Override
 	public int hashCode() {
-		int result = (this.originalAttrs != null) ? this.originalAttrs.hashCode() : 0;
-		result = 31 * result + ((this.dn != null) ? this.dn.hashCode() : 0);
-		result = 31 * result + ((this.base != null) ? this.base.hashCode() : 0);
+		int result = this.originalAttrs.hashCode();
+		result = 31 * result + this.dn.hashCode();
+		result = 31 * result + this.base.hashCode();
 		result = 31 * result + (this.updateMode ? 1 : 0);
-		result = 31 * result + ((this.updatedAttrs != null) ? this.updatedAttrs.hashCode() : 0);
-		result = 31 * result + ((this.referralUrl != null) ? this.referralUrl.hashCode() : 0);
+		result = 31 * result + this.updatedAttrs.hashCode();
+		result = 31 * result + this.referralUrl.hashCode();
 		return result;
 	}
 
@@ -1315,9 +1309,7 @@ public class DirContextAdapter implements DirContextOperations {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getClass().getName());
 		builder.append(":");
-		if (this.dn != null) {
-			builder.append(" dn=").append(this.dn);
-		}
+		builder.append(" dn=").append(this.dn);
 		builder.append(" {");
 
 		try {
