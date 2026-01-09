@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class PagedResultsCookie {
 
-	private byte @Nullable [] cookie;
+	private final byte @Nullable [] cookie;
 
 	/**
 	 * Constructor.
@@ -70,11 +70,7 @@ public class PagedResultsCookie {
 
 		PagedResultsCookie that = (PagedResultsCookie) o;
 
-		if (!Arrays.equals(this.cookie, that.cookie)) {
-			return false;
-		}
-
-		return true;
+		return Arrays.equals(this.cookie, that.cookie);
 	}
 
 	@Override
