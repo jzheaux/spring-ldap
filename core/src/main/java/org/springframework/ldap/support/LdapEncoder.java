@@ -99,13 +99,7 @@ public final class LdapEncoder {
 	 * @param value the value to escape.
 	 * @return a properly escaped representation of the supplied value.
 	 */
-	@Nullable
 	public static String filterEncode(String value) {
-
-		if (value == null) {
-			return null;
-		}
-
 		// make buffer roomy
 		StringBuilder encodedValue = new StringBuilder(value.length() * 2);
 
