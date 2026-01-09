@@ -37,6 +37,7 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextProxy;
 import org.springframework.ldap.pool2.DirContextType;
 import org.springframework.ldap.pool2.FailureAwareContext;
+import org.springframework.ldap.pool2.validation.DefaultDirContextValidator;
 import org.springframework.ldap.pool2.validation.DirContextValidator;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.util.Assert;
@@ -95,9 +96,13 @@ class DirContextPooledObjectFactory extends BaseKeyedPooledObjectFactory<Object,
 
 	private ContextSource contextSource;
 
-	private DirContextValidator dirContextValidator;
+	private DirContextValidator dirContextValidator = new DefaultDirContextValidator();
 
 	private Set<Class<? extends Throwable>> nonTransientExceptions = DEFAULT_NONTRANSIENT_EXCEPTIONS;
+
+	DirContextPooledObjectFactory(ContextSource contextSource) {
+		this.contextSource = contextSource;
+	}
 
 	void setNonTransientExceptions(Collection<Class<? extends Throwable>> nonTransientExceptions) {
 		this.nonTransientExceptions = new HashSet<>(nonTransientExceptions);
