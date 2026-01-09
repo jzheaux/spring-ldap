@@ -30,13 +30,13 @@ import org.jspecify.annotations.Nullable;
  */
 public class PagedResultsCookie {
 
-	private byte[] cookie;
+	private byte @Nullable [] cookie;
 
 	/**
 	 * Constructor.
 	 * @param cookie the cookie returned by a PagedResultsResponseControl.
 	 */
-	public PagedResultsCookie(byte[] cookie) {
+	public PagedResultsCookie(byte @Nullable [] cookie) {
 		if (cookie != null) {
 			this.cookie = Arrays.copyOf(cookie, cookie.length);
 		}
