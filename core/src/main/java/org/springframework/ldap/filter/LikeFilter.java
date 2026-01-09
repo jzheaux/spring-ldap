@@ -43,11 +43,6 @@ public class LikeFilter extends EqualsFilter {
 	}
 
 	private static String encodeValueInternal(String value) {
-		// just return if blank string
-		if (value == null) {
-			return "";
-		}
-
 		String[] substrings = value.split("\\*", -2);
 
 		if (substrings.length == 1) {
