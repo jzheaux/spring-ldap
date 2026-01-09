@@ -18,6 +18,7 @@ package org.springframework.ldap.control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -154,7 +155,7 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 	 */
 	protected @Nullable Object invokeMethod(String method, Class<?> clazz, Object control) {
 		Method actualMethod = ReflectionUtils.findMethod(clazz, method);
-		return ReflectionUtils.invokeMethod(actualMethod, control);
+		return ReflectionUtils.invokeMethod(Objects.requireNonNull(actualMethod), control);
 	}
 
 	/**
