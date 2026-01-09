@@ -65,6 +65,8 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 	 * @param cookie the cookie, as received from a previous search.
 	 */
 	public PagedResultsDirContextProcessor(int pageSize, PagedResultsCookie cookie) {
+		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, FALLBACK_REQUEST_CONTROL),
+			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
 		this.pageSize = pageSize;
 		this.cookie = cookie;
 

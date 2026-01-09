@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import javax.naming.NamingException;
 import javax.naming.ldap.Control;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -97,6 +99,8 @@ public class VirtualListViewControlDirContextProcessor
 
 	public VirtualListViewControlDirContextProcessor(int pageSize, int targetOffset, int listSize,
 			VirtualListViewResultsCookie cookie) {
+		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, DEFAULT_REQUEST_CONTROL),
+			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, DEFAULT_RESPONSE_CONTROL));
 		this.pageSize = pageSize;
 		this.targetOffset = targetOffset;
 		this.listSize = listSize;
@@ -171,6 +175,7 @@ public class VirtualListViewControlDirContextProcessor
 		return control;
 	}
 
+	@NullMarked
 	protected void handleResponse(Object control) {
 		byte[] result = (byte[]) invokeMethod("getContextID", responseControlClass, control);
 		Integer listSize = (Integer) invokeMethod("getListSize", responseControlClass, control);

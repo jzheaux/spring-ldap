@@ -54,6 +54,8 @@ public class SortControlDirContextProcessor extends AbstractFallbackRequestAndRe
 	 * @param sortKey the sort key, i.e. the attribute name to sort on.
 	 */
 	public SortControlDirContextProcessor(String sortKey) {
+		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, FALLBACK_REQUEST_CONTROL),
+			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
 		this.sortKey = sortKey;
 		this.sorted = false;
 		this.resultCode = -1;

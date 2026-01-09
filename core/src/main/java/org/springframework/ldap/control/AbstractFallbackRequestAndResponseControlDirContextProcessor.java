@@ -24,7 +24,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.LdapContext;
 
-import org.springframework.ldap.UncategorizedLdapException;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -87,51 +88,59 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 
 	private static final boolean CRITICAL_CONTROL = true;
 
-	protected Class<?> responseControlClass;
+	protected Class<?> responseControlClass = Void.class;
 
-	protected Class<?> requestControlClass;
+	protected Class<?> requestControlClass = Void.class;
 
 	protected boolean critical = CRITICAL_CONTROL;
 
-	protected String defaultRequestControl;
+	@Deprecated
+	protected @Nullable String defaultRequestControl;
 
-	protected String defaultResponseControl;
+	@Deprecated
+	protected @Nullable String defaultResponseControl;
 
-	protected String fallbackRequestControl;
+	@Deprecated
+	protected @Nullable String fallbackRequestControl;
 
-	protected String fallbackResponseControl;
+	@Deprecated
+	protected @Nullable String fallbackResponseControl;
 
+	@Deprecated
+	public AbstractFallbackRequestAndResponseControlDirContextProcessor() {}
+
+	public AbstractFallbackRequestAndResponseControlDirContextProcessor(
+		Class<?> requestControlClass, Class<?> responseControlClass) {
+		this.requestControlClass = requestControlClass;
+		this.responseControlClass = responseControlClass;
+	}
+
+	@Deprecated
 	protected void loadControlClasses() {
 		Assert.notNull(this.defaultRequestControl, "defaultRequestControl must not be null");
 		Assert.notNull(this.defaultResponseControl, "defaultResponseControl must not be null");
 		Assert.notNull(this.fallbackRequestControl, "fallbackRequestControl must not be null");
 		Assert.notNull(this.fallbackResponseControl, "fallbackReponseControl must not be null");
-		try {
-			this.requestControlClass = Class.forName(this.defaultRequestControl);
-			this.responseControlClass = Class.forName(this.defaultResponseControl);
-		}
-		catch (ClassNotFoundException ex) {
-			this.log.debug("Default control classes not found - falling back to LdapBP classes", ex);
-
-			try {
-				this.requestControlClass = Class.forName(this.fallbackRequestControl);
-				this.responseControlClass = Class.forName(this.fallbackResponseControl);
-			}
-			catch (ClassNotFoundException e1) {
-				throw new UncategorizedLdapException(
-						"Neither default nor fallback classes are available - unable to proceed", ex);
-			}
-		}
+		this.requestControlClass = ControlUtils.forControlName(this.defaultRequestControl, this.fallbackRequestControl);
+		this.responseControlClass = ControlUtils.forControlName(this.defaultResponseControl, this.fallbackResponseControl);
 	}
 
 	/**
 	 * Set the class of the expected ResponseControl for the sorted result response.
 	 * @param responseControlClass Class of the expected response control.
+	 * @deprecated Please provide the response control class in the constructor
 	 */
+	@Deprecated
 	public void setResponseControlClass(Class<?> responseControlClass) {
 		this.responseControlClass = responseControlClass;
 	}
 
+	/**
+	 * Set the class of the expected RequestControl for the request.
+	 * @param requestControlClass Class of the expected request control.
+	 * @deprecated Please provide the request control class in the constructor
+	 */
+	@Deprecated
 	public void setRequestControlClass(Class<?> requestControlClass) {
 		this.requestControlClass = requestControlClass;
 	}
