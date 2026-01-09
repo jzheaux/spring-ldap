@@ -602,8 +602,9 @@ public class DirContextAdapter implements DirContextOperations {
 		else {
 			Attribute attr = this.updatedAttrs.get(name);
 			if (attr == null) {
-				if (this.originalAttrs.get(name) != null) {
-					attr = (Attribute) this.originalAttrs.get(name).clone();
+				Attribute original = this.originalAttrs.get(name);
+				if (original != null) {
+					attr = (Attribute) original.clone();
 					attr.remove(value);
 					this.updatedAttrs.put(attr);
 				}
