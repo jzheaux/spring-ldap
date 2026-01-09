@@ -152,7 +152,7 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 	 * @param control Instance that the method should be invoked on
 	 * @return the invocation result, if any
 	 */
-	protected Object invokeMethod(String method, Class<?> clazz, Object control) {
+	protected @Nullable Object invokeMethod(String method, Class<?> clazz, Object control) {
 		Method actualMethod = ReflectionUtils.findMethod(clazz, method);
 		return ReflectionUtils.invokeMethod(actualMethod, control);
 	}
