@@ -16,6 +16,8 @@
 
 package org.springframework.ldap.control;
 
+import java.util.Objects;
+
 import javax.naming.ldap.Control;
 
 /**
@@ -143,7 +145,8 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 			this.more = false;
 		}
 		this.cookie = new PagedResultsCookie(result);
-		this.resultSize = (Integer) invokeMethod("getResultSize", this.responseControlClass, control);
+		this.resultSize = (Integer) Objects.requireNonNull(
+			invokeMethod("getResultSize", this.responseControlClass, control));
 	}
 
 }
