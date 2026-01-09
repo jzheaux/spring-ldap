@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -108,19 +109,19 @@ public class DirContextAdapter implements DirContextOperations {
 
 	private static final String NOT_IMPLEMENTED = "Not implemented.";
 
-	private static Logger log = LoggerFactory.getLogger(DirContextAdapter.class);
+	private static final Logger log = LoggerFactory.getLogger(DirContextAdapter.class);
 
 	private final NameAwareAttributes originalAttrs;
 
 	private LdapName dn;
 
-	private LdapName base = LdapUtils.emptyLdapName();
+	private final LdapName base;
 
 	private boolean updateMode = false;
 
 	private NameAwareAttributes updatedAttrs = new NameAwareAttributes();
 
-	private String referralUrl;
+	private final String referralUrl;
 
 	/**
 	 * Default constructor.
@@ -193,12 +194,7 @@ public class DirContextAdapter implements DirContextOperations {
 			this.base = LdapUtils.emptyLdapName();
 		}
 
-		if (referralUrl != null) {
-			this.referralUrl = referralUrl;
-		}
-		else {
-			this.referralUrl = EMPTY_STRING;
-		}
+		this.referralUrl = Objects.requireNonNullElse(referralUrl, EMPTY_STRING);
 	}
 
 	/**
@@ -207,6 +203,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 */
 	protected DirContextAdapter(DirContextAdapter main) {
 		this.originalAttrs = (NameAwareAttributes) main.originalAttrs.clone();
+		this.base = main.base;
 		this.dn = main.dn;
 		this.updatedAttrs = (NameAwareAttributes) main.updatedAttrs.clone();
 		this.updateMode = main.updateMode;
@@ -252,18 +249,7 @@ public class DirContextAdapter implements DirContextOperations {
 			}
 		}
 
-		return tmpList.toArray(new String[tmpList.size()]);
-	}
-
-	private void closeNamingEnumeration(@Nullable NamingEnumeration<?> enumeration) {
-		try {
-			if (enumeration != null) {
-				enumeration.close();
-			}
-		}
-		catch (NamingException ex) {
-			// Never mind this
-		}
+		return tmpList.toArray(new String[0]);
 	}
 
 	/**
@@ -284,7 +270,7 @@ public class DirContextAdapter implements DirContextOperations {
 			log.debug("Number of modifications:" + tmpList.size());
 		}
 
-		return tmpList.toArray(new ModificationItem[tmpList.size()]);
+		return tmpList.toArray(new ModificationItem[0]);
 	}
 
 	/**
@@ -442,15 +428,13 @@ public class DirContextAdapter implements DirContextOperations {
 			return true;
 		}
 
-		if (prev != null) {
-			// Also check against updatedAttrs, since there might have been
-			// a previous update
-			if (isAttributeUpdated(values, orderMatters, prev)) {
-				return true;
-			}
+		if (prev == null) {
+			return false;
 		}
-		// FALSE since we have compared all values
-		return false;
+
+		// Also check against updatedAttrs, since there might have been
+		// a previous update
+		return isAttributeUpdated(values, orderMatters, prev);
 	}
 
 	private boolean isAttributeUpdated(Object[] values, boolean orderMatters, NameAwareAttribute orig) {
@@ -479,8 +463,7 @@ public class DirContextAdapter implements DirContextOperations {
 
 	/**
 	 * Checks if an entry has a specific attribute.
-	 *
-	 * This method simply calls exists(String) with the attribute name.
+	 * <p>This method simply calls exists(String) with the attribute name.
 	 * @param attr the attribute to check.
 	 * @return true if attribute exists in entry.
 	 */
@@ -689,7 +672,7 @@ public class DirContextAdapter implements DirContextOperations {
 	public String @Nullable [] getStringAttributes(String name) {
 		try {
 			List<String> objects = collectAttributeValuesAsList(name, String.class);
-			return objects.toArray(new String[objects.size()]);
+			return objects.toArray(new String[0]);
 		}
 		catch (NoSuchAttributeException ex) {
 			// The attribute does not exist - contract says to return null.
@@ -704,7 +687,7 @@ public class DirContextAdapter implements DirContextOperations {
 	public Object @Nullable [] getObjectAttributes(String name) {
 		try {
 			List<Object> list = collectAttributeValuesAsList(name, Object.class);
-			return list.toArray(new Object[list.size()]);
+			return list.toArray(new Object[0]);
 		}
 		catch (NoSuchAttributeException ex) {
 			// The attribute does not exist - contract says to return null.
@@ -1215,7 +1198,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 */
 	@Override
 	public String getNameInNamespace() {
-		if (this.base.size() == 0) {
+		if (this.base.isEmpty()) {
 			return this.dn.toString();
 		}
 
@@ -1280,11 +1263,7 @@ public class DirContextAdapter implements DirContextOperations {
 		if (!this.referralUrl.equals(that.referralUrl)) {
 			return false;
 		}
-		if (!this.updatedAttrs.equals(that.updatedAttrs)) {
-			return false;
-		}
-
-		return true;
+		return this.updatedAttrs.equals(that.updatedAttrs);
 	}
 
 	/**
@@ -1323,7 +1302,7 @@ public class DirContextAdapter implements DirContextOperations {
 				}
 				else {
 					int j = 0;
-					for (Object value : (Iterable) attribute) {
+					for (Object value : attribute) {
 						appendAttributeValue(builder, attribute.getID(), value, j);
 						j++;
 					}
