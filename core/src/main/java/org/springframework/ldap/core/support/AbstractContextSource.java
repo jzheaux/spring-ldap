@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -84,7 +85,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 
 	private @Nullable Class<?> dirObjectFactory = DEFAULT_DIR_OBJECT_FACTORY;
 
-	private Class<?> contextFactory;
+	private @Nullable Class<?> contextFactory;
 
 	private LdapName base = LdapUtils.emptyLdapName();
 
@@ -100,21 +101,21 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	@Deprecated
 	protected String password = "";
 
-	private String[] urls;
+	private String @Nullable [] urls;
 
 	private boolean pooled = false;
 
 	private Hashtable<String, Object> baseEnv = new Hashtable<>();
 
-	private Hashtable<String, Object> anonymousEnv;
+	private Hashtable<String, Object> anonymousEnv = new Hashtable<>();
 
-	private AuthenticationSource authenticationSource;
+	private AuthenticationSource authenticationSource = new SimpleAuthenticationSource();
 
 	private boolean cacheEnvironmentProperties = true;
 
 	private boolean anonymousReadOnly = false;
 
-	private String referral = null;
+	private @Nullable String referral = null;
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractContextSource.class);
 
@@ -377,7 +378,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @return the context factory used when creating Contexts.
 	 */
 	public Class<?> getContextFactory() {
-		return this.contextFactory;
+		return Objects.requireNonNull(this.contextFactory);
 	}
 
 	/**
@@ -414,17 +415,13 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 		if (this.contextFactory == null) {
 			throw new IllegalArgumentException("contextFactory must be set");
 		}
-		if (this.authenticationSource == null) {
+		if (this.authenticationSource.getClass() == SimpleAuthenticationSource.class) {
 			LOG.debug("AuthenticationSource not set - " + "using default implementation");
 			if (!StringUtils.hasText(this.userDn)) {
 				LOG.info("Property 'userDn' not set - " + "anonymous context will be used for read-only operations");
 				this.anonymousReadOnly = true;
 			}
 			if (!this.anonymousReadOnly) {
-				if (this.password == null) {
-					throw new IllegalArgumentException(
-							"Property 'password' cannot be null. To use a blank password, please ensure it is set to \"\"");
-				}
 				if (!StringUtils.hasText(this.password)) {
 					LOG.info("Property 'password' not set - " + "blank password will be used");
 				}
@@ -450,8 +447,8 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 
 		Hashtable<String, Object> env = new Hashtable<>(this.baseEnv);
 
-		env.put(Context.INITIAL_CONTEXT_FACTORY, this.contextFactory.getName());
-		env.put(Context.PROVIDER_URL, assembleProviderUrlString(this.urls));
+		env.put(Context.INITIAL_CONTEXT_FACTORY, Objects.requireNonNull(this.contextFactory).getName());
+		env.put(Context.PROVIDER_URL, assembleProviderUrlString(Objects.requireNonNull(this.urls)));
 
 		if (this.dirObjectFactory != null) {
 			env.put(Context.OBJECT_FACTORIES, this.dirObjectFactory.getName());
@@ -518,7 +515,7 @@ public abstract class AbstractContextSource implements BaseLdapPathContextSource
 	 * @return the urls of all servers.
 	 */
 	public String[] getUrls() {
-		return this.urls.clone();
+		return Objects.requireNonNull(this.urls).clone();
 	}
 
 	/**
