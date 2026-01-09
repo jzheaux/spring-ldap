@@ -35,7 +35,7 @@ import org.springframework.core.NestedRuntimeException;
  */
 public abstract class NamingException extends NestedRuntimeException {
 
-	private final Throwable cause;
+	private final @Nullable Throwable cause;
 
 	/**
 	 * Overrides {@link NestedRuntimeException#getCause()} since serialization always
@@ -57,7 +57,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * Constructor that takes a message.
 	 * @param msg the detail message
 	 */
-	public NamingException(String msg) {
+	public NamingException(@Nullable String msg) {
 		super(msg);
 		this.cause = null;
 	}
@@ -68,7 +68,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * @param cause the cause of the exception. This argument is generally expected to be
 	 * a proper subclass of {@link javax.naming.NamingException}.
 	 */
-	public NamingException(String msg, Throwable cause) {
+	public NamingException(@Nullable String msg, @Nullable Throwable cause) {
 		super(msg);
 		this.cause = cause;
 	}
@@ -79,7 +79,7 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * @param cause the cause of the exception. This argument is generally expected to be
 	 * a proper subclass of {@link javax.naming.NamingException}.
 	 */
-	public NamingException(Throwable cause) {
+	public NamingException(@Nullable Throwable cause) {
 		this((cause != null) ? cause.getMessage() : null, cause);
 	}
 
