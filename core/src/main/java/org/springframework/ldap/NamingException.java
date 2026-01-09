@@ -154,21 +154,26 @@ public abstract class NamingException extends NestedRuntimeException {
 	 * @throws IOException if there is an error writing this object to the stream
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
-		Object resolvedObj = getResolvedObj();
-		boolean serializable = resolvedObj instanceof Serializable;
-		if (resolvedObj != null && !serializable) {
-			// the cause is of this type, since resolvedObj is not null
-			javax.naming.NamingException namingException = (javax.naming.NamingException) getCause();
-			namingException.setResolvedObj(null);
-			try {
-				stream.defaultWriteObject();
-			}
-			finally {
-				namingException.setResolvedObj(resolvedObj);
-			}
-		}
-		else {
+		javax.naming.NamingException namingException = (javax.naming.NamingException) getCause();
+		if (namingException == null) {
 			stream.defaultWriteObject();
+			return;
+		}
+		Object resolvedObj = getResolvedObj();
+		if (resolvedObj == null) {
+			stream.defaultWriteObject();
+			return;
+		}
+		if (resolvedObj instanceof Serializable) {
+			stream.defaultWriteObject();
+			return;
+		}
+		namingException.setResolvedObj(null);
+		try {
+			stream.defaultWriteObject();
+		}
+		finally {
+			namingException.setResolvedObj(resolvedObj);
 		}
 	}
 
