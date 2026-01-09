@@ -391,16 +391,11 @@ public class DirContextAdapter implements DirContextOperations {
 		NameAwareAttribute orig = this.originalAttrs.get(name);
 		NameAwareAttribute prev = this.updatedAttrs.get(name);
 
-		// values == null and values.length == 0 is treated the same way
-		boolean emptyNewValue = (values == null || values.length == 0);
+		if (values == null) {
+			return orig != null;
+		}
 
-		// Setting to empty ---------------------
-		if (emptyNewValue) {
-			// FALSE: if both are null, it is not changed (both don't exist)
-			// TRUE: if new value is null and old value exists (should be
-			// removed)
-			// TODO Also include prev in null check
-			// TODO Also check if there is a single null element
+		if (values.length == 0) {
 			return orig != null;
 		}
 
