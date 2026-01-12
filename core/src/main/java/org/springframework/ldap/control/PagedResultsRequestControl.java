@@ -25,6 +25,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.LdapContext;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -206,7 +208,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 				this.responseControlClass);
 	}
 
-	private Object invokeMethod(String method, Class clazz, Object control) {
+	private @Nullable Object invokeMethod(String method, Class clazz, Object control) {
 		Method actualMethod = Objects.requireNonNull(ReflectionUtils.findMethod(clazz, method));
 		return ReflectionUtils.invokeMethod(actualMethod, control);
 	}
