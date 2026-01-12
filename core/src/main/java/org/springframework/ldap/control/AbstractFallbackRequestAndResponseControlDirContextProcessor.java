@@ -165,7 +165,7 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 	 * @param params Actual constructor parameters
 	 * @return Control to be used by the DirContextProcessor
 	 */
-	public Control createRequestControl(Class<?>[] paramTypes, Object[] params) {
+	public Control createRequestControl(Class<?>[] paramTypes, @Nullable Object[] params) {
 		Constructor<?> constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass, paramTypes);
 		if (constructor == null) {
 			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");

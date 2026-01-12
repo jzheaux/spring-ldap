@@ -20,6 +20,8 @@ import java.util.Objects;
 
 import javax.naming.ldap.Control;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * DirContextProcessor implementation for managing the paged results control. Note that
  * due to the internal workings of <code>LdapTemplate</code>, the target connection is
@@ -44,7 +46,7 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 
 	private int pageSize;
 
-	private PagedResultsCookie cookie;
+	private @Nullable PagedResultsCookie cookie;
 
 	private int resultSize;
 
@@ -66,7 +68,7 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 	 * @param pageSize the page size.
 	 * @param cookie the cookie, as received from a previous search.
 	 */
-	public PagedResultsDirContextProcessor(int pageSize, PagedResultsCookie cookie) {
+	public PagedResultsDirContextProcessor(int pageSize, @Nullable PagedResultsCookie cookie) {
 		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, FALLBACK_REQUEST_CONTROL),
 			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
 		this.pageSize = pageSize;
@@ -87,7 +89,7 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 	 * more results, in which case {@link #hasMore()} will return <code>false</code>.
 	 * @see #hasMore()
 	 */
-	public PagedResultsCookie getCookie() {
+	public @Nullable PagedResultsCookie getCookie() {
 		return this.cookie;
 	}
 
@@ -119,7 +121,7 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 			actualCookie = this.cookie.getCookie();
 		}
 		return super.createRequestControl(new Class<?>[] { int.class, byte[].class, boolean.class },
-				new Object[] { this.pageSize, actualCookie, this.critical });
+				new @Nullable Object[] { this.pageSize, actualCookie, this.critical });
 	}
 
 	/**
