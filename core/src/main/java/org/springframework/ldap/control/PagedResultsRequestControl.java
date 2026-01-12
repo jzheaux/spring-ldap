@@ -18,14 +18,13 @@ package org.springframework.ldap.control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.LdapContext;
 
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullUnmarked;
 
 import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.util.ClassUtils;
@@ -44,6 +43,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Ulrik Sandberg
  * @deprecated Use PagedResultsDirContextProcessor instead.
  */
+@NullUnmarked
 public class PagedResultsRequestControl extends AbstractRequestControlDirContextProcessor {
 
 	private static final boolean CRITICAL_CONTROL = true;
@@ -105,7 +105,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 			}
 			catch (ClassNotFoundException e1) {
 				throw new UncategorizedLdapException(
-					"Neither default nor fallback classes are available - unable to proceed", ex);
+						"Neither default nor fallback classes are available - unable to proceed", ex);
 			}
 
 		}
@@ -160,7 +160,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 			actualCookie = this.cookie.getCookie();
 		}
 		Constructor constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass,
-			new Class[] { int.class, byte[].class, boolean.class });
+				new Class[] { int.class, byte[].class, boolean.class });
 		if (constructor == null) {
 			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
 		}
@@ -205,11 +205,11 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 		}
 
 		this.log.error("No matching response control found for paged results - looking for '{}",
-			this.responseControlClass);
+				this.responseControlClass);
 	}
 
-	private @Nullable Object invokeMethod(String method, Class clazz, Object control) {
-		Method actualMethod = Objects.requireNonNull(ReflectionUtils.findMethod(clazz, method));
+	private Object invokeMethod(String method, Class clazz, Object control) {
+		Method actualMethod = ReflectionUtils.findMethod(clazz, method);
 		return ReflectionUtils.invokeMethod(actualMethod, control);
 	}
 
