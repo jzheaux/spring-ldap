@@ -18,6 +18,7 @@ package org.springframework.ldap.control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Objects;
 
 import javax.naming.NamingException;
@@ -171,15 +172,13 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
 		}
 
-		Control result = null;
 		try {
-			result = (Control) constructor.newInstance(params);
+			return (Control) constructor.newInstance(params);
 		}
 		catch (Exception ex) {
 			ReflectionUtils.handleReflectionException(ex);
+			throw new UndeclaredThrowableException(ex);
 		}
-
-		return result;
 	}
 
 	/*
