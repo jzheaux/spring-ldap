@@ -57,7 +57,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 
 	private int pageSize;
 
-	private PagedResultsCookie cookie;
+	private @Nullable PagedResultsCookie cookie;
 
 	private int resultSize;
 
@@ -83,7 +83,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 	 * @param pageSize the page size.
 	 * @param cookie the cookie, as received from a previous search.
 	 */
-	public PagedResultsRequestControl(int pageSize, PagedResultsCookie cookie) {
+	public PagedResultsRequestControl(int pageSize, @Nullable PagedResultsCookie cookie) {
 		this.pageSize = pageSize;
 		this.cookie = cookie;
 
@@ -114,7 +114,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 	 * Get the cookie.
 	 * @return the cookie.
 	 */
-	public PagedResultsCookie getCookie() {
+	public @Nullable PagedResultsCookie getCookie() {
 		return this.cookie;
 	}
 
