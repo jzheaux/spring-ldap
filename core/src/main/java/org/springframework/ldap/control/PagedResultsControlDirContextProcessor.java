@@ -99,6 +99,7 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 	}
 
 	public static final class Request {
+
 		final javax.naming.ldap.PagedResultsControl delegate;
 
 		private final int pageSize;
@@ -112,7 +113,8 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 		public Request(int pageSize, byte @Nullable [] cookie, boolean criticality) {
 			try {
 				this.delegate = new PagedResultsControl(pageSize, cookie, criticality);
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				throw new IllegalArgumentException(ex);
 			}
 			this.pageSize = pageSize;
@@ -134,9 +136,11 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 		public boolean isCritical() {
 			return this.delegate.isCritical();
 		}
+
 	}
 
 	public static final class Response {
+
 		private final PagedResultsResponseControl response;
 
 		public Response(PagedResultsResponseControl response) {
@@ -154,5 +158,7 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 		public boolean hasMore() {
 			return this.getCookie() != null;
 		}
+
 	}
+
 }

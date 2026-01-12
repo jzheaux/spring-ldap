@@ -109,10 +109,11 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 	protected @Nullable String fallbackResponseControl;
 
 	@Deprecated
-	public AbstractFallbackRequestAndResponseControlDirContextProcessor() {}
+	public AbstractFallbackRequestAndResponseControlDirContextProcessor() {
+	}
 
-	public AbstractFallbackRequestAndResponseControlDirContextProcessor(
-		Class<?> requestControlClass, Class<?> responseControlClass) {
+	public AbstractFallbackRequestAndResponseControlDirContextProcessor(Class<?> requestControlClass,
+			Class<?> responseControlClass) {
 		this.requestControlClass = requestControlClass;
 		this.responseControlClass = responseControlClass;
 	}
@@ -124,7 +125,8 @@ public abstract class AbstractFallbackRequestAndResponseControlDirContextProcess
 		Assert.notNull(this.fallbackRequestControl, "fallbackRequestControl must not be null");
 		Assert.notNull(this.fallbackResponseControl, "fallbackReponseControl must not be null");
 		this.requestControlClass = ControlUtils.forControlName(this.defaultRequestControl, this.fallbackRequestControl);
-		this.responseControlClass = ControlUtils.forControlName(this.defaultResponseControl, this.fallbackResponseControl);
+		this.responseControlClass = ControlUtils.forControlName(this.defaultResponseControl,
+				this.fallbackResponseControl);
 	}
 
 	/**

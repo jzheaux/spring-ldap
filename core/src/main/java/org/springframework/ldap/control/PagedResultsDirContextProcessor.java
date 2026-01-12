@@ -70,7 +70,7 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 	 */
 	public PagedResultsDirContextProcessor(int pageSize, @Nullable PagedResultsCookie cookie) {
 		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, FALLBACK_REQUEST_CONTROL),
-			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
+				ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
 		this.pageSize = pageSize;
 		this.cookie = cookie;
 
@@ -147,8 +147,8 @@ public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndR
 			this.more = false;
 		}
 		this.cookie = new PagedResultsCookie(result);
-		this.resultSize = (Integer) Objects.requireNonNull(
-			invokeMethod("getResultSize", this.responseControlClass, control));
+		this.resultSize = (Integer) Objects
+			.requireNonNull(invokeMethod("getResultSize", this.responseControlClass, control));
 	}
 
 }

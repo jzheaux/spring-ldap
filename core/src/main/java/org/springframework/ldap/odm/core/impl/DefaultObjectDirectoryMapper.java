@@ -427,7 +427,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 				// Convert the value to its Java representation and add it to our
 				// working list
 				Object converted = this.converterManager.convert(value, attributeInfo.getSyntax(),
-					attributeInfo.getValueClass());
+						attributeInfo.getValueClass());
 				if (converted == null) {
 					continue;
 				}
@@ -484,8 +484,7 @@ public class DefaultObjectDirectoryMapper implements ObjectDirectoryMapper {
 	}
 
 	@Override
-	@Nullable
-	public Name getCalculatedId(Object entry) {
+	@Nullable public Name getCalculatedId(Object entry) {
 		Assert.notNull(entry, "Entry must not be null");
 		EntityData entityData = getEntityData(entry.getClass());
 		if (entityData.metaData.canCalculateDn()) {

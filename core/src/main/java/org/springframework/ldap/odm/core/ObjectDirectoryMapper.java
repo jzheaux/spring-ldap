@@ -67,8 +67,7 @@ public interface ObjectDirectoryMapper {
 	 */
 	void setId(Object entry, @Nullable Name id);
 
-	@Nullable
-	Name getCalculatedId(Object entry);
+	@Nullable Name getCalculatedId(Object entry);
 
 	/**
 	 * Use the specified search filter and return a new one that only applies to entries

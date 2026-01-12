@@ -101,8 +101,8 @@ class PagedResultsControlDirContextProcessorTests {
 		PagedResultsResponseControl response = spy(new PagedResultsResponseControl("id", true, new byte[0]));
 		given(response.getResultSize()).willReturn(15);
 		given(response.getCookie()).willReturn(new byte[] { 1, 2, 3 });
-		given(this.ldapContextMock.getResponseControls()).willReturn(new Control[] {
-			response, new DirSyncResponseControl("dummy", true, null) });
+		given(this.ldapContextMock.getResponseControls())
+			.willReturn(new Control[] { response, new DirSyncResponseControl("dummy", true, null) });
 
 		this.tested.postProcess(this.ldapContextMock);
 

@@ -117,8 +117,7 @@ public class DefaultIncrementalAttributesMapper
 		}
 
 		@Override
-		@Nullable
-		public List<Object> getValues() {
+		@Nullable public List<Object> getValues() {
 			return null;
 		}
 	};
@@ -424,8 +423,7 @@ public class DefaultIncrementalAttributesMapper
 		}
 
 		@Override
-		@Nullable
-		public List<Object> getValues() {
+		@Nullable public List<Object> getValues() {
 			if (this.values != null) {
 				return new ArrayList<>(this.values);
 			}

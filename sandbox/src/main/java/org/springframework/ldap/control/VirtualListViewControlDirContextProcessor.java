@@ -100,7 +100,7 @@ public class VirtualListViewControlDirContextProcessor
 	public VirtualListViewControlDirContextProcessor(int pageSize, int targetOffset, int listSize,
 			VirtualListViewResultsCookie cookie) {
 		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, DEFAULT_REQUEST_CONTROL),
-			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, DEFAULT_RESPONSE_CONTROL));
+				ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, DEFAULT_RESPONSE_CONTROL));
 		this.pageSize = pageSize;
 		this.targetOffset = targetOffset;
 		this.listSize = listSize;

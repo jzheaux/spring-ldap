@@ -145,5 +145,7 @@ class DefaultLdapClientBuilder implements LdapClient.Builder {
 		public DirContext getContext(String principal, String credentials) throws NamingException {
 			throw new IllegalStateException("Property 'contextSource' must be set.");
 		}
+
 	}
+
 }

@@ -173,7 +173,8 @@ public class DirContextAdapter implements DirContextOperations {
 	 * @param base the base.
 	 * @param referralUrl the referral url (if this instance results from a referral).
 	 */
-	public DirContextAdapter(@Nullable Attributes attrs, @Nullable Name dn, @Nullable Name base, @Nullable String referralUrl) {
+	public DirContextAdapter(@Nullable Attributes attrs, @Nullable Name dn, @Nullable Name base,
+			@Nullable String referralUrl) {
 		if (attrs != null) {
 			this.originalAttrs = new NameAwareAttributes(attrs);
 		}
@@ -458,7 +459,8 @@ public class DirContextAdapter implements DirContextOperations {
 
 	/**
 	 * Checks if an entry has a specific attribute.
-	 * <p>This method simply calls exists(String) with the attribute name.
+	 * <p>
+	 * This method simply calls exists(String) with the attribute name.
 	 * @param attr the attribute to check.
 	 * @return true if attribute exists in entry.
 	 */
@@ -480,8 +482,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Nullable
-	public String getStringAttribute(String name) {
+	@Nullable public String getStringAttribute(String name) {
 		return (String) getObjectAttribute(name);
 	}
 
@@ -489,8 +490,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Nullable
-	public Object getObjectAttribute(String name) {
+	@Nullable public Object getObjectAttribute(String name) {
 		Attribute oneAttr = this.originalAttrs.get(name);
 		if (oneAttr == null || oneAttr.size() == 0) { // LDAP-215
 			return null;
@@ -701,8 +701,7 @@ public class DirContextAdapter implements DirContextOperations {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Nullable
-	public SortedSet<String> getAttributeSortedStringSet(String name) {
+	@Nullable public SortedSet<String> getAttributeSortedStringSet(String name) {
 		try {
 			TreeSet<String> attrSet = new TreeSet<>();
 			LdapUtils.collectAttributeValues(this.originalAttrs, name, attrSet, String.class);

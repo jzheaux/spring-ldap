@@ -51,24 +51,21 @@ public interface LdapQuery {
 	 * LdapTemplate default should be used.
 	 * @return the search scope.
 	 */
-	@Nullable
-	SearchScope searchScope();
+	@Nullable SearchScope searchScope();
 
 	/**
 	 * Get the time limit. Default is <code>null</code>, indicating that the LdapTemplate
 	 * default should be used.
 	 * @return the time limit.
 	 */
-	@Nullable
-	Integer timeLimit();
+	@Nullable Integer timeLimit();
 
 	/**
 	 * Get the count limit. Default is <code>null</code>, indicating that the LdapTemplate
 	 * default should be used.
 	 * @return the count limit.
 	 */
-	@Nullable
-	Integer countLimit();
+	@Nullable Integer countLimit();
 
 	/**
 	 * Get the attributes to return. Default is <code>null</code>, indicating that all

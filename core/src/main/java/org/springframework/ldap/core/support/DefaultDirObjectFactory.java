@@ -157,8 +157,7 @@ public class DefaultDirObjectFactory implements DirObjectFactory {
 	}
 
 	@Override
-	@Nullable
-	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+	@Nullable public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
 			throws Exception {
 		return null;
 	}

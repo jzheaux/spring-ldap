@@ -50,8 +50,7 @@ public class DistinguishedNameEditor extends PropertyEditorSupport {
 	 *
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
-	@Nullable
-	public String getAsText() {
+	@Nullable public String getAsText() {
 		Object theValue = getValue();
 		if (theValue == null) {
 			return null;

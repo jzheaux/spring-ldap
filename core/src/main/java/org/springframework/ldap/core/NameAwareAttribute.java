@@ -110,8 +110,7 @@ public final class NameAwareAttribute implements Attribute, Iterable<Object> {
 	}
 
 	@Override
-	@Nullable
-	public Object get() {
+	@Nullable public Object get() {
 		if (this.values.isEmpty()) {
 			return null;
 		}

@@ -36,8 +36,7 @@ import org.springframework.core.convert.converter.Converter;
 public final class NameToStringConverter implements Converter<Name, String> {
 
 	@Override
-	@Nullable
-	public String convert(Name source) {
+	@Nullable public String convert(Name source) {
 		if (source == null) {
 			return null;
 		}

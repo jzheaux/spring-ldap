@@ -70,8 +70,7 @@ public final class NameAwareAttributes implements Attributes, Iterable<NameAware
 	}
 
 	@Override
-	@Nullable
-	public NameAwareAttribute get(String attrID) {
+	@Nullable public NameAwareAttribute get(String attrID) {
 		Assert.hasLength(attrID, "Attribute ID must not be empty");
 		return this.attributes.get(attrID.toLowerCase(Locale.ROOT));
 	}

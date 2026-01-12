@@ -57,7 +57,7 @@ public class SortControlDirContextProcessor extends AbstractFallbackRequestAndRe
 	 */
 	public SortControlDirContextProcessor(String sortKey) {
 		super(ControlUtils.forControlName(DEFAULT_REQUEST_CONTROL, FALLBACK_REQUEST_CONTROL),
-			ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
+				ControlUtils.forControlName(DEFAULT_RESPONSE_CONTROL, FALLBACK_RESPONSE_CONTROL));
 		this.sortKey = sortKey;
 		this.sorted = false;
 		this.resultCode = -1;
@@ -111,8 +111,8 @@ public class SortControlDirContextProcessor extends AbstractFallbackRequestAndRe
 	 */
 	protected void handleResponse(Object control) {
 		this.sorted = (Boolean) Objects.requireNonNull(invokeMethod("isSorted", this.responseControlClass, control));
-		this.resultCode = (Integer) Objects.requireNonNull(
-			invokeMethod("getResultCode", this.responseControlClass, control));
+		this.resultCode = (Integer) Objects
+			.requireNonNull(invokeMethod("getResultCode", this.responseControlClass, control));
 	}
 
 }

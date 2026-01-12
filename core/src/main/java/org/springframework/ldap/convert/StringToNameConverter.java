@@ -37,8 +37,7 @@ import org.springframework.ldap.support.LdapUtils;
 public final class StringToNameConverter implements Converter<String, Name> {
 
 	@Override
-	@Nullable
-	public Name convert(String source) {
+	@Nullable public Name convert(String source) {
 		if (source == null) {
 			return null;
 		}

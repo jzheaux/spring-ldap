@@ -139,8 +139,7 @@ public final class LdapEncoder {
 	 * @param value the value to escape.
 	 * @return The escaped value.
 	 */
-	@Nullable
-	public static String nameEncode(String value) {
+	@Nullable public static String nameEncode(String value) {
 
 		if (value == null) {
 			return null;
@@ -187,8 +186,7 @@ public final class LdapEncoder {
 	 * @return The decoded value as a string.
 	 * @throws BadLdapGrammarException
 	 */
-	@Nullable
-	public static String nameDecode(String value) throws BadLdapGrammarException {
+	@Nullable public static String nameDecode(String value) throws BadLdapGrammarException {
 
 		if (value == null) {
 			return null;

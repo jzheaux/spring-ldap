@@ -482,7 +482,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> search(Name base, String filter, int searchScope, String @Nullable [] attrs, AttributesMapper<T> mapper) {
+	public <T> List<T> search(Name base, String filter, int searchScope, String @Nullable [] attrs,
+			AttributesMapper<T> mapper) {
 		return search(base, filter, getDefaultSearchControls(searchScope, DONT_RETURN_OBJ_FLAG, attrs), mapper);
 	}
 
@@ -490,7 +491,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs, AttributesMapper<T> mapper) {
+	public <T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs,
+			AttributesMapper<T> mapper) {
 		return search(base, filter, getDefaultSearchControls(searchScope, DONT_RETURN_OBJ_FLAG, attrs), mapper);
 	}
 
@@ -530,7 +532,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> search(Name base, String filter, int searchScope, String @Nullable [] attrs, ContextMapper<T> mapper) {
+	public <T> List<T> search(Name base, String filter, int searchScope, String @Nullable [] attrs,
+			ContextMapper<T> mapper) {
 		return search(base, filter, getDefaultSearchControls(searchScope, RETURN_OBJ_FLAG, attrs), mapper);
 	}
 
@@ -538,7 +541,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs, ContextMapper<T> mapper) {
+	public <T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs,
+			ContextMapper<T> mapper) {
 		return search(base, filter, getDefaultSearchControls(searchScope, RETURN_OBJ_FLAG, attrs), mapper);
 	}
 
@@ -1084,7 +1088,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 */
 	@Override
 	public void rebind(final Name dn, final @Nullable Object obj, final @Nullable Attributes attributes) {
-		executeReadWrite((ctx)-> {
+		executeReadWrite((ctx) -> {
 			ctx.rebind(dn, obj, attributes);
 			return Void.class;
 		});
@@ -1169,7 +1173,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		}
 	}
 
-	private SearchControls getDefaultSearchControls(int searchScope, boolean returningObjFlag, String @Nullable [] attrs) {
+	private SearchControls getDefaultSearchControls(int searchScope, boolean returningObjFlag,
+			String @Nullable [] attrs) {
 		SearchControls controls = new SearchControls();
 		controls.setSearchScope(searchScope);
 		controls.setTimeLimit(this.defaultTimeLimit);
@@ -1558,7 +1563,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			closeContextAndNamingEnumeration(ctx, null);
 			return Stream.empty();
 		}
-		Spliterator<SearchResult> spliterator = Spliterators.spliteratorUnknownSize(CollectionUtils.toIterator(results), Spliterator.ORDERED);
+		Spliterator<SearchResult> spliterator = Spliterators.spliteratorUnknownSize(CollectionUtils.toIterator(results),
+				Spliterator.ORDERED);
 		Stream<T> result = StreamSupport.stream(spliterator, false).map(mapper).filter(Objects::nonNull);
 		return result.onClose(() -> closeContextAndNamingEnumeration(ctx, results));
 	}
@@ -1706,7 +1712,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> find(@Nullable Name base, @Nullable Filter filter, SearchControls searchControls, final Class<T> clazz) {
+	public <T> List<T> find(@Nullable Name base, @Nullable Filter filter, SearchControls searchControls,
+			final Class<T> clazz) {
 		Filter finalFilter = this.odm.filterFor(clazz, filter);
 
 		// Search from the root if we are not told where to search from
@@ -1726,10 +1733,10 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 					searchControls));
 		}
 
-		List<T> result = search(localBase, finalFilter.encode(), searchControls, OPERATIONS)
-			.stream()
+		List<T> result = search(localBase, finalFilter.encode(), searchControls, OPERATIONS).stream()
 			.map((ctx) -> LdapTemplate.this.odm.mapFromLdapDataEntry(ctx, clazz))
-			.filter(Objects::nonNull).toList();
+			.filter(Objects::nonNull)
+			.toList();
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("Found %1$s Entries - %2$s", result.size(), result));
@@ -1780,8 +1787,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			.filter(Objects::nonNull);
 	}
 
-	@Nullable
-	private <T> T unchecked(CheckedSupplier<T> supplier) {
+	@Nullable private <T> T unchecked(CheckedSupplier<T> supplier) {
 		try {
 			return supplier.get();
 		}
@@ -1964,5 +1970,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		public DirContext getContext(String principal, String credentials) throws NamingException {
 			throw new IllegalStateException("Property 'contextSource' must be set.");
 		}
+
 	}
+
 }

@@ -311,6 +311,7 @@ public class PooledContextSource extends DelegatingBaseLdapPathContextSourceSupp
 		poolConfig.setLifo(commonsConfig.getLifo());
 		return poolConfig;
 	}
+
 	private GenericKeyedObjectPoolConfig getConfig(PoolConfig poolConfig) {
 		GenericKeyedObjectPoolConfig objectPoolConfig = new GenericKeyedObjectPoolConfig();
 
@@ -360,5 +361,7 @@ public class PooledContextSource extends DelegatingBaseLdapPathContextSourceSupp
 		public DirContext getContext(String principal, String credentials) throws NamingException {
 			throw new IllegalStateException("Property 'contextSource' must be set.");
 		}
+
 	}
+
 }

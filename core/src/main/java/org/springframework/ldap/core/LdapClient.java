@@ -160,7 +160,6 @@ public interface LdapClient {
 
 	// Static, factory methods
 
-
 	/**
 	 * Obtain a {@code LdapClient} builder.
 	 * @param contextSource the {@link ContextSource} for all requests

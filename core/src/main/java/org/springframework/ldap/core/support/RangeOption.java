@@ -99,8 +99,7 @@ class RangeOption implements Comparable<RangeOption> {
 		}
 	}
 
-	@Nullable
-	static RangeOption parse(String option) {
+	@Nullable static RangeOption parse(String option) {
 		Matcher rangeMatcher = RANGE_PATTERN.matcher(option);
 
 		rangeMatcher.find();

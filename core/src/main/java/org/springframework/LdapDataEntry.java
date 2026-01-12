@@ -40,8 +40,7 @@ public interface LdapDataEntry {
 	 * attribute doesn't exist or if it exists but with no value.
 	 * @throws ClassCastException if the value of the entry is not a String.
 	 */
-	@Nullable
-	String getStringAttribute(String name);
+	@Nullable String getStringAttribute(String name);
 
 	/**
 	 * Get the value of an Object attribute. If more than one attribute value exists for
@@ -51,8 +50,7 @@ public interface LdapDataEntry {
 	 * @return the attribute value as an object if it exists, or <code>null</code> if the
 	 * attribute doesn't exist or if it exists but with no value.
 	 */
-	@Nullable
-	Object getObjectAttribute(String name);
+	@Nullable Object getObjectAttribute(String name);
 
 	/**
 	 * Check if an Object attribute exists, regardless of whether it has a value or not.
@@ -189,8 +187,7 @@ public interface LdapDataEntry {
 	 * @throws IllegalArgumentException if one of the found attribute values cannot be
 	 * cast to a String.
 	 */
-	@Nullable
-	SortedSet<String> getAttributeSortedStringSet(String name);
+	@Nullable SortedSet<String> getAttributeSortedStringSet(String name);
 
 	/**
 	 * Returns the DN relative to the base path. <b>NB</b>: as of version 2.0 the returned

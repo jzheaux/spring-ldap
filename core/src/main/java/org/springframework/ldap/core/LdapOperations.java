@@ -389,8 +389,8 @@ public interface LdapOperations {
 	 * <code>NameNotFoundException</code> will be ignored. Instead this is interpreted
 	 * that no entries were found.
 	 */
-	<T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs, AttributesMapper<T> mapper)
-			throws NamingException;
+	<T> List<T> search(String base, String filter, int searchScope, String @Nullable [] attrs,
+			AttributesMapper<T> mapper) throws NamingException;
 
 	/**
 	 * Search for all objects matching the supplied filter. The Attributes in each

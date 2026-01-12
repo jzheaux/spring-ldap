@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.ldap.UncategorizedLdapException;
 
 final class ControlUtils {
+
 	static final Log log = LogFactory.getLog(ControlUtils.class.getName());
 
 	static Class<?> forControlName(String className, String fallbackClassName) {
@@ -40,4 +41,5 @@ final class ControlUtils {
 			}
 		}
 	}
+
 }
