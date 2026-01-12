@@ -17,8 +17,7 @@
 package org.springframework.ldap.control;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Objects;
+import java.lang.reflect.Proxy;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -195,11 +194,9 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 
 			// check for match, try fallback otherwise
 			if (responseControl.getClass().isAssignableFrom(this.responseControlClass)) {
-				Object control = responseControl;
-				byte[] result = (byte[]) invokeMethod("getCookie", this.responseControlClass, control);
-				this.cookie = new PagedResultsCookie(result);
-				Integer wrapper = (Integer) invokeMethod("getResultSize", this.responseControlClass, control);
-				this.resultSize = wrapper.intValue();
+				PagedResultsResponseControlInterface control = control(responseControl);
+				this.cookie = new PagedResultsCookie(control.getCookie());
+				this.resultSize = control.getResultSize();
 				return;
 			}
 		}
@@ -208,9 +205,57 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 				this.responseControlClass);
 	}
 
-	private @Nullable Object invokeMethod(String method, Class clazz, Object control) {
-		Method actualMethod = Objects.requireNonNull(ReflectionUtils.findMethod(clazz, method));
-		return ReflectionUtils.invokeMethod(actualMethod, control);
+	private PagedResultsResponseControlInterface control(Control control) {
+		if (DEFAULT_RESPONSE_CONTROL.equals(control.getClass().getName())) {
+			return new JavaxPagedResultsResponseControl(control);
+		}
+		if (LDAPBP_RESPONSE_CONTROL.equals(control.getClass().getName())) {
+			return new SunPagedResultsResponseControl(control);
+		}
+		return (PagedResultsResponseControlInterface) Proxy.newProxyInstance(getClass().getClassLoader(),
+			new Class[] { this.responseControlClass }, (p, m, a) -> m.invoke(p, a));
+	}
+
+	interface PagedResultsResponseControlInterface {
+		int getResultSize();
+
+		byte @Nullable [] getCookie();
+	}
+
+	static final class SunPagedResultsResponseControl implements PagedResultsResponseControlInterface {
+		private final com.sun.jndi.ldap.ctl.PagedResultsResponseControl control;
+
+		SunPagedResultsResponseControl(Control control) {
+			this.control = (com.sun.jndi.ldap.ctl.PagedResultsResponseControl) control;
+		}
+
+		@Override
+		public int getResultSize() {
+			return this.control.getResultSize();
+		}
+
+		@Override
+		public byte @Nullable [] getCookie() {
+			return this.control.getCookie();
+		}
+	}
+
+	static final class JavaxPagedResultsResponseControl implements PagedResultsResponseControlInterface {
+		private final javax.naming.ldap.PagedResultsResponseControl control;
+
+		public JavaxPagedResultsResponseControl(Control control) {
+			this.control = (javax.naming.ldap.PagedResultsResponseControl) control;
+		}
+
+		@Override
+		public int getResultSize() {
+			return this.control.getResultSize();
+		}
+
+		@Override
+		public byte @Nullable [] getCookie() {
+			return this.control.getCookie();
+		}
 	}
 
 }
