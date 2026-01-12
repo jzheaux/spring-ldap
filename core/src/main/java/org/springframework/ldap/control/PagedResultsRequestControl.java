@@ -16,8 +16,11 @@
 
 package org.springframework.ldap.control;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -158,21 +161,12 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 		if (this.cookie != null) {
 			actualCookie = this.cookie.getCookie();
 		}
-		Constructor constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass,
-				new Class[] { int.class, byte[].class, boolean.class });
-		if (constructor == null) {
-			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
-		}
-
-		Control result = null;
 		try {
-			result = (Control) constructor.newInstance(this.pageSize, actualCookie, this.critical);
+			return requestControl(this.pageSize, actualCookie, this.critical);
 		}
-		catch (Exception ex) {
-			ReflectionUtils.handleReflectionException(ex);
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
-
-		return result;
 	}
 
 	/*
@@ -194,7 +188,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 
 			// check for match, try fallback otherwise
 			if (responseControl.getClass().isAssignableFrom(this.responseControlClass)) {
-				PagedResultsResponseControlInterface control = control(responseControl);
+				PagedResultsResponseControlInterface control = responseControl(responseControl);
 				this.cookie = new PagedResultsCookie(control.getCookie());
 				this.resultSize = control.getResultSize();
 				return;
@@ -205,7 +199,28 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 				this.responseControlClass);
 	}
 
-	private PagedResultsResponseControlInterface control(Control control) {
+	private Control requestControl(int pageSize, byte @Nullable [] cookie, boolean critical) throws IOException {
+		if (DEFAULT_REQUEST_CONTROL.equals(this.requestControlClass.getName())) {
+			return new javax.naming.ldap.PagedResultsControl(pageSize, cookie, critical);
+		}
+		if (LDAPBP_REQUEST_CONTROL.equals(this.requestControlClass.getName())) {
+			return new com.sun.jndi.ldap.ctl.PagedResultsControl(pageSize, cookie, critical);
+		}
+		Constructor<?> constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass,
+			int.class, byte[].class, boolean.class);
+		if (constructor == null) {
+			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
+		}
+		try {
+			return (Control) constructor.newInstance(this.pageSize, cookie, this.critical);
+		}
+		catch (Exception ex) {
+			ReflectionUtils.handleReflectionException(ex);
+			throw new UndeclaredThrowableException(ex);
+		}
+	}
+
+	private PagedResultsResponseControlInterface responseControl(Control control) {
 		if (DEFAULT_RESPONSE_CONTROL.equals(control.getClass().getName())) {
 			return new JavaxPagedResultsResponseControl(control);
 		}
