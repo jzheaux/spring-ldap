@@ -18,6 +18,7 @@ package org.springframework.ldap.control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -206,7 +207,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 	}
 
 	private Object invokeMethod(String method, Class clazz, Object control) {
-		Method actualMethod = ReflectionUtils.findMethod(clazz, method);
+		Method actualMethod = Objects.requireNonNull(ReflectionUtils.findMethod(clazz, method));
 		return ReflectionUtils.invokeMethod(actualMethod, control);
 	}
 
