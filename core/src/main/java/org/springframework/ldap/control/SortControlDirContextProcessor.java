@@ -16,6 +16,8 @@
 
 package org.springframework.ldap.control;
 
+import java.util.Objects;
+
 import javax.naming.ldap.Control;
 
 /**
@@ -108,8 +110,9 @@ public class SortControlDirContextProcessor extends AbstractFallbackRequestAndRe
 	 * #handleResponse(java.lang.Object)
 	 */
 	protected void handleResponse(Object control) {
-		this.sorted = (Boolean) invokeMethod("isSorted", this.responseControlClass, control);
-		this.resultCode = (Integer) invokeMethod("getResultCode", this.responseControlClass, control);
+		this.sorted = (Boolean) Objects.requireNonNull(invokeMethod("isSorted", this.responseControlClass, control));
+		this.resultCode = (Integer) Objects.requireNonNull(
+			invokeMethod("getResultCode", this.responseControlClass, control));
 	}
 
 }
