@@ -16,11 +16,9 @@
 
 package org.springframework.ldap.control;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.lang.reflect.Method;
+import java.util.Objects;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -60,7 +58,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 
 	private int pageSize;
 
-	private @Nullable PagedResultsCookie cookie;
+	private PagedResultsCookie cookie;
 
 	private int resultSize;
 
@@ -86,7 +84,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 	 * @param pageSize the page size.
 	 * @param cookie the cookie, as received from a previous search.
 	 */
-	public PagedResultsRequestControl(int pageSize, @Nullable PagedResultsCookie cookie) {
+	public PagedResultsRequestControl(int pageSize, PagedResultsCookie cookie) {
 		this.pageSize = pageSize;
 		this.cookie = cookie;
 
@@ -107,7 +105,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 			}
 			catch (ClassNotFoundException e1) {
 				throw new UncategorizedLdapException(
-						"Neither default nor fallback classes are available - unable to proceed", ex);
+					"Neither default nor fallback classes are available - unable to proceed", ex);
 			}
 
 		}
@@ -117,7 +115,7 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 	 * Get the cookie.
 	 * @return the cookie.
 	 */
-	public @Nullable PagedResultsCookie getCookie() {
+	public PagedResultsCookie getCookie() {
 		return this.cookie;
 	}
 
@@ -161,12 +159,21 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 		if (this.cookie != null) {
 			actualCookie = this.cookie.getCookie();
 		}
+		Constructor constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass,
+			new Class[] { int.class, byte[].class, boolean.class });
+		if (constructor == null) {
+			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
+		}
+
+		Control result = null;
 		try {
-			return requestControl(this.pageSize, actualCookie, this.critical);
+			result = (Control) constructor.newInstance(this.pageSize, actualCookie, this.critical);
 		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		catch (Exception ex) {
+			ReflectionUtils.handleReflectionException(ex);
 		}
+
+		return result;
 	}
 
 	/*
@@ -188,89 +195,22 @@ public class PagedResultsRequestControl extends AbstractRequestControlDirContext
 
 			// check for match, try fallback otherwise
 			if (responseControl.getClass().isAssignableFrom(this.responseControlClass)) {
-				PagedResultsResponseControlInterface control = responseControl(responseControl);
-				this.cookie = new PagedResultsCookie(control.getCookie());
-				this.resultSize = control.getResultSize();
+				Object control = responseControl;
+				byte[] result = (byte[]) invokeMethod("getCookie", this.responseControlClass, control);
+				this.cookie = new PagedResultsCookie(result);
+				Integer wrapper = (Integer) invokeMethod("getResultSize", this.responseControlClass, control);
+				this.resultSize = wrapper.intValue();
 				return;
 			}
 		}
 
 		this.log.error("No matching response control found for paged results - looking for '{}",
-				this.responseControlClass);
+			this.responseControlClass);
 	}
 
-	private Control requestControl(int pageSize, byte @Nullable [] cookie, boolean critical) throws IOException {
-		if (DEFAULT_REQUEST_CONTROL.equals(this.requestControlClass.getName())) {
-			return new javax.naming.ldap.PagedResultsControl(pageSize, cookie, critical);
-		}
-		if (LDAPBP_REQUEST_CONTROL.equals(this.requestControlClass.getName())) {
-			return new com.sun.jndi.ldap.ctl.PagedResultsControl(pageSize, cookie, critical);
-		}
-		Constructor<?> constructor = ClassUtils.getConstructorIfAvailable(this.requestControlClass,
-			int.class, byte[].class, boolean.class);
-		if (constructor == null) {
-			throw new IllegalArgumentException("Failed to find an appropriate RequestControl constructor");
-		}
-		try {
-			return (Control) constructor.newInstance(this.pageSize, cookie, this.critical);
-		}
-		catch (Exception ex) {
-			ReflectionUtils.handleReflectionException(ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-	}
-
-	private PagedResultsResponseControlInterface responseControl(Control control) {
-		if (DEFAULT_RESPONSE_CONTROL.equals(control.getClass().getName())) {
-			return new JavaxPagedResultsResponseControl(control);
-		}
-		if (LDAPBP_RESPONSE_CONTROL.equals(control.getClass().getName())) {
-			return new SunPagedResultsResponseControl(control);
-		}
-		return (PagedResultsResponseControlInterface) Proxy.newProxyInstance(getClass().getClassLoader(),
-			new Class[] { this.responseControlClass }, (p, m, a) -> m.invoke(p, a));
-	}
-
-	interface PagedResultsResponseControlInterface {
-		int getResultSize();
-
-		byte @Nullable [] getCookie();
-	}
-
-	static final class SunPagedResultsResponseControl implements PagedResultsResponseControlInterface {
-		private final com.sun.jndi.ldap.ctl.PagedResultsResponseControl control;
-
-		SunPagedResultsResponseControl(Control control) {
-			this.control = (com.sun.jndi.ldap.ctl.PagedResultsResponseControl) control;
-		}
-
-		@Override
-		public int getResultSize() {
-			return this.control.getResultSize();
-		}
-
-		@Override
-		public byte @Nullable [] getCookie() {
-			return this.control.getCookie();
-		}
-	}
-
-	static final class JavaxPagedResultsResponseControl implements PagedResultsResponseControlInterface {
-		private final javax.naming.ldap.PagedResultsResponseControl control;
-
-		public JavaxPagedResultsResponseControl(Control control) {
-			this.control = (javax.naming.ldap.PagedResultsResponseControl) control;
-		}
-
-		@Override
-		public int getResultSize() {
-			return this.control.getResultSize();
-		}
-
-		@Override
-		public byte @Nullable [] getCookie() {
-			return this.control.getCookie();
-		}
+	private @Nullable Object invokeMethod(String method, Class clazz, Object control) {
+		Method actualMethod = Objects.requireNonNull(ReflectionUtils.findMethod(clazz, method));
+		return ReflectionUtils.invokeMethod(actualMethod, control);
 	}
 
 }
