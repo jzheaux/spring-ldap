@@ -98,7 +98,7 @@ public class DelegatingLdapContext extends DelegatingDirContext implements LdapC
 		assertOpen();
 		return Objects.requireNonNull(getDelegateLdapContext());
 	}
-	
+
 	// ***** Object methods *****//
 
 	/**

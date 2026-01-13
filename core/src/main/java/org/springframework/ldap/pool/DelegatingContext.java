@@ -101,7 +101,7 @@ public class DelegatingContext implements Context {
 		assertOpen();
 		return Objects.requireNonNull(getDelegateContext());
 	}
-	
+
 	// ***** Object methods *****//
 
 	/**

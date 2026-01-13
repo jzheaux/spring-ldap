@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.support.LdapUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -55,7 +56,7 @@ import org.springframework.util.StringUtils;
  */
 public class BaseLdapPathBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware, Ordered {
 
-	private ApplicationContext applicationContext;
+	private @Nullable ApplicationContext applicationContext;
 
 	private @Nullable LdapName basePath;
 
@@ -91,6 +92,7 @@ public class BaseLdapPathBeanPostProcessor implements BeanPostProcessor, Applica
 	}
 
 	BaseLdapPathSource getBaseLdapPathSourceFromApplicationContext() {
+		Assert.notNull(this.applicationContext, "applicationContext cannot be null");
 		if (StringUtils.hasLength(this.baseLdapPathSourceName)) {
 			return this.applicationContext.getBean(this.baseLdapPathSourceName, BaseLdapPathSource.class);
 		}

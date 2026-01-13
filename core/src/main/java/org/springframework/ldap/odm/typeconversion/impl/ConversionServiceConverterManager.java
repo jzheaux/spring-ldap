@@ -62,6 +62,7 @@ public class ConversionServiceConverterManager implements ConverterManager {
 			}
 		}
 		genericConversionService.addConverter(new StringToNameConverter());
+		this.conversionService = genericConversionService;
 	}
 
 	@Override

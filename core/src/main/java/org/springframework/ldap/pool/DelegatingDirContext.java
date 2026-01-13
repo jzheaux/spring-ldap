@@ -101,7 +101,7 @@ public class DelegatingDirContext extends DelegatingContext implements DirContex
 		assertOpen();
 		return Objects.requireNonNull(getDelegateDirContext());
 	}
-	
+
 	// ***** Object methods *****//
 
 	/**

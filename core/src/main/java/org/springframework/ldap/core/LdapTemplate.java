@@ -1394,7 +1394,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 			throw new AuthenticationException();
 		}
 
-		return mapperCallback.collectedObject;
+		return mapperCallback.getObject();
 	}
 
 	/**
@@ -1717,10 +1717,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		Filter finalFilter = this.odm.filterFor(clazz, filter);
 
 		// Search from the root if we are not told where to search from
-		Name localBase = base;
-		if (base == null || base.isEmpty()) {
-			localBase = LdapUtils.emptyLdapName();
-		}
+		Name localBase = nonNullBase(base);
 
 		// extend search controls with the attributes to return
 		if (searchControls.getReturningAttributes() == null) {
@@ -1743,6 +1740,16 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		}
 
 		return result;
+	}
+
+	private Name nonNullBase(@Nullable Name base) {
+		if (base == null) {
+			return LdapUtils.emptyLdapName();
+		}
+		if (base.isEmpty()) {
+			return LdapUtils.emptyLdapName();
+		}
+		return base;
 	}
 
 	/**
@@ -1868,8 +1875,8 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		}
 
 		@Override
-		public @Nullable Object mapWithContext(DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
-			return null;
+		public Object mapWithContext(DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
+			return Void.class;
 		}
 
 	}
@@ -1938,7 +1945,7 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 
 		private final AuthenticatedLdapEntryContextMapper<T> mapper;
 
-		private T collectedObject;
+		private @Nullable T collectedObject;
 
 		private ReturningAuthenticatedLdapEntryContext(AuthenticatedLdapEntryContextMapper<T> mapper) {
 			this.mapper = mapper;
@@ -1950,6 +1957,10 @@ public class LdapTemplate implements LdapOperations, InitializingBean {
 		@Override
 		public void executeWithContext(DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
 			this.collectedObject = this.mapper.mapWithContext(ctx, ldapEntryIdentification);
+		}
+
+		T getObject() {
+			return Objects.requireNonNull(this.collectedObject);
 		}
 
 	}

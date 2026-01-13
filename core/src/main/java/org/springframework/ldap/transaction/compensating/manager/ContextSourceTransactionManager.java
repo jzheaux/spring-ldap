@@ -104,7 +104,26 @@ public class ContextSourceTransactionManager extends AbstractPlatformTransaction
 
 	private static final long serialVersionUID = 7138208218687237856L;
 
-	private ContextSourceTransactionManagerDelegate delegate = new ContextSourceTransactionManagerDelegate();
+	private ContextSourceTransactionManagerDelegate delegate;
+
+	/**
+	 * @deprecated Please provide the {@link ContextSource} in the constructor
+	 * @since 4.1
+	 */
+	@Deprecated
+	public ContextSourceTransactionManager() {
+		this.delegate = new ContextSourceTransactionManagerDelegate();
+	}
+
+	/**
+	 * Construct a {@link ContextSourceTransactionManager} using the given
+	 * {@link ContextSource}
+	 * @param contextSource the {@link ContextSource} to use
+	 * @since 4.1
+	 */
+	public ContextSourceTransactionManager(ContextSource contextSource) {
+		this.delegate = new ContextSourceTransactionManagerDelegate(contextSource);
+	}
 
 	/*
 	 * @see
@@ -161,7 +180,9 @@ public class ContextSourceTransactionManager extends AbstractPlatformTransaction
 	 * Set the ContextSource.
 	 * @param contextSource the ContextSource.
 	 * @see ContextSourceTransactionManagerDelegate#setContextSource(ContextSource)
+	 * @deprecated please provide the {@link ContextSource} in the constructor
 	 */
+	@Deprecated
 	public void setContextSource(ContextSource contextSource) {
 		this.delegate.setContextSource(contextSource);
 	}

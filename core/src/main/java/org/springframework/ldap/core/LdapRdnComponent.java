@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-present the original author or authors.
+ * Copyright 2002-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
+import org.jspecify.annotations.NullUnmarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import org.springframework.util.StringUtils;
  * @deprecated {@link DistinguishedName} and associated classes are deprecated as of 2.0.
  */
 @Deprecated
+@NullUnmarked
 public class LdapRdnComponent implements Comparable, Serializable {
 
 	private static final long serialVersionUID = -3296747972616243038L;

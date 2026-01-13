@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.naming.Name;
@@ -248,7 +249,7 @@ public class DefaultIncrementalAttributesMapper
 		int index = 0;
 		for (String next : this.rangedAttributesInNextIteration) {
 			IncrementalAttributeState state = this.stateMap.get(next);
-			result[index++] = state.getAttributeNameForQuery();
+			result[index++] = Objects.requireNonNull(state).getAttributeNameForQuery();
 		}
 
 		return result;
@@ -410,20 +411,16 @@ public class DefaultIncrementalAttributesMapper
 			Attribute attribute = attributes.get(attributeName);
 			NamingEnumeration<?> valueEnum = attribute.getAll();
 
-			initValuesIfApplicable();
+			if (this.values == null) {
+				this.values = new LinkedList<>();
+			}
 			while (valueEnum.hasMore()) {
 				this.values.add(valueEnum.next());
 			}
 		}
 
-		private void initValuesIfApplicable() {
-			if (this.values == null) {
-				this.values = new LinkedList<>();
-			}
-		}
-
 		@Override
-		@Nullable public List<Object> getValues() {
+		public @Nullable List<Object> getValues() {
 			if (this.values != null) {
 				return new ArrayList<>(this.values);
 			}

@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.naming.Name;
 
+import com.mysema.commons.lang.Assert;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.ldap.UncategorizedLdapException;
@@ -50,10 +52,10 @@ import org.springframework.ldap.odm.annotations.Transient;
 	private static final CaseIgnoreString OBJECT_CLASS_ATTRIBUTE_CI = new CaseIgnoreString("objectclass");
 
 	// Name of the LDAP attribute from the @Attribute annotation
-	private CaseIgnoreString name;
+	private @Nullable CaseIgnoreString name;
 
 	// Syntax of the LDAP attribute from the @Attribute annotation
-	private String syntax;
+	private @Nullable String syntax;
 
 	// Whether this attribute is binary from the @Attribute annotation
 	private boolean isBinary;
@@ -72,7 +74,7 @@ import org.springframework.ldap.odm.annotations.Transient;
 	// Is this field multi-valued represented by a List
 	private boolean isCollection;
 
-	private Class<? extends Collection> collectionClass;
+	private @Nullable Class<? extends Collection> collectionClass;
 
 	// Is this the objectClass attribute
 	private boolean isObjectClass;
@@ -81,7 +83,7 @@ import org.springframework.ldap.odm.annotations.Transient;
 
 	private boolean isReadOnly = false;
 
-	private String[] attributes;
+	private String @Nullable [] attributes;
 
 	private @Nullable DnAttribute dnAttribute;
 
@@ -135,10 +137,10 @@ import org.springframework.ldap.odm.annotations.Transient;
 
 		this.isCollection = Collection.class.isAssignableFrom(fieldType);
 
-		this.valueClass = null;
+		Class<?> valueClass = null;
 		if (!this.isCollection) {
 			// It's not a list so assume its single valued - so just take the field type
-			this.valueClass = fieldType;
+			valueClass = fieldType;
 		}
 		else {
 			determineCollectionClass(fieldType);
@@ -158,14 +160,14 @@ import org.springframework.ldap.odm.annotations.Transient;
 			Type[] actualParamArguments = paramType.getActualTypeArguments();
 			if (actualParamArguments.length == 1) {
 				if (actualParamArguments[0] instanceof Class) {
-					this.valueClass = (Class<?>) actualParamArguments[0];
+					valueClass = (Class<?>) actualParamArguments[0];
 				}
 				else {
 					if (actualParamArguments[0] instanceof GenericArrayType) {
 						// Deal with arrays
 						Type type = ((GenericArrayType) actualParamArguments[0]).getGenericComponentType();
 						if (type instanceof Class) {
-							this.valueClass = Array.newInstance((Class<?>) type, 0).getClass();
+							valueClass = Array.newInstance((Class<?>) type, 0).getClass();
 						}
 					}
 				}
@@ -173,10 +175,11 @@ import org.springframework.ldap.odm.annotations.Transient;
 		}
 
 		// Check we have been able to determine the value class
-		if (this.valueClass == null) {
+		if (valueClass == null) {
 			throw new MetaDataException(String.format("Can't determine destination type for field %1$s in class %2$s",
 					field, field.getDeclaringClass()));
 		}
+		this.valueClass = valueClass;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -202,8 +205,9 @@ import org.springframework.ldap.odm.annotations.Transient;
 
 	@SuppressWarnings("unchecked")
 	Collection<Object> newCollectionInstance() {
+		Assert.notNull(this.collectionClass, "There is no collection class associated with this attribute");
 		try {
-			return (Collection<Object>) this.collectionClass.newInstance();
+			return (Collection<Object>) Objects.requireNonNull(this.collectionClass).newInstance();
 		}
 		catch (Exception ex) {
 			throw new UncategorizedLdapException("Failed to instantiate collection class", ex);
@@ -270,7 +274,8 @@ import org.springframework.ldap.odm.annotations.Transient;
 	}
 
 	String getSyntax() {
-		return this.syntax;
+		Assert.notNull(this.syntax, "This attribute does not have a syntax, it may be an @Id");
+		return Objects.requireNonNull(this.syntax);
 	}
 
 	boolean isBinary() {
@@ -282,7 +287,8 @@ import org.springframework.ldap.odm.annotations.Transient;
 	}
 
 	CaseIgnoreString getName() {
-		return this.name;
+		Assert.notNull(this.name, "This attribute does not have a name, it may be an @Id");
+		return Objects.requireNonNull(this.name);
 	}
 
 	boolean isCollection() {
@@ -303,6 +309,10 @@ import org.springframework.ldap.odm.annotations.Transient;
 
 	@Nullable DnAttribute getDnAttribute() {
 		return this.dnAttribute;
+	}
+
+	DnAttribute getNonNullDnAttribute() {
+		return Objects.requireNonNull(this.dnAttribute);
 	}
 
 	boolean isDnAttribute() {
@@ -342,8 +352,8 @@ import org.springframework.ldap.odm.annotations.Transient;
 	public String toString() {
 		return String.format(
 				"name=%1$s | field=%2$s | valueClass=%3$s | syntax=%4$s| isBinary=%5$s | isId=%6$s | isReadOnly=%7$s |  isList=%8$s | isObjectClass=%9$s",
-				getName(), getField(), getValueClass(), getSyntax(), isBinary(), isId(), isReadOnly(), isCollection(),
-				isObjectClass());
+				this.name, this.field, this.valueClass, this.syntax, this.isBinary, this.isId, this.isReadOnly,
+				this.isCollection, this.isObjectClass);
 	}
 
 }
