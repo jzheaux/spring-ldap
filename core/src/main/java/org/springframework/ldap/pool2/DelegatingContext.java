@@ -188,11 +188,12 @@ public class DelegatingContext implements Context {
 				}
 			}
 
+			KeyedObjectPool<Object, Object> keyedObjectPool = Objects.requireNonNull(this.keyedObjectPool);
 			if (valid) {
-				this.keyedObjectPool.returnObject(this.dirContextType, context);
+				keyedObjectPool.returnObject(this.dirContextType, context);
 			}
 			else {
-				this.keyedObjectPool.invalidateObject(this.dirContextType, context);
+				keyedObjectPool.invalidateObject(this.dirContextType, context);
 			}
 		}
 		catch (Exception ex) {

@@ -148,7 +148,11 @@ public class DelegatingDirContext extends DelegatingContext implements DirContex
 	 * @see org.springframework.ldap.core.DirContextProxy#getTargetContext()
 	 */
 	public DirContext getTargetContext() {
-		return this.getInnermostDelegateDirContext();
+		DirContext innermost = this.getInnermostDelegateDirContext();
+		if (innermost == null) {
+			throw new IllegalStateException("cannot get the target context on a closed wrapper context");
+		}
+		return innermost;
 	}
 
 	// ***** DirContext Interface Delegates *****//
