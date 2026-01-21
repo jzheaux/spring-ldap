@@ -33,7 +33,9 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Mattias Hellborg Arthursson
  * @author Ulrik Sandberg
+ * @deprecated in favor of {@link PagedResultsControlDirContextProcessor}
  */
+@Deprecated
 public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndResponseControlDirContextProcessor {
 
 	private static final String DEFAULT_REQUEST_CONTROL = "javax.naming.ldap.PagedResultsControl";

@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Mattias Hellborg Arthursson
  * @author Ulrik Sandberg
+ * @deprecated please use the response holder in {@link PagedResultsControlDirContextProcessor}
  */
 public class PagedResultsCookie {
 

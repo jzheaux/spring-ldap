@@ -25,7 +25,9 @@ import javax.naming.ldap.Control;
  * is stateful, so a new instance needs to be instantiated for each new search.
  *
  * @author Ulrik Sandberg
+ * @deprecated please use {@link NamingSortControlDirContextProcessor} instead
  */
+@Deprecated
 public class SortControlDirContextProcessor extends AbstractFallbackRequestAndResponseControlDirContextProcessor {
 
 	private static final String DEFAULT_REQUEST_CONTROL = "javax.naming.ldap.SortControl";
