@@ -79,11 +79,7 @@ public class ConversionServiceConverterManager implements ConverterManager {
 			implements org.springframework.core.convert.converter.Converter<Name, String> {
 
 		@Override
-		@Nullable public String convert(Name source) {
-			if (source == null) {
-				return null;
-			}
-
+		public String convert(Name source) {
 			return source.toString();
 		}
 
@@ -93,11 +89,7 @@ public class ConversionServiceConverterManager implements ConverterManager {
 			implements org.springframework.core.convert.converter.Converter<String, Name> {
 
 		@Override
-		@Nullable public Name convert(String source) {
-			if (source == null) {
-				return null;
-			}
-
+		public Name convert(String source) {
 			return LdapUtils.newLdapName(source);
 		}
 
