@@ -18,7 +18,6 @@ package org.springframework.ldap.control;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,27 +28,45 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.ldap.core.DirContextProcessor;
 
 /**
+ * A {@link DirContextProcessor} implementation for managing the paged results control.
+ * <p>Paging requires that the same LDAP connection be used across each page; as such, it is
+ * your responsibility to reuse the LDAP connection.
+ * <p>Spring LDAP's
+ * {@link org.springframework.ldap.core.support.SingleContextSource} and also its
+ * {@link org.springframework.ldap.transaction.compensating.manager.TransactionAwareContextSourceProxy}
+ * will provide this for you if you wire them into your {@link org.springframework.ldap.core.LdapTemplate}
+ * and {@link org.springframework.ldap.core.LdapClient} instances.
+ *
+ * @author Josh Cummings
  * @since 4.1
+ * @see org.springframework.ldap.core.support.SingleContextSource
+ * @see org.springframework.ldap.transaction.compensating.manager.ContextSourceTransactionManager
+ * @see org.springframework.ldap.transaction.compensating.manager.TransactionAwareContextSourceProxy
  */
 public final class PagedResultsControlDirContextProcessor implements DirContextProcessor {
 
-	private Logger log = LoggerFactory.getLogger(PagedResultsControlDirContextProcessor.class);
+	private final Log log = LogFactory.getLog(getClass());
 
 	Request request;
 
 	private @Nullable Response response;
 
-	private Consumer<DirContext> noPagedResultsResponseHandler = (ctx) -> {
+	private final Consumer<DirContext> noPagedResultsResponseHandler = (ctx) -> {
 		this.log.debug("Failed to find PagedResultsResponseControl in response");
 	};
 
+	/**
+	 * Construct this {@link DirContextProcessor}, providing the initial
+	 * paged results control {@link Request} to use
+	 * @param request the initial paged results control to use
+	 */
 	public PagedResultsControlDirContextProcessor(Request request) {
 		this.request = request;
 	}
@@ -64,10 +81,15 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 			ldap.setRequestControls(new Control[] { this.request.delegate });
 			return;
 		}
-		List<Control> updated = new ArrayList<>(Arrays.asList(controls));
+		List<Control> updated = new ArrayList<>();
 		for (Control control : controls) {
 			if (!(control instanceof PagedResultsControl)) {
 				updated.add(control);
+			} else {
+				if (this.log.isTraceEnabled()) {
+					this.log.trace("Replacing pre-existing paged results control with "
+							+ this.request);
+				}
 			}
 		}
 		updated.add(this.request.delegate);
@@ -80,7 +102,7 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 			throw new IllegalArgumentException("ctx must be of type LdapContext");
 		}
 		Control[] responseControls = ldap.getResponseControls();
-		if (responseControls.length == 0) {
+		if (responseControls == null || responseControls.length == 0) {
 			this.noPagedResultsResponseHandler.accept(ctx);
 			return;
 		}
@@ -98,6 +120,9 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 		return this.response;
 	}
 
+	/**
+	 * The current request control to be sent as part of an LDAP request.
+	 */
 	public static final class Request {
 
 		final javax.naming.ldap.PagedResultsControl delegate;
@@ -137,26 +162,37 @@ public final class PagedResultsControlDirContextProcessor implements DirContextP
 			return this.delegate.isCritical();
 		}
 
+		@Override
+		public String toString() {
+			return "PagedResultsRequest [pageSize=" + this.pageSize +
+					", cookie=" + (this.cookie != null) +
+					", critical=" + this.delegate.isCritical() + "]";
+		}
 	}
 
+	/**
+	 * The most recent response control retrieved from of an LDAP response.
+	 */
 	public static final class Response {
 
-		private final PagedResultsResponseControl response;
+		private final int resultSize;
+		private final byte @Nullable [] cookie;
 
 		public Response(PagedResultsResponseControl response) {
-			this.response = response;
+			this.resultSize = response.getResultSize();
+			this.cookie = response.getCookie();
 		}
 
 		public int getResultSize() {
-			return this.response.getResultSize();
+			return this.resultSize;
 		}
 
 		public byte @Nullable [] getCookie() {
-			return this.response.getCookie();
+			return this.cookie;
 		}
 
 		public boolean hasMore() {
-			return this.getCookie() != null;
+			return this.cookie != null;
 		}
 
 	}

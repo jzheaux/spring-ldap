@@ -32,7 +32,6 @@ import org.springframework.ldap.control.PagedResultsControlDirContextProcessor.R
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -44,9 +43,11 @@ class PagedResultsControlDirContextProcessorTests {
 
 	private PagedResultsControlDirContextProcessor tested;
 
+	private final Request request = new Request(20);
+
 	@BeforeEach
 	void setUp() {
-		this.tested = new PagedResultsControlDirContextProcessor(new Request(20));
+		this.tested = new PagedResultsControlDirContextProcessor(this.request);
 		this.ldapContextMock = mock(LdapContext.class);
 	}
 
@@ -88,28 +89,27 @@ class PagedResultsControlDirContextProcessorTests {
 	@Test
 	void postProcessWhenNoResponseThenIgnores() throws Exception {
 		given(this.ldapContextMock.getResponseControls()).willReturn(null);
-
 		this.tested.postProcess(this.ldapContextMock);
-
 		assertThat(this.tested.getResponse()).isNull();
-		assertThat(this.tested.request.getPageSize()).isEqualTo(20);
+		assertThat(this.tested.request.getPageSize()).isEqualTo(this.request.getPageSize());
 		assertThat(this.tested.request.getCookie()).isNull();
 	}
 
 	@Test
 	void postProcessWhenResponsesThenUsesPagedResultsResponseControl() throws Exception {
-		PagedResultsResponseControl response = spy(new PagedResultsResponseControl("id", true, new byte[0]));
-		given(response.getResultSize()).willReturn(15);
-		given(response.getCookie()).willReturn(new byte[] { 1, 2, 3 });
+		byte resultSize = 64;
+		byte[] cookie = new byte[3];
+		byte[] prefix = new byte[] { 30, 5, 2, 1, resultSize, 4, (byte) cookie.length };
+		byte[] value = new byte[prefix.length + cookie.length];
+		System.arraycopy(prefix, 0, value, 0, prefix.length);
+		PagedResultsResponseControl response = new PagedResultsResponseControl("id", true, value);
 		given(this.ldapContextMock.getResponseControls())
 			.willReturn(new Control[] { response, new DirSyncResponseControl("dummy", true, null) });
-
 		this.tested.postProcess(this.ldapContextMock);
-
 		assertThat(this.tested.getResponse()).isNotNull();
 		assertThat(this.tested.getResponse().hasMore()).isTrue();
-		assertThat(this.tested.getResponse().getResultSize()).isEqualTo(15);
-		assertThat(this.tested.getResponse().getCookie()).isEqualTo(new byte[] { 1, 2, 3 });
+		assertThat(this.tested.getResponse().getResultSize()).isEqualTo(resultSize);
+		assertThat(this.tested.getResponse().getCookie()).isEqualTo(cookie);
 	}
 
 }
