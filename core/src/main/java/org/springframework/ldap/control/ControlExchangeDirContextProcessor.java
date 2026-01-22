@@ -16,9 +16,7 @@
 
 package org.springframework.ldap.control;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -27,12 +25,9 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.PagedResultsControl;
-import javax.naming.ldap.SortControl;
-import javax.naming.ldap.SortResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.ldap.core.DirContextProcessor;
 
@@ -52,25 +47,23 @@ import org.springframework.ldap.core.DirContextProcessor;
  * @see org.springframework.ldap.transaction.compensating.manager.ContextSourceTransactionManager
  * @see org.springframework.ldap.transaction.compensating.manager.TransactionAwareContextSourceProxy
  */
-public final class NamingSortControlDirContextProcessor implements DirContextProcessor {
+public final class ControlExchangeDirContextProcessor<S extends Control, T extends Control> implements DirContextProcessor {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	final Request request;
+	private ControlExchange<S, T> exchange;
 
-	private @Nullable Response response;
-
-	private final Consumer<DirContext> noSortResponseHandler = (ctx) -> {
-		this.log.debug("Failed to find SortResponseControl in response");
+	private final Consumer<DirContext> noResultResponseControlHandler = (ctx) -> {
+		this.log.debug("Failed to find response control");
 	};
 
 	/**
-	 * Construct this {@link DirContextProcessor}, providing the initial
-	 * paged results control {@link Request} to use
-	 * @param request the initial paged results control to use
+	 * Construct this {@link DirContextProcessor}, providing the {@link ControlExchange}
+	 * to use
+	 * @param exchange {@link ControlExchange} to use
 	 */
-	public NamingSortControlDirContextProcessor(Request request) {
-		this.request = request;
+	public ControlExchangeDirContextProcessor(ControlExchange<S, T> exchange) {
+		this.exchange = exchange;
 	}
 
 	@Override
@@ -80,7 +73,7 @@ public final class NamingSortControlDirContextProcessor implements DirContextPro
 		}
 		Control[] controls = ldap.getRequestControls();
 		if (controls == null) {
-			ldap.setRequestControls(new Control[] { this.request.delegate });
+			ldap.setRequestControls(new Control[] { this.exchange.getRequest() });
 			return;
 		}
 		List<Control> updated = new ArrayList<>();
@@ -90,95 +83,36 @@ public final class NamingSortControlDirContextProcessor implements DirContextPro
 			} else {
 				if (this.log.isTraceEnabled()) {
 					this.log.trace("Replacing pre-existing paged results control with "
-							+ this.request);
+							+ this.exchange.getRequest());
 				}
 			}
 		}
-		updated.add(this.request.delegate);
+		updated.add(this.exchange.getRequest());
 		ldap.setRequestControls(updated.toArray(Control[]::new));
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void postProcess(DirContext ctx) throws NamingException {
 		if (!(ctx instanceof LdapContext ldap)) {
 			throw new IllegalArgumentException("ctx must be of type LdapContext");
 		}
 		Control[] responseControls = ldap.getResponseControls();
 		if (responseControls == null || responseControls.length == 0) {
-			this.noSortResponseHandler.accept(ctx);
+			this.noResultResponseControlHandler.accept(ctx);
 			return;
 		}
 		for (Control responseControl : responseControls) {
-			if (responseControl instanceof SortResponseControl results) {
-				this.response = new Response(results);
+			ControlExchange<S, T> exchange = this.exchange.withResponse((T) responseControl);
+			if (exchange != this.exchange) {
 				return;
 			}
 		}
-		this.noSortResponseHandler.accept(ctx);
+		this.noResultResponseControlHandler.accept(ctx);
 	}
 
-	public @Nullable Response getResponse() {
-		return this.response;
-	}
-
-	/**
-	 * The current request control to be sent as part of an LDAP request.
-	 */
-	public static final class Request {
-
-		final SortControl delegate;
-
-		private final String[] sortBy;
-
-		public Request(String sortBy) {
-			this(new String[] { sortBy }, true);
-		}
-
-		public Request(String[] sortBy, boolean criticality) {
-			try {
-				this.delegate = new SortControl(sortBy, criticality);
-			}
-			catch (IOException ex) {
-				throw new IllegalArgumentException(ex);
-			}
-			this.sortBy = sortBy;
-		}
-
-		public String[] getSortBy() {
-			return this.sortBy;
-		}
-
-		public boolean isCritical() {
-			return this.delegate.isCritical();
-		}
-
-		@Override
-		public String toString() {
-			return "SortRequest [sortBy=" + Arrays.toString(this.sortBy) +
-					", critical=" + this.delegate.isCritical() + "]";
-		}
-	}
-
-	/**
-	 * The most recent response control retrieved from of an LDAP response.
-	 */
-	public static final class Response {
-
-		private final boolean isSorted;
-		private final int resultCode;
-
-		public Response(SortResponseControl response) {
-			this.isSorted = response.isSorted();
-			this.resultCode = response.getResultCode();
-		}
-
-		public boolean isSorted() {
-			return this.isSorted;
-		}
-
-		public int getResultCode() {
-			return this.resultCode;
-		}
+	public ControlExchange<S, T> getExchange() {
+		return this.exchange;
 	}
 
 }

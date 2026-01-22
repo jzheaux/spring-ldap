@@ -138,8 +138,8 @@ public List<String> getAllPersonNames() {
   final SearchControls searchControls = new SearchControls();
   searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-  final PagedResultsControlDirContextProcessor processor =
-        new PagedResultsControlDirContextProcessor(PAGE_SIZE);
+  PagedResultsControlExchange exchange = PagedResultsControlExchange.withPageSize(PAGE_SIZE);
+  ControlExchangeDirContextProcessor processor = new ControlExchangeDirContextProcessor(exchange);
 
   return SingleContextSource.doWithSingleContext(
         contextSource, new LdapOperationsCallback<List<String>>() {
@@ -156,7 +156,7 @@ public List<String> getAllPersonNames() {
             CN_ATTRIBUTES_MAPPER,
             processor);
           result.addAll(oneResult);
-        } while(processor.hasMore());
+        } while(processor.getExchange().hasMore());
 
         return result;
       }
