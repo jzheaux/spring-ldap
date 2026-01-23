@@ -21,26 +21,29 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.jspecify.annotations.Nullable;
 
-public class PagedResultsControlExchange implements ControlExchange<SpringPagedResultsControl, PagedResultsResponseControl> {
-	private final SpringPagedResultsControl request;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
+
+public class PagedResultsControlExchange implements ControlExchange<SpringLdapPagedResultsControl, PagedResultsResponseControl>, ResolvableTypeProvider {
+	private final SpringLdapPagedResultsControl request;
 	private final @Nullable PagedResultsResponseControl response;
 
-	public PagedResultsControlExchange(SpringPagedResultsControl request) {
+	public PagedResultsControlExchange(SpringLdapPagedResultsControl request) {
 		this.request = request;
 		this.response = null;
 	}
 
-	PagedResultsControlExchange(SpringPagedResultsControl request, PagedResultsResponseControl response) {
+	PagedResultsControlExchange(SpringLdapPagedResultsControl request, PagedResultsResponseControl response) {
 		this.request = request;
 		this.response = response;
 	}
 
 	public static PagedResultsControlExchange withPageSize(int pageSize) {
-		return new PagedResultsControlExchange(new SpringPagedResultsControl(pageSize));
+		return new PagedResultsControlExchange(new SpringLdapPagedResultsControl(pageSize));
 	}
 
 	@Override
-	public SpringPagedResultsControl getRequest() {
+	public SpringLdapPagedResultsControl getRequest() {
 		return this.request;
 	}
 
@@ -58,8 +61,13 @@ public class PagedResultsControlExchange implements ControlExchange<SpringPagedR
 		if (!(response instanceof PagedResultsResponseControl paged)) {
 			return this;
 		}
-		SpringPagedResultsControl updated = new SpringPagedResultsControl(
+		SpringLdapPagedResultsControl updated = new SpringLdapPagedResultsControl(
 			this.request.getPageSize(), paged.getCookie(), this.request.isCritical());
 		return new PagedResultsControlExchange(updated, paged);
+	}
+
+	@Override
+	public @Nullable ResolvableType getResolvableType() {
+		return ResolvableType.forClass(PagedResultsResponseControl.class);
 	}
 }

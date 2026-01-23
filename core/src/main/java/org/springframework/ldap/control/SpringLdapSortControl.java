@@ -17,33 +17,29 @@
 package org.springframework.ldap.control;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.naming.ldap.Control;
-import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.SortControl;
 
-import org.jspecify.annotations.Nullable;
+public class SpringLdapSortControl implements Control {
 
-public class SpringPagedResultsControl implements Control {
+	final SortControl delegate;
 
-	final PagedResultsControl delegate;
+	private final String[] sortBy;
 
-	private final int pageSize;
-
-	private final byte @Nullable [] cookie;
-
-	public SpringPagedResultsControl(int pageSize) {
-		this(pageSize, null, true);
+	public SpringLdapSortControl(String sortBy) {
+		this(new String[] { sortBy }, true);
 	}
 
-	public SpringPagedResultsControl(int pageSize, byte @Nullable [] cookie, boolean criticality) {
+	public SpringLdapSortControl(String[] sortBy, boolean criticality) {
 		try {
-			this.delegate = new PagedResultsControl(pageSize, cookie, criticality);
+			this.delegate = new SortControl(sortBy, criticality);
 		}
 		catch (IOException ex) {
 			throw new IllegalArgumentException(ex);
 		}
-		this.pageSize = pageSize;
-		this.cookie = cookie;
+		this.sortBy = sortBy;
 	}
 
 	@Override
@@ -56,12 +52,8 @@ public class SpringPagedResultsControl implements Control {
 		return this.delegate.getEncodedValue();
 	}
 
-	public int getPageSize() {
-		return this.pageSize;
-	}
-
-	public byte @Nullable [] getCookie() {
-		return this.cookie;
+	public String[] getSortBy() {
+		return sortBy;
 	}
 
 	public boolean isCritical() {
@@ -70,7 +62,7 @@ public class SpringPagedResultsControl implements Control {
 
 	@Override
 	public String toString() {
-		return "PagedResultsRequest [pageSize=" + this.pageSize + ", cookie=" + (this.cookie != null) + ", critical="
+		return "PagedResultsRequest [sortBy=" + Arrays.toString(this.sortBy) + ", critical="
 				+ this.delegate.isCritical() + "]";
 	}
 

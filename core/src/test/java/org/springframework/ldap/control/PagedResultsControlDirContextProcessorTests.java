@@ -27,8 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.ldap.control.PagedResultsControlDirContextProcessor.Request;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
@@ -41,13 +39,13 @@ class PagedResultsControlDirContextProcessorTests {
 
 	private LdapContext ldapContextMock;
 
-	private PagedResultsControlDirContextProcessor tested;
+	private ControlExchangeDirContextProcessor<SpringLdapPagedResultsControl, PagedResultsResponseControl> tested;
 
-	private final Request request = new Request(20);
+	private final PagedResultsControlExchange exchange = PagedResultsControlExchange.withPageSize(20);
 
 	@BeforeEach
 	void setUp() {
-		this.tested = new PagedResultsControlDirContextProcessor(this.request);
+		this.tested = new ControlExchangeDirContextProcessor<>(this.exchange);
 		this.ldapContextMock = mock(LdapContext.class);
 	}
 
@@ -61,7 +59,7 @@ class PagedResultsControlDirContextProcessorTests {
 		Control[] controls = captor.getValue();
 		assertThat(controls).hasSize(1);
 		assertThat(controls[0]).isInstanceOf(PagedResultsControl.class);
-		assertThat(this.tested.request.delegate).isSameAs(controls[0]);
+		assertThat(this.tested.getExchange().getRequest().delegate).isSameAs(controls[0]);
 	}
 
 	@Test
@@ -83,16 +81,16 @@ class PagedResultsControlDirContextProcessorTests {
 		Control[] controls = captor.getValue();
 		assertThat(controls).hasExactlyElementsOfTypes(SortControl.class, PagedResultsControl.class);
 		assertThat(controls[1]).isInstanceOf(PagedResultsControl.class);
-		assertThat(this.tested.request.delegate).isSameAs(controls[1]);
+		assertThat(this.tested.getExchange().getRequest().delegate).isSameAs(controls[1]);
 	}
 
 	@Test
 	void postProcessWhenNoResponseThenIgnores() throws Exception {
 		given(this.ldapContextMock.getResponseControls()).willReturn(null);
 		this.tested.postProcess(this.ldapContextMock);
-		assertThat(this.tested.getResponse()).isNull();
-		assertThat(this.tested.request.getPageSize()).isEqualTo(this.request.getPageSize());
-		assertThat(this.tested.request.getCookie()).isNull();
+		assertThat(this.tested.getExchange().getResponse()).isNull();
+		assertThat(this.tested.getExchange().getRequest().getPageSize()).isEqualTo(this.exchange.getRequest().getPageSize());
+		assertThat(this.tested.getExchange().getRequest().getCookie()).isNull();
 	}
 
 	@Test
@@ -106,10 +104,10 @@ class PagedResultsControlDirContextProcessorTests {
 		given(this.ldapContextMock.getResponseControls())
 			.willReturn(new Control[] { response, new DirSyncResponseControl("dummy", true, null) });
 		this.tested.postProcess(this.ldapContextMock);
-		assertThat(this.tested.getResponse()).isNotNull();
-		assertThat(this.tested.getResponse().hasMore()).isTrue();
-		assertThat(this.tested.getResponse().getResultSize()).isEqualTo(resultSize);
-		assertThat(this.tested.getResponse().getCookie()).isEqualTo(cookie);
+		assertThat(this.tested.getExchange().getResponse()).isNotNull();
+		assertThat(this.tested.getExchange().hasMore()).isTrue();
+		assertThat(this.tested.getExchange().getResponse().getResultSize()).isEqualTo(resultSize);
+		assertThat(this.tested.getExchange().getResponse().getCookie()).isEqualTo(cookie);
 	}
 
 }

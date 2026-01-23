@@ -21,22 +21,22 @@ import javax.naming.ldap.SortResponseControl;
 
 import org.jspecify.annotations.Nullable;
 
-public class SortControlExchange implements ControlExchange<SpringSortControl, SortResponseControl> {
-	private final SpringSortControl request;
+public class SortControlExchange implements ControlExchange<SpringLdapSortControl, SortResponseControl> {
+	private final SpringLdapSortControl request;
 	private final @Nullable SortResponseControl response;
 
-	public SortControlExchange(SpringSortControl request) {
+	public SortControlExchange(SpringLdapSortControl request) {
 		this.request = request;
 		this.response = null;
 	}
 
-	SortControlExchange(SpringSortControl request, SortResponseControl response) {
+	SortControlExchange(SpringLdapSortControl request, SortResponseControl response) {
 		this.request = request;
 		this.response = response;
 	}
 
 	@Override
-	public SpringSortControl getRequest() {
+	public SpringLdapSortControl getRequest() {
 		return this.request;
 	}
 
