@@ -18,7 +18,6 @@ package org.springframework.ldap.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.naming.NamingException;
@@ -29,9 +28,7 @@ import javax.naming.ldap.LdapContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.core.ResolvableType;
 import org.springframework.ldap.core.DirContextProcessor;
-import org.springframework.util.Assert;
 
 /**
  * A {@link DirContextProcessor} implementation for managing the paged results control.
@@ -56,7 +53,7 @@ public final class ControlExchangeDirContextProcessor<S extends Control, T exten
 	private ControlExchange<S, T> exchange;
 
 	private final Consumer<DirContext> noResultResponseControlHandler = (ctx) -> {
-		this.log.debug("Failed to find " + getResponseType() + " response control");
+		this.log.debug("Failed to find " + this.exchange.getRequest().getID() + " response control");
 	};
 
 	/**
@@ -104,20 +101,13 @@ public final class ControlExchangeDirContextProcessor<S extends Control, T exten
 			this.noResultResponseControlHandler.accept(ctx);
 			return;
 		}
-		Class<?> responseType = getResponseType();
 		for (Control responseControl : responseControls) {
-			if (responseType.isAssignableFrom(responseControl.getClass())) {
+			if (this.exchange.getRequest().getID().equals(responseControl.getID())) {
 				this.exchange = this.exchange.withResponse((T) responseControl);
 				return;
 			}
 		}
 		this.noResultResponseControlHandler.accept(ctx);
-	}
-
-	private Class<?> getResponseType() {
-		ResolvableType type = ResolvableType.forClass(this.exchange.getClass()).getGeneric(1);
-		Assert.notNull(type.resolve(), "cannot resolve type of response control; please implement ResolvableTypeProvider");
-		return Objects.requireNonNull(type.resolve());
 	}
 
 	public ControlExchange<S, T> getExchange() {

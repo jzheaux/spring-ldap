@@ -21,10 +21,7 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.core.ResolvableType;
-import org.springframework.core.ResolvableTypeProvider;
-
-public class PagedResultsControlExchange implements ControlExchange<SpringLdapPagedResultsControl, PagedResultsResponseControl>, ResolvableTypeProvider {
+public class PagedResultsControlExchange implements ControlExchange<SpringLdapPagedResultsControl, PagedResultsResponseControl> {
 	private final SpringLdapPagedResultsControl request;
 	private final @Nullable PagedResultsResponseControl response;
 
@@ -66,8 +63,4 @@ public class PagedResultsControlExchange implements ControlExchange<SpringLdapPa
 		return new PagedResultsControlExchange(updated, paged);
 	}
 
-	@Override
-	public @Nullable ResolvableType getResolvableType() {
-		return ResolvableType.forClass(PagedResultsResponseControl.class);
-	}
 }
