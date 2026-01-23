@@ -84,7 +84,9 @@ import org.springframework.util.ReflectionUtils;
  * </pre>
  *
  * @author Ulrik Sandberg
+ * @deprecated please use {@link ControlExchangeDirContextProcessor} instead
  */
+@Deprecated
 public abstract class AbstractFallbackRequestAndResponseControlDirContextProcessor
 		extends AbstractRequestControlDirContextProcessor {
 

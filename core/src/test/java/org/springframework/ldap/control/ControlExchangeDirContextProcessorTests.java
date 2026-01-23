@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 /**
  * @author Josh Cummings
  */
-class PagedResultsControlDirContextProcessorTests {
+class ControlExchangeDirContextProcessorTests {
 
 	private LdapContext ldapContextMock;
 
@@ -89,7 +89,8 @@ class PagedResultsControlDirContextProcessorTests {
 		given(this.ldapContextMock.getResponseControls()).willReturn(null);
 		this.tested.postProcess(this.ldapContextMock);
 		assertThat(this.tested.getExchange().getResponse()).isNull();
-		assertThat(this.tested.getExchange().getRequest().getPageSize()).isEqualTo(this.exchange.getRequest().getPageSize());
+		assertThat(this.tested.getExchange().getRequest().getPageSize())
+			.isEqualTo(this.exchange.getRequest().getPageSize());
 		assertThat(this.tested.getExchange().getRequest().getCookie()).isNull();
 	}
 

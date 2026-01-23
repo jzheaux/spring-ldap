@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Mattias Hellborg Arthursson
  * @author Ulrik Sandberg
- * @deprecated in favor of {@link PagedResultsControlDirContextProcessor}
+ * @deprecated in favor of {@link PagedResultsControlExchangeDirContextProcessor}
  */
 @Deprecated
 public class PagedResultsDirContextProcessor extends AbstractFallbackRequestAndResponseControlDirContextProcessor {

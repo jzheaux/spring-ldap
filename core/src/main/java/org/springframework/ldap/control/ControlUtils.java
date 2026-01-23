@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.ldap.UncategorizedLdapException;
 
+@Deprecated
 final class ControlUtils {
 
 	static final Log log = LogFactory.getLog(ControlUtils.class.getName());
