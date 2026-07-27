@@ -1,0 +1,31 @@
+name: CI SNAPSHOT
+
+on:
+  workflow_dispatch:
+    inputs:
+      gradleOptions:
+        description: 'The Gradle CLI options: tasks, properties etc.'
+        required: false
+        type: string
+
+  push:
+    branches:
+      - main
+      - '*.x'
+
+  schedule:
+    - cron: '0 5 * * *'
+
+concurrency:
+  group: group-snapshot-for-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-snapshot:
+    uses: spring-io/spring-github-workflows/.github/workflows/spring-artifactory-gradle-snapshot.yml@v6
+    with:
+      gradleTasks: ${{ github.event_name == 'schedule' && '--rerun-tasks --refresh-dependencies' || inputs.gradleOptions }}
+    secrets:
+      DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+      ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
