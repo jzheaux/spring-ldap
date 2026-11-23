@@ -84,7 +84,7 @@ See xref:release-train.adoc[The Release Train].
 [[snapshot-branch]]
 == Snapshot branch
 
-A short-lived, automation-built branch named `snapshot/<snapshot-version>` that snapshot builds of an upcoming release are published from.
+A short-lived, automation-built branch named `embargoed/<snapshot-version>`, like `embargoed/4.0.9.1-SNAPSHOT`, that snapshot builds of an upcoming release are published from.
 See xref:branches.adoc#temporary-branches[Branches].
 
 [[tag-merge]]

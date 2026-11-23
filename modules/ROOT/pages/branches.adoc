@@ -77,8 +77,9 @@ No one commits to them.
 | Carries the commits of one release: dependency upgrades, and a final `Release <version>` commit.
 It is deleted once the release is public.
 
-| `snapshot/<snapshot-version>`
+| `embargoed/<snapshot-version>`, like `embargoed/4.0.9.1-SNAPSHOT`
 | The branch from which snapshot builds of an upcoming release are published.
+It is named for the snapshot version it carries.
 |===
 
 See xref:releasing.adoc[Releasing] for how they fit together.
