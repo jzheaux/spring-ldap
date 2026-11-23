@@ -1,59 +1,314 @@
-# Release Process
+= Releasing Spring LDAP
 
-### 1. Update Dependencies
+This guide is for maintainers who are preparing a release.
+It says which automation does each job, how to tell that it worked, and what to do if it failed or never ran.
 
-Check for available updates. If available, update at least Spring Framework, Spring Data, and Spring Security.
+[TIP]
+====
+To understand *how* releases work and *why*, see https://docs.spring.io/spring-ldap/reference/releasing.html[Releasing] in the reference documentation.
+This page is only about what to do.
+====
 
-### 2. Update Release Number
+[NOTE]
+====
+Almost everything below is automated.
+You should not normally need any of the manual steps.
+They are here so that a failure never leaves you stuck.
+====
 
-Update `build.gradle`'s version property:
+== 🗺️ The Steps at a Glance
 
-```bash
-export RELEASE=3.0.0-M4
-sed -i 's/version=(.*)/version=${RELEASE}/' build.gradle
-```
+[cols="3,3,2"]
+|===
+| Step | Automated by | Details
 
-### 3. Build
+| 1. Give the milestone a due date that is a release train
+| https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/sync-milestone.yml[`sync-milestone.yml`]
+| <<milestone>>
 
-Check to ensure that everything builds:
+| 2. Build the release and snapshot branches
+| `release-branches.yml`, on a push to an `embargoed/*` branch
+| <<branches>>
 
-```bash
-gw check
-```
+| 3. Join the release train
+| `release-train-join.yml`, run by step 2
+| <<join>>
 
-### 4. Commit and Watch
+| 4. Freeze the code
+| `code-freeze.yml`, which you start
+| <<freeze>>
 
-Commit the release:
+| 5. Build and test the release
+| `release-train-build.yml` and `release-train-test.yml`, run by the release train
+| <<build>>
 
-```bash
-git commit -m "Release ${RELEASE}"
-```
+| 6. Publish the release
+| The release train
+| <<publish>>
 
-This will push a build to https://jenkins.spring.io/job/spring-ldap/job/main/.
-Once the build passes, proceed to the next step.
+| 7. Merge the tag forward and tidy up
+| `post-publish.yml`, on the tag being pushed
+| <<post-publish>>
 
-### 5. Tag
+| 8. Publish docs, release notes, and the learn page
+| `release-announcements-publish.yml`, run by step 7
+| <<materials>>
 
-Tag and push the release commit:
+| 9. Move to the next development version
+| `code-freeze.yml`, in step 4
+| <<next-version>>
+|===
 
-```bash
-git tag ${RELEASE}
-git push origin ${RELEASE}
-```
+== ✅ Before You Start
 
-### 6. Notify on Slack
+* You have write access to https://github.com/spring-projects/spring-ldap[`spring-ldap`] and to the commercial repository, `spring-ldap-commercial`.
+Most of the release workflows run in the commercial repository, because the branches they work on are there.
+* You have the https://cli.github.com[GitHub CLI] installed and authenticated.
+The commands below use it, and every one can also be started from the *Actions* tab with *Run workflow*.
+* The version being released has a milestone, in the OSS repository for an OSS release and in the commercial one for a long-term support release.
 
-Announce the release on the `#spring-release` channel:
+In the commands below, `4.0.8` stands for the version, `2026.11.19` for the release train, and `4.0.x` for the generation.
 
-```bash
-spring-ldap-announcing `3.0.0-M4` is out!
-```
+[[milestone]]
+== 1. 🎟️ Milestone and Release Train
 
-### 7. Prepare for Next Development Cycle
+*Automated by:* https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/sync-milestone.yml[`sync-milestone.yml`], which runs when a milestone is edited.
 
-Update and commit `build.gradle`:
+The due date of the milestone is the date of the release train that the release joins.
+A due date of `2026-11-19` is the train `2026.11.19`.
+Check the https://spring.io/calendar[Spring calendar] for the date.
 
-```bash
-sed -i 's/version=(.*)/version=3.0.0-SNAPSHOT'
-git commit -am "Next Development Version"
-```
+Setting the due date makes `sync-milestone` update the commercial milestones and start <<branches>> if the train exists.
+The train's line `Release Train: 2026.11.19` is then written into the milestone's description.
+
+*If it fails:* look at the milestone's description.
+
+[cols="2,3"]
+|===
+| The description says | Do this
+
+| `ERROR: Cannot leave the Release Train ...: it is ready`
+| The release is ready in the train it was moved out of, and a ready train cannot be left.
+Sort it out in the release train, then edit the milestone again.
+
+| `ERROR: The Release Train ... has no commercial-general-availability`
+| The release train needs a `schedule.publication.commercial-general-availability` date.
+Add it to the train, then edit the milestone again.
+|===
+
+*If it did not run:* edit the milestone (for example, set the due date again).
+If the train does not exist yet, that is not an error.
+The milestone is picked up by the nightly run once the train exists.
+
+[[branches]]
+== 2. 🌿 Release and Snapshot Branches
+
+*Automated by:* `release-branches.yml`, on a push to `embargoed/frozen/**`, `embargoed/active/**`, or `embargoed/lts/**`.
+
+It builds `release/4.0.8` and a snapshot branch from the pushed commit.
+The release branch carries one commit for each dependency upgrade that the release train asks for, then `Release 4.0.8`.
+Nobody commits to either branch.
+
+*Check it ran:* in the *Actions* tab of the commercial repository, look for a `release-branches` run on the embargoed branch.
+Its summary lists the branches that were built, the milestone, and the release train.
+
+*If it fails:* read the run's summary, fix what it names, then run it again (see below).
+Fix the cause on the embargoed branch itself, never on the release branch, which is rebuilt every time.
+Common causes:
+
+* *OSS support of `4.0.x` ended.* The generation has moved to long-term support.
+Its work belongs on `embargoed/lts/4.0.x`.
+* *A catalog that is newer than the train.* The version catalog has a version newer than the release train's.
+Fix the catalog.
+
+*If it did not run, or to run it again:* run the workflow on the embargoed branch.
+
+[source,bash]
+----
+gh workflow run release-branches.yml \
+    --repo spring-projects/spring-ldap-commercial \
+    --ref embargoed/frozen/4.0.x
+----
+
+Use `embargoed/active/4.0.x` instead to build the hotfix.
+A hotfix is only built if the active branch has changes that the frozen branch lacks.
+Use `embargoed/lts/4.0.x` for a long-term support release.
+
+[[join]]
+== 3. 🚂 Joining the Release Train
+
+*Automated by:* `release-train-join.yml`, which `release-branches.yml` runs once the branches are pushed.
+
+*Check it ran:* the milestone's description has the `Release Train:` line.
+
+*If it fails:* the failure is in the run of `Release Train – Join`, which the summary of `release-branches.yml` links to.
+Fix what it reports, then run the join again.
+
+*If it did not run, or to run it again:* run the workflow on the release branch.
+
+[source,bash]
+----
+gh workflow run release-train-join.yml \
+    --repo spring-projects/spring-ldap-commercial \
+    --ref release/4.0.8 \
+    --field release-train=2026.11.19 \
+    --field deployment-destination="Maven Central"
+----
+
+The deployment destination is `Maven Central` for an OSS release, and `Spring Enterprise` for a hotfix or a long-term support release.
+
+To take a release out of a train, run `release-train-leave.yml` the same way, without the deployment destination.
+
+[[freeze]]
+== 4. ❄️ Code Freeze
+
+*Automated by:* `code-freeze.yml` in the commercial repository.
+You start it; it does the rest.
+It marks each release ready in the release train, moves every branch to its next development version, merges history forward, and pushes.
+
+[IMPORTANT]
+====
+Always do a dry run first.
+A dry run changes nothing, and it attaches the result to the run so that you can look at it before you do it for real.
+====
+
+[source,bash]
+----
+# dry run (the default)
+gh workflow run code-freeze.yml \
+    --repo spring-projects/spring-ldap-commercial \
+    --field release-train=2026.11.19
+
+# for real, once the dry run looks right
+gh workflow run code-freeze.yml \
+    --repo spring-projects/spring-ldap-commercial \
+    --field release-train=2026.11.19 \
+    --field dry-run=false
+----
+
+*Check it ran:* the run is named `2026.11.19: Code Freeze`.
+Its summary has the versions of each branch, the releases marked ready, the merges, the pushes, and the milestones.
+
+*If it fails:* the run fails before changing anything, and lists everything that stopped it at once.
+Common causes:
+
+* `release/<version> has not joined the release train`, or `does not exist`: go back to <<branches>> and <<join>>.
+* `must have one version`: make the OSS, frozen, and active branches of the generation agree on a version.
+* *Commercial code would reach OSS*: do not push.
+The message lists the commits.
+Nothing was pushed.
+
+Anything that was already done is skipped when you run it again.
+
+*Limiting it:* to freeze only some generations, give `branches` (for example `4.0.x,4.1.x`) or `lts-branches`.
+
+[[build]]
+== 5. 🔨 Building and Testing
+
+*Automated by:* `release-train-build.yml` and `release-train-test.yml`.
+The release train starts them on the release branch, and they report back to it.
+
+[WARNING]
+====
+These workflows refuse to be re-run from the *Re-run jobs* button.
+Use *Release Train – Retry* instead.
+====
+
+*If it fails:* find the cause in the run's log, fix it on the embargoed branch (see <<branches>>), and retry.
+
+[source,bash]
+----
+gh workflow run release-train-retry.yml \
+    --repo spring-projects/spring-ldap-commercial \
+    --ref release/4.0.8 \
+    --field release-train=2026.11.19
+----
+
+[[publish]]
+== 6. 🚀 Publishing
+
+*Automated by:* the release train, which deploys the release and pushes its tag.
+
+You do not do anything for this step.
+Once the tag is pushed, <<post-publish>> starts by itself.
+
+[[post-publish]]
+== 7. 🧹 After the Release Is Public
+
+*Automated by:* `post-publish.yml`, on a push of a tag that is a version, like `4.0.8`.
+It is in the OSS repository for an OSS release, and in the commercial repository for a long-term support release.
+
+It merges the tag into its branch and forward, without changing any branch's `gradle.properties`.
+It also copies the release's issues to the OSS repository and deletes the release and snapshot branches.
+Before deleting anything, it backs up the branches, and attaches the backup to the run as `restore-deleted-branches-4.0.8`.
+
+*Check it ran:* look for a run named `4.0.8: Post Publish` in the repository that the tag was pushed to.
+GitHub does not always deliver the event of a tag, so a tag with no run, or with a red one, was not processed.
+
+*If it fails:* read the run's summary, and see the https://github.com/spring-io/spring-security-actions/blob/main/docs/post-publish.md#reading-a-run[table of messages and what to do] in the guide.
+Nothing is pushed when a check fails.
+Every step can be repeated, so run it again once you have fixed the cause.
+
+*If it did not run, or to run it again:* run it by hand, with the dry run turned off.
+
+[source,bash]
+----
+gh workflow run post-publish.yml \
+    --repo spring-projects/spring-ldap \
+    --field tag=4.0.8 \
+    --field dry-run=false
+----
+
+Use `--repo spring-projects/spring-ldap-commercial` for a hotfix or a long-term support release.
+
+*To check the result:* run it again with the default, a dry run.
+A tag that is done has nothing left to do: it reports `Nothing to push: every branch has the tag already`.
+
+[TIP]
+====
+To see what it would do before the tag exists, run it with `--field ref=release/4.0.8` and leave the dry run on.
+It attaches a repository with the merged branches that you can look at.
+====
+
+[[materials]]
+== 8. 📣 Docs, Release Notes, and the Learn Page
+
+*Automated by:* `release-announcements-publish.yml`, which `post-publish.yml` runs once its work is done.
+It deploys the docs, creates the GitHub release with notes generated from the milestone, and adds the release to the https://spring.io/projects/spring-ldap#learn[learn page].
+
+*If it fails, or did not run:* run it by hand.
+It is safe to run again: it regenerates and republishes the same release notes.
+
+[source,bash]
+----
+gh workflow run release-announcements-publish.yml \
+    --repo spring-projects/spring-ldap \
+    --field version=4.0.8
+----
+
+To redeploy only the docs, run `deploy-docs.yml`.
+
+[[next-version]]
+== 9. ⏭️ The Next Development Version
+
+*Automated by:* the code freeze, <<freeze>>.
+It commits `Next Development Version (4.0.9-SNAPSHOT)` on each branch.
+There is nothing to do afterward.
+
+== 🧾 Not Yet Documented Here
+
+These are known gaps.
+They are left out rather than guessed at; please add them as they are worked out:
+
+* Manually generating release notes, when the automation can't.
+* Publishing a release when the release train cannot.
+* Repairing the issues created for CVE fixes when `ensure-cve-issues.yml` does not run.
+* Announcing a release outside of GitHub.
+* Releasing a milestone or release candidate of a new `.0` version.
+
+== 🔗 See Also
+
+* https://docs.spring.io/spring-ldap/reference/releasing.html[Releasing] -- how and why, in the reference
+* https://docs.spring.io/spring-ldap/reference/merging.html[Merging Changes]
+* https://github.com/spring-io/spring-security-actions[spring-io/spring-security-actions] -- the automation, with a guide for each workflow
+* https://github.com/spring-io/spring-security-release-tools[spring-io/spring-security-release-tools]
