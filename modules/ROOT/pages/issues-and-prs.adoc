@@ -1,0 +1,96 @@
+= Issues and Pull Requests
+
+== 🎯 Purpose
+
+This page explains the conventions Spring LDAP follows for issues and pull requests, and the reasons behind them.
+For how to submit one, see https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+
+== 📚 Prerequisites
+
+* xref:glossary.adoc[Glossary]
+* xref:release-train.adoc[The Release Train]
+
+== 📝 Issues
+
+=== Titles
+
+An issue's title says what should be done.
+That makes the intent clear at a glance, and it lets the title be reused as-is in release notes.
+
+=== Descriptions
+
+An issue explains the problem and what should be done about it.
+
+* *For a bug*, a unit test or other reproducer is the most useful thing to include.
+It lets others confirm the bug and reach a solution faster.
+* *For a feature*, it helps to show whether the behavior is possible today.
+If it is, a sample makes that clear.
+Describing what you think the feature might look like separates how the code works now from how it could work, and a change in a sample is often a compelling case.
+
+=== Labels
+
+Every issue has at least two labels:
+
+. The module, like `in: core`.
+. The type, like `type: bug` or `type: enhancement`.
+
+Other labels describe status:
+
+* `status: ideal-for-contribution` and `status: first-timers-only` mark simple issues.
+They are removed once someone volunteers and is assigned.
+* `status: waiting-for-feedback` means a maintainer needs clarification, which is sometimes a sample.
+It is removed when the answer arrives.
+If two weeks pass with no answer, the issue is closed.
+
+[[milestones]]
+=== Milestones
+
+Every issue has a xref:glossary.adoc#milestone[milestone].
+
+* A bug is ideally scheduled for the next milestone of the branch it affects.
+* A feature is usually scheduled for the current minor-release milestone, so that it can be evaluated for the upcoming minor release.
+
+The milestone also tells you which branch to target; see xref:merging.adoc[Merging Changes].
+
+=== Security Vulnerabilities
+
+[WARNING]
+====
+Do not open a public issue for a suspected vulnerability.
+Follow the process at https://spring.io/security instead.
+====
+
+If a maintainer decides that an already-open public issue may describe a vulnerability, the issue is closed and recreated privately as a security advisory, and the reporter is added to it so the investigation can continue.
+See xref:advisory-updates.adoc[Security Fixes].
+
+== 🔀 Pull Requests
+
+Most of the above applies to pull requests too, with some differences.
+
+* *Titles* state what was actually done, which is sometimes different from what was reported.
+* *Labels* are usually the same as the issue's.
+If a pull request resolves an existing issue, the issue is typically closed with `status: superceded` and a note linking to the pull request.
+The pull request takes the issue's module and type labels.
+Any milestone on the issue is removed so that the change is not reported twice in the release notes.
+* *An issue is not required.*
+Any issue or pull request labeled `type: bug` or `type: dependency-upgrade` with a milestone is included in that milestone's release notes, linked or not.
+* *Maintainers may edit your pull request.*
+Preserving your contribution matters to us, so we prefer to ask for changes.
+If a change is small, stylistic, or obvious, a maintainer will likely add a polish commit before merging.
+
+== 🔁 One Fix, Several Releases
+
+A fix is made on the earliest branch that needs it and is merged forward, as described in xref:merging.adoc[Merging Changes].
+It is not backported by cherry-pick.
+
+[NOTE]
+====
+Each release that contains a fix has its own issue for it, so that every release's notes are accurate.
+GitHub only closes the issue that a commit names, so the others are closed by a maintainer once the fix has been merged forward.
+====
+
+== 🔗 See Also
+
+* xref:issue-types.adoc[Types of Changes]
+* xref:merging.adoc[Merging Changes]
+* https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc]

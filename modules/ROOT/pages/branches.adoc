@@ -1,0 +1,89 @@
+= Branches
+
+== 🎯 Purpose
+
+This page explains what each branch of Spring LDAP is for, including some branches that you cannot see in this repository.
+
+== 📚 Prerequisites
+
+* xref:glossary.adoc[Glossary]
+* xref:release-types.adoc[Release Types]
+
+== 🌳 Branches in This Repository
+
+Branches in `spring-projects/spring-ldap` are public and named either `main` or `<major>.<minor>.x`.
+
+[cols="1,3"]
+|===
+| Branch | Purpose
+
+| `<major>.<minor>.x`, like `4.1.x`
+| One xref:glossary.adoc#generation[generation] that is within its public support window.
+It receives bug fixes and the other changes described in xref:issue-types.adoc[Types of Changes].
+
+| `main`
+| The next minor release, if it is open for development.
+Otherwise, the first patch release of the latest minor release.
+|===
+
+=== What `main` Represents
+
+If `main` shows `4.2.1-SNAPSHOT`, then `4.2.0` is out and no work on 4.3 has begun.
+Once a `4.2.x` branch is created for maintenance, `main` shows `4.3.0-SNAPSHOT`, which means that development of 4.3 has begun.
+
+TIP: The current support windows, and so which `<major>.<minor>.x` branches exist, are on the https://spring.io/projects/spring-ldap#support[Spring LDAP project page].
+
+[[embargoed-branches]]
+== 🔒 Branches You Cannot See
+
+Some fixes, security fixes in particular, are xref:glossary.adoc#embargoed[embargoed]: they are kept private until the release that contains them is public.
+Those fixes are developed on branches in a private repository, so that no details are public ahead of time.
+
+You may notice these branches referred to in the project's https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/ci.yml[`ci.yml`].
+They are listed here so that nothing in the repository is a mystery.
+
+[cols="2,3"]
+|===
+| Branch | Purpose
+
+| `embargoed/frozen/<generation>`
+| A private copy of a public branch that also contains the embargoed fixes that will ship in the next release.
+It is a xref:glossary.adoc#frozen-branch[frozen branch]: it accepts no further embargoed fixes.
+
+| `embargoed/active/<generation>`
+| The same, but still open to additional embargoed fixes.
+It is an xref:glossary.adoc#active-branch[active branch].
+
+| `embargoed/lts/<generation>`
+| A generation whose public support window has ended.
+See xref:release-types.adoc[Release Types].
+|===
+
+Each `frozen` and `active` branch contains everything in the public branch it is named after, so a public change always reaches the private copies.
+The reverse never happens until a release is public.
+See xref:merging.adoc[Merging Changes].
+
+[[temporary-branches]]
+== ⏳ Temporary Branches
+
+Automation creates, rebuilds, and deletes these branches.
+No one commits to them.
+
+[cols="2,3"]
+|===
+| Branch | Purpose
+
+| `release/<version>`
+| Carries the commits of one release: dependency upgrades, and a final `Release <version>` commit.
+It is deleted once the release is public.
+
+| `snapshot/<snapshot-version>`
+| The branch from which snapshot builds of an upcoming release are published.
+|===
+
+See xref:releasing.adoc[Releasing] for how they fit together.
+
+== 🔗 See Also
+
+* xref:merging.adoc[Merging Changes] -- how a change flows between these branches
+* xref:releasing.adoc[Releasing]

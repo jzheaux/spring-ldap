@@ -1,0 +1,61 @@
+= Release Types
+
+== 🎯 Purpose
+
+This page explains the kinds of release Spring LDAP makes, who each is for, and how a xref:glossary.adoc#generation[generation] moves from one to the next.
+
+== 📚 Prerequisites
+
+* xref:glossary.adoc[Glossary]
+
+== 📦 The Three Kinds of Release
+
+[cols="1,1,3"]
+|===
+| Kind | Example version | What it is
+
+| xref:glossary.adoc#oss-release[OSS release]
+| `4.1.4`, `4.2.0-RC1`
+| A public release, published to Maven Central, for a generation that is still within its https://spring.io/projects/spring-ldap#support[public support window].
+
+| xref:glossary.adoc#lts[Long-term support (LTS) release]
+| `3.3.12`
+| A release of a generation whose public support window has ended.
+It is made for commercial subscribers.
+
+| xref:glossary.adoc#hotfix-release[Hotfix release]
+| `4.1.0.1`
+| A release of one specific, already-released version, with extra fixes added.
+It is for those who cannot yet move to a newer release.
+Its version has four parts.
+|===
+
+== 🔄 The Life of a Generation
+
+A generation passes through these stages in order:
+
+....
+ OSS  ───────────►  LTS  ───────────►  End of life
+ (public releases)  (commercial        (no more commits
+                     releases)          or releases)
+....
+
+* While a generation is in its *OSS* stage, its releases are public and its branch is in this repository.
+* When its public support window ends, the generation moves to *LTS*.
+The public branch stops receiving commits.
+* Eventually the generation reaches *end of life* and receives nothing further.
+
+The current windows are published on the https://spring.io/projects/spring-ldap#support[Spring LDAP project page].
+
+[NOTE]
+====
+A hotfix is not a stage.
+It is a one-off built from a specific release, and it is never merged back into the generation it came from.
+See xref:releasing.adoc[Releasing].
+====
+
+== 🔗 See Also
+
+* xref:release-train.adoc[The Release Train] -- when releases happen
+* xref:branches.adoc[Branches] -- where each kind of release is built
+* https://spring.io/projects/spring-ldap#learn[Reference documentation for released versions]

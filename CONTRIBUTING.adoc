@@ -1,6 +1,9 @@
-= Contributing to Spring Security
+= Contributing to Spring LDAP
 
 First off, thank you for taking the time to contribute! :+1: :tada:
+
+NOTE: This page says what to do.
+To understand how issues, branches, merging, and releases work, and why, see https://docs.spring.io/spring-ldap/reference/how-we-work.html[How We Work] in the reference documentation.
 
 == Table of Contents
 
@@ -28,7 +31,7 @@ Please report unacceptable behavior to spring-code-of-conduct@pivotal.io.
 === Ask Questions
 
 If you have a question, check Stack Overflow using
-https://stackoverflow.com/questions/tagged/spring-security+or+spring-ldap+or+spring-authorization-server+or+spring-session?tab=Newest[this list of tags].
+https://stackoverflow.com/questions/tagged/spring-ldap?tab=Newest[the `spring-ldap` tag].
 Find an existing discussion, or start a new one if necessary.
 
 If you believe there is an issue, search through https://github.com/spring-projects/spring-ldap/issues[existing issues] trying a  few different ways to find discussions, past or current, that are related to the issue.
@@ -60,9 +63,10 @@ We love contributors, and we may ask you to <<submit-a-pull-request,submit a PR 
 [[issue-lifecycle]]
 === Issue Lifecycle
 
-When an issue is first created, it is flagged `waiting-for-triage` waiting for a team member to triage it.
-Once the issue has been reviewed, the team may ask for further information if needed, and based on the findings, the issue is either assigned a target branch (or no branch if a feature) or is closed with a specific status.
+When an issue is first created, it is labeled `status: waiting-for-triage` while it waits for a team member to triage it.
+Once the issue has been reviewed, the team may ask for further information if needed, and based on the findings, the issue is either assigned a milestone, which determines the target branch (or the next minor release if a feature), or is closed with a specific status.
 The target branch is https://spring.io/projects/spring-ldap#support[the earliest supported branch] where <<choose-a-branch,the change will be applied>>.
+See https://docs.spring.io/spring-ldap/reference/issues-and-prs.html[Issues and Pull Requests] for the conventions we follow.
 
 When a fix is ready, the issue is closed and may still be re-opened until the fix is released.
 After that the issue will typically no longer be reopened.
@@ -72,7 +76,7 @@ In most cases however any follow-up reports will need to be created as new issue
 [[build-from-source]]
 === Build from Source
 
-See https://github.com/spring-projects/spring-security/tree/main#building-from-source[Build from Source] for instructions on how to check out, build, and import the Spring Security source code into your IDE.
+See https://github.com/spring-projects/spring-ldap#building-from-source[Building from Source] for instructions on how to check out and build Spring LDAP.
 
 [[code-style]]
 === Source Code Style
@@ -94,26 +98,23 @@ Don't worry if you don't get them all correct the first time, we will help you.
 [[sign-cla]]
 1. All commits must include a __Signed-off-by__ trailer at the end of each commit message to indicate that the contributor agrees to the Developer Certificate of Origin.
    For additional details, please refer to the blog post https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring[Hello DCO, Goodbye CLA: Simplifying Contributions to Spring].
-   [[create-an-issue]]
-1. Must you https://github.com/spring-projects/spring-security/issues/new/choose[create an issue] first? No, but it is recommended for features and larger bug fixes. It's easier discuss with the team first to determine the right fix or enhancement.
+   [[create-an-issue-first]]
+1. Must you https://github.com/spring-projects/spring-ldap/issues/new/choose[create an issue] first? No, but it is recommended for features and larger bug fixes. It's easier discuss with the team first to determine the right fix or enhancement.
    For typos and straightforward bug fixes, starting with a pull request is encouraged.
    Please include a description for context and motivation.
    Note that the team may close your pull request if it's not a fit for the project.
    [[choose-a-branch]]
-1. Always check out the branch indicated in the milestone and submit pull requests against it (for example, for milestone `5.8.3` use the `5.8.x` branch).
+1. Always check out the branch indicated in the milestone and submit pull requests against it (for example, for milestone `4.0.3` use the `4.0.x` branch).
    If there is no milestone, choose `main`.
-   Once merged, the fix will be forwarded-ported to applicable branches including `main`.
+   You only need one pull request: once it is merged, a maintainer merges the change forward into the later branches, including `main`.
+   See https://docs.spring.io/spring-ldap/reference/merging.html[Merging Changes] for how that works.
    [[create-a-local-branch]]
 1. Create a local branch
-   If this is for an issue, consider a branch name with the issue number, like `gh-22276`.
+   If this is for an issue, consider a branch name with the issue number, like `gh-1234`.
    [[write-tests]]
 1. Add documentation and JUnit Tests for your changes.
-   [[update-copyright]]
-1. In all files you edited, if the copyright header is of the form 2002-20xx, update the final copyright year to the current year.
    [[add-since]]
 1. If on `main`, add `@since` JavaDoc attributes to new public APIs that your PR adds
-   [[change-rnc]]
-1. If you are updating the XSD, please instead update the RNC file and then run `./gradlew :spring-security-config:rncToXsd`.
    [[format-code]]
 1. For each commit, build the code using `./gradlew format check`.
    This command ensures the code meets most of <<code-style,the style guide>>; a notable exception is import order.
@@ -122,23 +123,24 @@ Don't worry if you don't get them all correct the first time, we will help you.
    multiple edits or corrections of the same logical change.
    See https://git-scm.com/book/en/Git-Tools-Rewriting-History[Rewriting History section of Pro Git] for an overview of streamlining the commit history.
    [[format-commit-messages]]
-1. Format commit messages using 55 characters for the subject line, 72 characters per line
-   for the description, followed by the issue fixed, for example, `Closes gh-22276`.
+1. Format commit messages with a subject line of about 50 characters, in the imperative mood, and 72 characters per line
+   for the description, followed by the issue fixed, for example, `Closes gh-1234`.
+   If a change takes several commits, use `Issue gh-1234` for all but the last.
+   Keep each commit an atomic unit of work; for example, don't mix cleanup with a bug fix.
    See the https://git-scm.com/book/en/Distributed-Git-Contributing-to-a-Project#Commit-Guidelines[Commit Guidelines section of Pro Git] for best practices around commit messages, and use `git log` to see some examples.
-   Present tense is preferred.
 +
 [indent=0]
 ----
 Address NullPointerException
 
-Closes gh-22276
+Closes gh-1234
 ----
 [[reference-issue]]
 1. If there is a prior issue, reference the GitHub issue number in the description of the pull request.
 +
 [indent=0]
 ----
-Closes gh-22276
+Closes gh-1234
 ----
 
 If accepted, your contribution may be heavily modified as needed prior to merging.
@@ -153,4 +155,4 @@ When it is time to merge, you'll be asked to squash your commits.
 
 Helping to review pull requests is another great way to contribute.
 Your feedback can help to shape the implementation of new features.
-When reviewing pull requests, however, please refrain from approving or rejecting a PR unless you are a core committer for Spring Security.
+When reviewing pull requests, however, please refrain from approving or rejecting a PR unless you are a core committer for Spring LDAP.

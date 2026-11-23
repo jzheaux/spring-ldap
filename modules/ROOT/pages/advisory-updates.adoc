@@ -1,0 +1,56 @@
+= Security Fixes
+
+== 🎯 Purpose
+
+This page explains how a vulnerability in Spring LDAP goes from a report to a public fix, and why some of it happens out of sight.
+
+== 📚 Prerequisites
+
+* xref:release-types.adoc[Release Types]
+* xref:branches.adoc[Branches]
+* xref:issue-types.adoc[Types of Changes]
+
+== 🤫 Why Some of This Is Private
+
+A vulnerability that is described publicly before a fix is available puts every user at risk.
+So fixes are xref:glossary.adoc#embargoed[embargoed]: developed privately, and made public only in the release that contains them.
+
+[IMPORTANT]
+====
+To report a suspected vulnerability, follow the process at https://spring.io/security.
+Please do not open a public issue or pull request.
+====
+
+== 🛣️ The Path of a Fix
+
+. A report is received through the process at https://spring.io/security.
+. The team decides whether it is a vulnerability, and which releases are affected.
+. The fix is developed privately, in every affected generation.
+. The fix is released.
+. The vulnerability and the fix are announced, with a CVE if one applies.
+
+=== Who Gets the Fix
+
+A fix is made for each affected generation, whether it is public, in xref:glossary.adoc#lts[long-term support], or has a xref:glossary.adoc#hotfix-release[hotfix].
+See xref:release-types.adoc[Release Types].
+
+=== How the Fix Reaches Each Branch
+
+The fix follows the same xref:glossary.adoc#merge-forward[merge-forward] approach as any other change, but on private branches.
+See xref:merging.adoc#security-fixes[Merging Changes].
+
+== 🧰 API Changes
+
+A security fix may change the public API when there is a clear argument that it must.
+The most common reason is that the mitigation cannot be followed without an API that is not yet present.
+
+[TIP]
+====
+This usually looks like deprecating an insecure API and adding an alternative at the same time, so that users can move forward.
+====
+
+== 🔗 See Also
+
+* xref:issue-types.adoc[Types of Changes]
+* xref:merging.adoc[Merging Changes]
+* https://spring.io/security[Spring Security Policy and Advisories]

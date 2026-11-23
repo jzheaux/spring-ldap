@@ -1,0 +1,107 @@
+= Merging Changes
+
+== 🎯 Purpose
+
+This page explains where a change is committed and how it then reaches every other branch that needs it.
+
+If you are contributing a pull request, you only need <<contributors>>.
+The rest is for those who are curious about, or responsible for, the merging.
+
+== 📚 Prerequisites
+
+* xref:branches.adoc[Branches] -- what `main`, `<major>.<minor>.x`, and the embargoed branches are for
+* xref:issue-types.adoc[Types of Changes] -- bug fixes, enhancements, and security fixes
+* xref:advisory-updates.adoc[Security Fixes] -- how vulnerability fixes are developed and released
+* xref:release-types.adoc[Release Types] -- OSS, long-term support, and hotfix releases
+* xref:release-train.adoc[The Release Train] -- when releases happen
+
+[[contributors]]
+== 🙋 If You Are Contributing a Pull Request
+
+Target the branch named by the issue's milestone, or `main` if there is no milestone.
+A maintainer merges your change and carries it forward.
+You never need to open one pull request per branch.
+
+[[merge-forward]]
+== 🔀 The Rule: Merge Forward
+
+A change is committed to the *earliest* branch that needs it, then *merged* into each later branch in order.
+It is not cherry-picked, with one exception: <<security-fixes>>.
+
+Merging keeps one history, so a later branch can never quietly lose a fix that an earlier one has.
+
+....
+4.0.x  ───────►  4.1.x  ───────►  main
+....
+
+Each branch is merged into the next, so a fix committed to `4.0.x` reaches `4.1.x` and then `main`.
+
+NOTE: Merging forward is why a fix is not backported.
+A fix is made once, in the earliest place, and moves forward.
+
+== 🧭 Where Each Kind of Change Goes
+
+=== 🐛 Bug Fixes
+
+A bug fix goes onto the earliest supported branch that is affected, then merges forward.
+An issue is created for each branch that receives the fix so that each release's notes are accurate; see xref:issues-and-prs.adoc[Issues and Pull Requests].
+
+=== ✨ Enhancements
+
+An enhancement goes onto `main`, if `main` is open for development, and merges forward from there.
+
+An enhancement may go onto an earlier branch if it is polish, a documentation improvement, or a low-risk performance improvement.
+Such a change merges forward in the same way as a bug fix.
+See xref:issue-types.adoc#earlier-enhancements[Types of Changes].
+
+[[security-fixes]]
+=== 🔒 Security Fixes
+
+Security fixes are developed on private, xref:glossary.adoc#embargoed[embargoed] branches; see xref:branches.adoc#embargoed-branches[Branches].
+Those branches mirror the public ones and are kept in sync with them by merging forward:
+
+* The public branches merge forward as above.
+* Each public branch also merges into its private branches, so the private branches always contain every public change.
+* A fix for a long-term support generation is made on the earliest affected long-term support branch, and merged forward through the others.
+Its net change is then cherry-picked onto the earliest affected private branch of a public generation, and merged forward from there.
+
+[IMPORTANT]
+====
+Nothing embargoed reaches a public branch until the release that contains it is public.
+====
+
+=== 🚀 Releases and Code Freezes
+
+Releases are commits too, and they follow the same rules.
+The commits of a release are made by automation, and the tag of a published release is merged forward without changing any branch's own version.
+See xref:releasing.adoc[Releasing].
+
+== 🛠️ Merging as a Maintainer
+
+Merge commits are signed and signed off, and their subject is `merge: <subject of the commit being merged forward>`.
+
+[TIP]
+====
+Maintainers with access to the private branches can use https://github.com/rwinch/zsh-plugins[rwinch/zsh-plugins].
+Its `git-branches` commands check that every branch is up to date, merge a whole chain of branches in one go, and print the push command instead of pushing.
+====
+
+== 🔍 Examples
+
+=== A Bug in `4.0.x`
+
+. The fix is committed to `4.0.x`.
+. `4.0.x` is merged into `4.1.x`, which is merged into `main`.
+. Each public branch is merged into its private branches.
+
+=== A Vulnerability in Long-Term Support and in `4.0.x`
+
+. The fix is committed to the earliest affected long-term support branch, and merged forward through the others.
+. The net change is cherry-picked onto the private branch of `4.0.x`.
+. That branch is merged forward through the private branches of the later generations and of `main`.
+
+== 🔗 See Also
+
+* xref:releasing.adoc[Releasing]
+* xref:branches.adoc[Branches]
+* https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc]

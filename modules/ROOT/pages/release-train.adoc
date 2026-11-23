@@ -1,0 +1,41 @@
+= The Release Train
+
+== 🎯 Purpose
+
+This page explains how Spring LDAP's releases are scheduled, and how a release finds out which date it ships on.
+
+== 📚 Prerequisites
+
+* xref:release-types.adoc[Release Types]
+
+== 🚂 What a Release Train Is
+
+Spring projects release together, on a shared schedule.
+Each scheduled release date has a *release train*, named for its date, like `2026.11.19`.
+A release that is part of a train ships when that train does.
+
+The dates of upcoming trains are published on the https://spring.io/calendar[Spring calendar].
+
+[NOTE]
+====
+The calendar is the source of truth for dates.
+A date mentioned anywhere else, including in an issue, is a plan that the calendar may supersede.
+====
+
+== 🎟️ How a Release Joins a Train
+
+. Every release has a xref:glossary.adoc#milestone[milestone], titled with the release's version.
+. The milestone's due date decides which train the release belongs to.
+. When the release is built, it joins that train.
+. The train also drives the dependency upgrades that the release picks up, so that the projects in a train work with the same versions of their shared dependencies.
+
+[IMPORTANT]
+====
+If a milestone has no due date, the release can still be built, but it does not join a train and does not pick up the train's dependency upgrades.
+Setting the due date is what puts a release on the calendar.
+====
+
+== 🔗 See Also
+
+* xref:releasing.adoc[Releasing] -- what happens once a release has joined a train
+* xref:issues-and-prs.adoc#milestones[Milestones]

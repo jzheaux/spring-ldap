@@ -1,0 +1,68 @@
+= Types of Changes
+
+== 🎯 Purpose
+
+This page explains the kinds of change Spring LDAP makes, and how the kind decides which releases receive it.
+
+== 📚 Prerequisites
+
+* xref:release-types.adoc[Release Types]
+* xref:branches.adoc[Branches]
+
+== 🧩 Summary
+
+[cols="1,3"]
+|===
+| Type | Goes into
+
+| 🐛 Bug fix
+| The earliest supported generation that is affected, and every later one.
+
+| ✨ Enhancement
+| The minor release that is open for development, which is normally `main`.
+A few kinds of enhancement may go into earlier generations; see <<earlier-enhancements>>.
+
+| 📦 Dependency upgrade
+| Whichever releases the xref:release-train.adoc[release train] says.
+
+| 🔒 Security fix
+| Every affected generation, including long-term support.
+See xref:advisory-updates.adoc[Security Fixes].
+|===
+
+== 🐛 Bug Fixes
+
+A bug fix goes into the earliest affected generation that is still https://spring.io/projects/spring-ldap#support[supported], and is then merged forward through every later generation and into `main`.
+A bug is fixed once, in the earliest place, so that no later generation can be missing a fix that an earlier one has.
+
+[[earlier-enhancements]]
+== ✨ Enhancements
+
+New features and API changes go into the minor release that is open for development.
+Normally that is `main`.
+
+Some enhancements carry so little risk that waiting for the next minor release would only delay a benefit.
+These may go into earlier generations:
+
+. *Polish and cleanup*, with no new features and no API changes.
+. *Documentation clarifications and enhancements.*
+. *Low-risk performance improvements.*
+
+IMPORTANT: When in doubt, an enhancement waits for the next minor release.
+Anything that adds a feature or changes the public API is never in this list.
+
+== 🔒 Security Fixes
+
+Security fixes are different from other changes in two ways.
+They are developed privately until the release that contains them is public, and they are made in every affected generation, including those in long-term support.
+
+A security fix may also change the public API, if there is a clear argument that it must.
+The usual reason is that the mitigation cannot be followed without an API that does not exist yet.
+For example, if an insecure API is being deprecated, an alternative has to be provided so that users have somewhere to move.
+
+See xref:advisory-updates.adoc[Security Fixes] for the full picture.
+
+== 🔗 See Also
+
+* xref:issues-and-prs.adoc[Issues and Pull Requests]
+* xref:merging.adoc[Merging Changes]

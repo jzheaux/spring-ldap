@@ -1,0 +1,79 @@
+= Releasing
+
+== 🎯 Purpose
+
+This page explains how a Spring LDAP release is built and published, and what happens to the branches afterward.
+
+It describes how things work.
+For the list of tasks a maintainer follows, see https://github.com/spring-projects/spring-ldap/blob/main/RELEASE.adoc[RELEASE.adoc].
+
+== 📚 Prerequisites
+
+* xref:release-types.adoc[Release Types]
+* xref:release-train.adoc[The Release Train]
+* xref:branches.adoc[Branches]
+* xref:merging.adoc[Merging Changes]
+
+== 🚀 From Branch to Release
+
+A release is a set of commits, so it follows the same xref:merging.adoc[merging rules] as any other change.
+Most of it is done by automation, which lives in the repository's https://github.com/spring-projects/spring-ldap/tree/main/.github/workflows[workflows] and in
+https://github.com/spring-io/spring-security-actions[spring-io/spring-security-actions].
+
+. *A milestone is ready.* The release's xref:glossary.adoc#milestone[milestone] has a due date, which puts it on a xref:release-train.adoc[release train].
+. *The release is built.* Automation builds a xref:glossary.adoc#release-branch[release branch] from the branch being released.
+It carries the dependency upgrades that the train asks for, then a final `Release <version>` commit.
+It also builds a xref:glossary.adoc#snapshot-branch[snapshot branch] for the upcoming release.
+. *The release joins the train.* A workflow joins the release to its train; see
+https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/release-train-join.yml[`release-train-join.yml`].
+. *The release is published.* The release is deployed and its tag is pushed.
+. *The branches are tidied up.* See <<after-publish>>.
+
+[NOTE]
+====
+Nobody commits to a release branch or a snapshot branch.
+Automation rebuilds them from the branch they came from, so a change to the source branch is all that is ever needed.
+====
+
+[[after-publish]]
+== 🧹 After a Release Is Public
+
+Once a release is public, its tag is merged into the branch it was built from, and then forward through the later branches.
+This is a xref:glossary.adoc#tag-merge[tag merge].
+
+* It records the release in each branch's history, so that it is clear which commits a release contains.
+* It does not change `gradle.properties`.
+Each branch keeps its own version.
+* The release branch is deleted.
+
+The automation that does this is
+https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/post-publish.yml[`post-publish.yml`]; its guide is in
+https://github.com/spring-io/spring-security-actions/blob/main/docs/post-publish.md[spring-security-actions].
+
+Hotfix and long-term support releases differ:
+
+* A hotfix is never merged back into the generation it was based on.
+* A long-term support release is merged only through the long-term support branches.
+
+[[code-freeze]]
+== ❄️ The Code Freeze
+
+Shortly before a release train ships, a xref:glossary.adoc#code-freeze[code freeze] locks in what each branch will release.
+Every branch then moves on to its next development version, and history is merged forward.
+The embargoed branches take part, so that the frozen branch of each generation catches up with its active branch.
+
+This is also done by automation; see
+https://github.com/spring-io/spring-security-actions/blob/main/docs/code-freeze.md[spring-security-actions].
+
+[TIP]
+====
+The workflow files in this repository are generated, not written by hand.
+Keeping them current is covered in the documentation of
+https://github.com/spring-io/spring-security-release-tools[spring-io/spring-security-release-tools].
+====
+
+== 🔗 See Also
+
+* xref:merging.adoc[Merging Changes]
+* xref:release-train.adoc[The Release Train]
+* https://spring.io/projects/spring-ldap#learn[Reference documentation for released versions]
