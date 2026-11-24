@@ -3,7 +3,7 @@
 First off, thank you for taking the time to contribute! :+1: :tada:
 
 NOTE: This page says what to do.
-To understand how issues, branches, merging, and releases work, and why, see https://docs.spring.io/spring-ldap/reference/how-we-work.html[How We Work] in the reference documentation.
+To understand how issues, branches, merging, and releases work, and why, see link:contributing/README.adoc[How We Work].
 
 == Table of Contents
 
@@ -66,7 +66,7 @@ We love contributors, and we may ask you to <<submit-a-pull-request,submit a PR 
 When an issue is first created, it is labeled `status: waiting-for-triage` while it waits for a team member to triage it.
 Once the issue has been reviewed, the team may ask for further information if needed, and based on the findings, the issue is either assigned a milestone, which determines the target branch (or the next minor release if a feature), or is closed with a specific status.
 The target branch is https://spring.io/projects/spring-ldap#support[the earliest supported branch] where <<choose-a-branch,the change will be applied>>.
-See https://docs.spring.io/spring-ldap/reference/issues-and-prs.html[Issues and Pull Requests] for the conventions we follow.
+See link:contributing/issues-and-prs.adoc[Issues and Pull Requests] for the conventions we follow.
 
 When a fix is ready, the issue is closed and may still be re-opened until the fix is released.
 After that the issue will typically no longer be reopened.
@@ -107,7 +107,7 @@ Don't worry if you don't get them all correct the first time, we will help you.
 1. Always check out the branch indicated in the milestone and submit pull requests against it (for example, for milestone `4.0.3` use the `4.0.x` branch).
    If there is no milestone, choose `main`.
    You only need one pull request: once it is merged, a maintainer merges the change forward into the later branches, including `main`.
-   See https://docs.spring.io/spring-ldap/reference/merging.html[Merging Changes] for how that works.
+   See link:contributing/merging.adoc[Merging Changes] for how that works.
    [[create-a-local-branch]]
 1. Create a local branch
    If this is for an issue, consider a branch name with the issue number, like `gh-1234`.

@@ -5,7 +5,7 @@ It says which automation does each job, how to tell that it worked, and what to 
 
 [TIP]
 ====
-To understand *how* releases work and *why*, see https://docs.spring.io/spring-ldap/reference/releasing.html[Releasing] in the reference documentation.
+To understand *how* releases work and *why*, see link:contributing/releasing.adoc[Releasing].
 This page is only about what to do.
 ====
 
@@ -307,7 +307,7 @@ They are left out rather than guessed at; please add them as they are worked out
 
 == 🔗 See Also
 
-* https://docs.spring.io/spring-ldap/reference/releasing.html[Releasing] -- how and why, in the reference
-* https://docs.spring.io/spring-ldap/reference/merging.html[Merging Changes]
+* link:contributing/releasing.adoc[Releasing] -- how and why
+* link:contributing/merging.adoc[Merging Changes]
 * https://github.com/spring-io/spring-security-actions[spring-io/spring-security-actions] -- the automation, with a guide for each workflow
 * https://github.com/spring-io/spring-security-release-tools[spring-io/spring-security-release-tools]

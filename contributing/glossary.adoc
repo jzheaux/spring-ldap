@@ -2,7 +2,7 @@
 
 == 🎯 Purpose
 
-This page defines the terms used throughout xref:how-we-work.adoc[How We Work].
+This page defines the terms used throughout link:README.adoc[How We Work].
 Each term is linked to the page that explains it in depth.
 
 [[active-branch]]
@@ -10,20 +10,20 @@ Each term is linked to the page that explains it in depth.
 
 A private branch, one per <<generation,generation>>, that holds <<embargoed,embargoed>> fixes and is still open to receiving more.
 Compare the <<frozen-branch,frozen branch>>.
-See xref:branches.adoc#embargoed-branches[Branches].
+See link:branches.adoc#embargoed-branches[Branches].
 
 [[code-freeze]]
 == Code freeze
 
 The point at which a <<release-train,release train>>'s releases are locked in and every branch moves on to its next development version.
-See xref:releasing.adoc#code-freeze[Releasing].
+See link:releasing.adoc#code-freeze[Releasing].
 
 [[embargoed]]
 == Embargoed
 
 Kept private until the release that contains it is public, so that users can upgrade before the details are known.
 This applies to security fixes.
-See xref:advisory-updates.adoc[Security Fixes].
+See link:advisory-updates.adoc[Security Fixes].
 
 [[frozen-branch]]
 == Frozen branch
@@ -31,7 +31,7 @@ See xref:advisory-updates.adoc[Security Fixes].
 A private branch, one per <<generation,generation>>, that holds the <<embargoed,embargoed>> fixes that will ship in the next release.
 It accepts no additional embargoed fixes.
 Compare the <<active-branch,active branch>>.
-See xref:branches.adoc#embargoed-branches[Branches].
+See link:branches.adoc#embargoed-branches[Branches].
 
 [[generation]]
 == Generation
@@ -43,53 +43,53 @@ Each generation has its own branch.
 == Hotfix release
 
 A release, numbered with four parts like `4.1.0.1`, that adds fixes to one specific <<oss-release,OSS release>> for those who cannot move to a newer one.
-See xref:release-types.adoc[Release Types].
+See link:release-types.adoc[Release Types].
 
 [[lts]]
 == Long-term support (LTS)
 
 The stage of a <<generation,generation>> after its public support window ends, during which it continues to receive fixes and releases for Enterprise customers.
-See xref:release-types.adoc[Release Types].
+See link:release-types.adoc[Release Types].
 
 [[merge-forward]]
 == Merge forward
 
 Committing a change to the earliest branch that needs it, and then merging that branch into each later branch in order.
-See xref:merging.adoc[Merging Changes].
+See link:merging.adoc[Merging Changes].
 
 [[milestone]]
 == Milestone
 
 A GitHub milestone, titled with a release's version, that collects the issues and pull requests that ship in that release.
 Its due date is the day the release is planned to be available.
-See xref:issues-and-prs.adoc[Issues and Pull Requests].
+See link:issues-and-prs.adoc[Issues and Pull Requests].
 
 [[oss-release]]
 == OSS release
 
 A release published publicly, to Maven Central, for a generation that is within its public support window.
-See xref:release-types.adoc[Release Types].
+See link:release-types.adoc[Release Types].
 
 [[release-branch]]
 == Release branch
 
 A short-lived, automation-built branch named `release/<version>` that carries the commits of one release.
-See xref:branches.adoc#temporary-branches[Branches].
+See link:branches.adoc#temporary-branches[Branches].
 
 [[release-train]]
 == Release train
 
 A shared schedule on which Spring projects release together.
-See xref:release-train.adoc[The Release Train].
+See link:release-train.adoc[The Release Train].
 
 [[snapshot-branch]]
 == Snapshot branch
 
 A short-lived, automation-built branch named `embargoed/<snapshot-version>`, like `embargoed/4.0.9.1-SNAPSHOT`, that snapshot builds of an upcoming release are published from.
-See xref:branches.adoc#temporary-branches[Branches].
+See link:branches.adoc#temporary-branches[Branches].
 
 [[tag-merge]]
 == Tag merge
 
 Merging a published release's tag into its generation's branch, and forward, so that the history records the release without changing the branch's own version.
-See xref:releasing.adoc#after-publish[Releasing].
+See link:releasing.adoc#after-publish[Releasing].

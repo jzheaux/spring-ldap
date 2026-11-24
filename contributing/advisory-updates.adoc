@@ -6,14 +6,14 @@ This page explains how a vulnerability in Spring LDAP goes from a report to a pu
 
 == 📚 Prerequisites
 
-* xref:release-types.adoc[Release Types]
-* xref:branches.adoc[Branches]
-* xref:issue-types.adoc[Types of Changes]
+* link:release-types.adoc[Release Types]
+* link:branches.adoc[Branches]
+* link:issue-types.adoc[Types of Changes]
 
 == 🤫 Why Some of This Is Private
 
 A vulnerability that is described publicly before a fix is available puts every user at risk.
-So fixes are xref:glossary.adoc#embargoed[embargoed]: developed privately, and made public only in the release that contains them.
+So fixes are link:glossary.adoc#embargoed[embargoed]: developed privately, and made public only in the release that contains them.
 
 [IMPORTANT]
 ====
@@ -31,13 +31,13 @@ Please do not open a public issue or pull request.
 
 === Who Gets the Fix
 
-A fix is made for each affected generation, whether it is public, in xref:glossary.adoc#lts[long-term support], or has a xref:glossary.adoc#hotfix-release[hotfix].
-See xref:release-types.adoc[Release Types].
+A fix is made for each affected generation, whether it is public, in link:glossary.adoc#lts[long-term support], or has a link:glossary.adoc#hotfix-release[hotfix].
+See link:release-types.adoc[Release Types].
 
 === How the Fix Reaches Each Branch
 
-The fix follows the same xref:glossary.adoc#merge-forward[merge-forward] approach as any other change, but on private branches.
-See xref:merging.adoc#security-fixes[Merging Changes].
+The fix follows the same link:glossary.adoc#merge-forward[merge-forward] approach as any other change, but on private branches.
+See link:merging.adoc#security-fixes[Merging Changes].
 
 == 🧰 API Changes
 
@@ -51,6 +51,6 @@ This usually looks like deprecating an insecure API and adding an alternative at
 
 == 🔗 See Also
 
-* xref:issue-types.adoc[Types of Changes]
-* xref:merging.adoc[Merging Changes]
+* link:issue-types.adoc[Types of Changes]
+* link:merging.adoc[Merging Changes]
 * https://spring.io/security[Spring Security Policy and Advisories]

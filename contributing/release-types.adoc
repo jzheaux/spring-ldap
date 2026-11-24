@@ -2,11 +2,11 @@
 
 == 🎯 Purpose
 
-This page explains the kinds of release Spring LDAP makes, who each is for, and how a xref:glossary.adoc#generation[generation] moves from one to the next.
+This page explains the kinds of release Spring LDAP makes, who each is for, and how a link:glossary.adoc#generation[generation] moves from one to the next.
 
 == 📚 Prerequisites
 
-* xref:glossary.adoc[Glossary]
+* link:glossary.adoc[Glossary]
 
 == 📦 The Three Kinds of Release
 
@@ -14,17 +14,17 @@ This page explains the kinds of release Spring LDAP makes, who each is for, and 
 |===
 | Kind | Example version | What it is
 
-| xref:glossary.adoc#oss-release[OSS release]
+| link:glossary.adoc#oss-release[OSS release]
 | `4.1.4`, `4.2.0-RC1`
 | A public release, published to Maven Central, for a generation that is still within its https://spring.io/projects/spring-ldap#support[public support window].
-Its planned date is the due date of its xref:glossary.adoc#milestone[milestone]; see xref:release-train.adoc[The Release Train].
+Its planned date is the due date of its link:glossary.adoc#milestone[milestone]; see link:release-train.adoc[The Release Train].
 
-| xref:glossary.adoc#lts[Long-term support (LTS) release]
+| link:glossary.adoc#lts[Long-term support (LTS) release]
 | `3.3.12`
 | A release of a generation whose public support window has ended.
 It is made for Enterprise customers.
 
-| xref:glossary.adoc#hotfix-release[Hotfix release]
+| link:glossary.adoc#hotfix-release[Hotfix release]
 | `4.1.0.1`
 | A release of one specific, already-released version, with extra fixes added.
 It is for those who cannot yet move to a newer release.
@@ -52,11 +52,11 @@ The current windows are published on the https://spring.io/projects/spring-ldap#
 ====
 A hotfix is not a stage.
 It is a one-off built from a specific release, and it is never merged back into the generation it came from.
-See xref:releasing.adoc[Releasing].
+See link:releasing.adoc[Releasing].
 ====
 
 == 🔗 See Also
 
-* xref:release-train.adoc[The Release Train] -- when releases happen
-* xref:branches.adoc[Branches] -- where each kind of release is built
+* link:release-train.adoc[The Release Train] -- when releases happen
+* link:branches.adoc[Branches] -- where each kind of release is built
 * https://spring.io/projects/spring-ldap#learn[Reference documentation for released versions]

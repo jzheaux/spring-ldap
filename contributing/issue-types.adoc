@@ -6,8 +6,8 @@ This page explains the kinds of change Spring LDAP makes, and how the kind decid
 
 == 📚 Prerequisites
 
-* xref:release-types.adoc[Release Types]
-* xref:branches.adoc[Branches]
+* link:release-types.adoc[Release Types]
+* link:branches.adoc[Branches]
 
 == 🧩 Summary
 
@@ -23,11 +23,11 @@ This page explains the kinds of change Spring LDAP makes, and how the kind decid
 A few kinds of enhancement may go into earlier generations; see <<earlier-enhancements>>.
 
 | 📦 Dependency upgrade
-| Whichever releases the xref:release-train.adoc[release train] says.
+| Whichever releases the link:release-train.adoc[release train] says.
 
 | 🔒 Security fix
 | Every affected generation, including long-term support.
-See xref:advisory-updates.adoc[Security Fixes].
+See link:advisory-updates.adoc[Security Fixes].
 |===
 
 == 🐛 Bug Fixes
@@ -60,9 +60,9 @@ A security fix may also change the public API, if there is a clear argument that
 The usual reason is that the mitigation cannot be followed without an API that does not exist yet.
 For example, if an insecure API is being deprecated, an alternative has to be provided so that users have somewhere to move.
 
-See xref:advisory-updates.adoc[Security Fixes] for the full picture.
+See link:advisory-updates.adoc[Security Fixes] for the full picture.
 
 == 🔗 See Also
 
-* xref:issues-and-prs.adoc[Issues and Pull Requests]
-* xref:merging.adoc[Merging Changes]
+* link:issues-and-prs.adoc[Issues and Pull Requests]
+* link:merging.adoc[Merging Changes]

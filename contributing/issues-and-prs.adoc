@@ -3,12 +3,12 @@
 == 🎯 Purpose
 
 This page explains the conventions Spring LDAP follows for issues and pull requests, and the reasons behind them.
-For how to submit one, see https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+For how to submit one, see link:../CONTRIBUTING.adoc[CONTRIBUTING.adoc].
 
 == 📚 Prerequisites
 
-* xref:glossary.adoc[Glossary]
-* xref:release-train.adoc[The Release Train]
+* link:glossary.adoc[Glossary]
+* link:release-train.adoc[The Release Train]
 
 == 📝 Issues
 
@@ -45,15 +45,15 @@ If two weeks pass with no answer, the issue is closed.
 [[milestones]]
 === Milestones
 
-Every issue has a xref:glossary.adoc#milestone[milestone].
+Every issue has a link:glossary.adoc#milestone[milestone].
 
 * A bug is ideally scheduled for the next milestone of the branch it affects.
 * A feature is usually scheduled for the current minor-release milestone, so that it can be evaluated for the upcoming minor release.
 
 The milestone's due date is the day the release is planned to be available, which for an OSS release means downloadable from Maven Central.
-See xref:release-train.adoc[The Release Train].
+See link:release-train.adoc[The Release Train].
 
-The milestone also tells you which branch to target; see xref:merging.adoc[Merging Changes].
+The milestone also tells you which branch to target; see link:merging.adoc[Merging Changes].
 
 === Security Vulnerabilities
 
@@ -64,7 +64,7 @@ Follow the process at https://spring.io/security instead.
 ====
 
 If a maintainer decides that an already-open public issue may describe a vulnerability, the issue is closed and recreated privately as a security advisory, and the reporter is added to it so the investigation can continue.
-See xref:advisory-updates.adoc[Security Fixes].
+See link:advisory-updates.adoc[Security Fixes].
 
 == 🔀 Pull Requests
 
@@ -83,7 +83,7 @@ If a change is small, stylistic, or obvious, a maintainer will likely add a poli
 
 == 🔁 One Fix, Several Releases
 
-A fix is made on the earliest branch that needs it and is merged forward, as described in xref:merging.adoc[Merging Changes].
+A fix is made on the earliest branch that needs it and is merged forward, as described in link:merging.adoc[Merging Changes].
 It is not backported by cherry-pick.
 
 [NOTE]
@@ -94,6 +94,6 @@ GitHub only closes the issue that a commit names, so the others are closed by a 
 
 == 🔗 See Also
 
-* xref:issue-types.adoc[Types of Changes]
-* xref:merging.adoc[Merging Changes]
-* https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc]
+* link:issue-types.adoc[Types of Changes]
+* link:merging.adoc[Merging Changes]
+* link:../CONTRIBUTING.adoc[CONTRIBUTING.adoc]

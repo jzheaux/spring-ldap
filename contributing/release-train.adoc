@@ -6,7 +6,7 @@ This page explains how Spring LDAP's releases are scheduled, and how a release f
 
 == 📚 Prerequisites
 
-* xref:release-types.adoc[Release Types]
+* link:release-types.adoc[Release Types]
 
 == 🚂 What a Release Train Is
 
@@ -34,7 +34,7 @@ Whether and how a train is involved behind the scenes doesn't change that.
 
 The train decides the release date, and the milestone records it.
 
-. Every release has a xref:glossary.adoc#milestone[milestone], titled with the release's version.
+. Every release has a link:glossary.adoc#milestone[milestone], titled with the release's version.
 . The release's maintainers pick the train it will join, and set the milestone's due date to the train's date.
 . The automation reads the due date to find the train, and the release joins it when it is built.
 . The train also drives the dependency upgrades that the release picks up, so that the projects in a train work with the same versions of their shared dependencies.
@@ -47,5 +47,5 @@ Setting the due date is what puts a release on a train.
 
 == 🔗 See Also
 
-* xref:releasing.adoc[Releasing] -- what happens once a release has joined a train
-* xref:issues-and-prs.adoc#milestones[Milestones]
+* link:releasing.adoc[Releasing] -- what happens once a release has joined a train
+* link:issues-and-prs.adoc#milestones[Milestones]

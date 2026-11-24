@@ -9,11 +9,11 @@ The rest is for those who are curious about, or responsible for, the merging.
 
 == 📚 Prerequisites
 
-* xref:branches.adoc[Branches] -- what `main`, `<major>.<minor>.x`, and the embargoed branches are for
-* xref:issue-types.adoc[Types of Changes] -- bug fixes, enhancements, and security fixes
-* xref:advisory-updates.adoc[Security Fixes] -- how vulnerability fixes are developed and released
-* xref:release-types.adoc[Release Types] -- OSS, long-term support, and hotfix releases
-* xref:release-train.adoc[The Release Train] -- when releases happen
+* link:branches.adoc[Branches] -- what `main`, `<major>.<minor>.x`, and the embargoed branches are for
+* link:issue-types.adoc[Types of Changes] -- bug fixes, enhancements, and security fixes
+* link:advisory-updates.adoc[Security Fixes] -- how vulnerability fixes are developed and released
+* link:release-types.adoc[Release Types] -- OSS, long-term support, and hotfix releases
+* link:release-train.adoc[The Release Train] -- when releases happen
 
 [[contributors]]
 == 🙋 If You Are Contributing a Pull Request
@@ -44,7 +44,7 @@ A fix is made once, in the earliest place, and moves forward.
 === 🐛 Bug Fixes
 
 A bug fix goes onto the earliest supported branch that is affected, then merges forward.
-An issue is created for each branch that receives the fix so that each release's notes are accurate; see xref:issues-and-prs.adoc[Issues and Pull Requests].
+An issue is created for each branch that receives the fix so that each release's notes are accurate; see link:issues-and-prs.adoc[Issues and Pull Requests].
 
 === ✨ Enhancements
 
@@ -52,12 +52,12 @@ An enhancement goes onto `main`, if `main` is open for development, and merges f
 
 An enhancement may go onto an earlier branch if it is polish, a documentation improvement, or a low-risk performance improvement.
 Such a change merges forward in the same way as a bug fix.
-See xref:issue-types.adoc#earlier-enhancements[Types of Changes].
+See link:issue-types.adoc#earlier-enhancements[Types of Changes].
 
 [[security-fixes]]
 === 🔒 Security Fixes
 
-Security fixes are developed on private, xref:glossary.adoc#embargoed[embargoed] branches; see xref:branches.adoc#embargoed-branches[Branches].
+Security fixes are developed on private, link:glossary.adoc#embargoed[embargoed] branches; see link:branches.adoc#embargoed-branches[Branches].
 Those branches mirror the public ones and are kept in sync with them by merging forward:
 
 * The public branches merge forward as above.
@@ -74,7 +74,7 @@ Nothing embargoed reaches a public branch until the release that contains it is 
 
 Releases are commits too, and they follow the same rules.
 The commits of a release are made by automation, and the tag of a published release is merged forward without changing any branch's own version.
-See xref:releasing.adoc[Releasing].
+See link:releasing.adoc[Releasing].
 
 == 🛠️ Merging as a Maintainer
 
@@ -102,6 +102,6 @@ Its `git-branches` commands check that every branch is up to date, merge a whole
 
 == 🔗 See Also
 
-* xref:releasing.adoc[Releasing]
-* xref:branches.adoc[Branches]
-* https://github.com/spring-projects/spring-ldap/blob/main/CONTRIBUTING.adoc[CONTRIBUTING.adoc]
+* link:releasing.adoc[Releasing]
+* link:branches.adoc[Branches]
+* link:../CONTRIBUTING.adoc[CONTRIBUTING.adoc]
