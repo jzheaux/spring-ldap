@@ -50,6 +50,9 @@ Every issue has a xref:glossary.adoc#milestone[milestone].
 * A bug is ideally scheduled for the next milestone of the branch it affects.
 * A feature is usually scheduled for the current minor-release milestone, so that it can be evaluated for the upcoming minor release.
 
+The milestone's due date is the day the release is planned to be available, which for an OSS release means downloadable from Maven Central.
+See xref:release-train.adoc[The Release Train].
+
 The milestone also tells you which branch to target; see xref:merging.adoc[Merging Changes].
 
 === Security Vulnerabilities

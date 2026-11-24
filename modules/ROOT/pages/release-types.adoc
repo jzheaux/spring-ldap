@@ -17,11 +17,12 @@ This page explains the kinds of release Spring LDAP makes, who each is for, and 
 | xref:glossary.adoc#oss-release[OSS release]
 | `4.1.4`, `4.2.0-RC1`
 | A public release, published to Maven Central, for a generation that is still within its https://spring.io/projects/spring-ldap#support[public support window].
+Its planned date is the due date of its xref:glossary.adoc#milestone[milestone]; see xref:release-train.adoc[The Release Train].
 
 | xref:glossary.adoc#lts[Long-term support (LTS) release]
 | `3.3.12`
 | A release of a generation whose public support window has ended.
-It is made for commercial subscribers.
+It is made for Enterprise customers.
 
 | xref:glossary.adoc#hotfix-release[Hotfix release]
 | `4.1.0.1`
@@ -36,7 +37,7 @@ A generation passes through these stages in order:
 
 ....
  OSS  ───────────►  LTS  ───────────►  End of life
- (public releases)  (commercial        (no more commits
+ (public releases)  (Enterprise        (no more commits
                      releases)          or releases)
 ....
 

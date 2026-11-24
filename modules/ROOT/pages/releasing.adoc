@@ -20,7 +20,7 @@ A release is a set of commits, so it follows the same xref:merging.adoc[merging 
 Most of it is done by automation, which lives in the repository's https://github.com/spring-projects/spring-ldap/tree/main/.github/workflows[workflows] and in
 https://github.com/spring-io/spring-security-actions[spring-io/spring-security-actions].
 
-. *A milestone is ready.* The release's xref:glossary.adoc#milestone[milestone] has a due date, which puts it on a xref:release-train.adoc[release train].
+. *A milestone is ready.* The release's xref:glossary.adoc#milestone[milestone] has a due date, which is the date of the xref:release-train.adoc[release train] it will join.
 . *The release is built.* Automation builds a xref:glossary.adoc#release-branch[release branch] from the branch being released.
 It carries the dependency upgrades that the train asks for, then a final `Release <version>` commit.
 It also builds a xref:glossary.adoc#snapshot-branch[snapshot branch] for the upcoming release.

@@ -14,6 +14,8 @@ Spring projects release together, on a shared schedule.
 Each scheduled release date has a *release train*, named for its date, like `2026.11.19`.
 A release that is part of a train ships when that train does.
 
+By convention, a train runs about once a month, and Spring LDAP joins every one.
+
 The dates of upcoming trains are published on the https://spring.io/calendar[Spring calendar].
 
 [NOTE]
@@ -22,17 +24,25 @@ The calendar is the source of truth for dates.
 A date mentioned anywhere else, including in an issue, is a plan that the calendar may supersede.
 ====
 
+[IMPORTANT]
+====
+All you need to know as a user: the due date on a milestone is the day the release is planned to be downloadable from Maven Central.
+Whether and how a train is involved behind the scenes doesn't change that.
+====
+
 == 🎟️ How a Release Joins a Train
 
+The train decides the release date, and the milestone records it.
+
 . Every release has a xref:glossary.adoc#milestone[milestone], titled with the release's version.
-. The milestone's due date decides which train the release belongs to.
-. When the release is built, it joins that train.
+. The release's maintainers pick the train it will join, and set the milestone's due date to the train's date.
+. The automation reads the due date to find the train, and the release joins it when it is built.
 . The train also drives the dependency upgrades that the release picks up, so that the projects in a train work with the same versions of their shared dependencies.
 
 [IMPORTANT]
 ====
 If a milestone has no due date, the release can still be built, but it does not join a train and does not pick up the train's dependency upgrades.
-Setting the due date is what puts a release on the calendar.
+Setting the due date is what puts a release on a train.
 ====
 
 == 🔗 See Also

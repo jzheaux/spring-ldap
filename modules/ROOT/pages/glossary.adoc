@@ -48,7 +48,7 @@ See xref:release-types.adoc[Release Types].
 [[lts]]
 == Long-term support (LTS)
 
-The stage of a <<generation,generation>> after its public support window ends, during which it continues to receive fixes and releases for commercial subscribers.
+The stage of a <<generation,generation>> after its public support window ends, during which it continues to receive fixes and releases for Enterprise customers.
 See xref:release-types.adoc[Release Types].
 
 [[merge-forward]]
@@ -61,6 +61,7 @@ See xref:merging.adoc[Merging Changes].
 == Milestone
 
 A GitHub milestone, titled with a release's version, that collects the issues and pull requests that ship in that release.
+Its due date is the day the release is planned to be available.
 See xref:issues-and-prs.adoc[Issues and Pull Requests].
 
 [[oss-release]]

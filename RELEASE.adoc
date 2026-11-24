@@ -74,9 +74,8 @@ In the commands below, `4.0.8` stands for the version, `2026.11.19` for the rele
 
 *Automated by:* https://github.com/spring-projects/spring-ldap/blob/main/.github/workflows/sync-milestone.yml[`sync-milestone.yml`], which runs when a milestone is edited.
 
-The due date of the milestone is the date of the release train that the release joins.
-A due date of `2026-11-19` is the train `2026.11.19`.
-Check the https://spring.io/calendar[Spring calendar] for the date.
+Pick the release train on the https://spring.io/calendar[Spring calendar], and set the milestone's due date to the train's date.
+A due date of `2026-11-19` joins the train `2026.11.19`; the automation uses the due date to find the train.
 
 Setting the due date makes `sync-milestone` update the commercial milestones and start <<branches>> if the train exists.
 The train's line `Release Train: 2026.11.19` is then written into the milestone's description.
